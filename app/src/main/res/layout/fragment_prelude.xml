@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:viewadapter="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.PreludeViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/iv_config"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:src="@drawable/ic_settings_grey"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            viewadapter:isInvisible="@{viewModel.errorMode}"/>
+
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{viewModel.hint}"
+            android:textColor="@color/main_color_dark"
+            android:textSize="14sp"
+            app:layout_constraintWidth_percent="0.8"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_button_green"
+            android:gravity="center"
+            android:text="重试"
+            android:textColor="@color/white"
+            app:layout_constraintDimensionRatio="1000:414"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_quit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline_bottom"
+            app:layout_constraintVertical_bias="0"
+            style="@style/Widget.AppCompat.Button"
+            viewadapter:isInvisible="@{viewModel.errorMode}" />
+
+        <Button
+            android:id="@+id/btn_quit"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_button_green"
+            android:gravity="center"
+            android:text="退出"
+            android:textColor="@color/white"
+            app:layout_constraintDimensionRatio="1000:414"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_retry"
+            app:layout_constraintTop_toBottomOf="@id/guideline_bottom"
+            app:layout_constraintVertical_bias="0"
+            style="@style/Widget.AppCompat.Button"
+            viewadapter:isInvisible="@{viewModel.errorMode}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

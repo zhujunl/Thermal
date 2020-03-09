@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.miaxis.thermal.util.DateUtil"/>
+        <variable
+            name="item"
+            type="com.miaxis.thermal.data.entity.Person" />
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="2dp"
+        app:contentPadding="15dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/iv_header"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/default_header"
+                android:paddingEnd="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_name_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="姓        名："
+                android:gravity="center|start"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_name"/>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{item.name}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_name_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_name_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_identify_number_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_name_hint"/>
+
+            <TextView
+                android:id="@+id/tv_identify_number_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="证件号码："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/tv_name"
+                app:layout_constraintTop_toTopOf="@id/tv_name_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_identify_number"
+                app:layout_constraintBottom_toBottomOf="@id/tv_name_hint"/>
+
+            <TextView
+                android:id="@+id/tv_identify_number"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{item.identifyNumber}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_identify_number_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_name_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_name_hint"/>
+
+            <TextView
+                android:id="@+id/tv_phone_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="手机号码："
+                android:gravity="center|start"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_name_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_phone"/>
+
+            <TextView
+                android:id="@+id/tv_phone"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{item.phone}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_phone_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_phone_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_type_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint"/>
+
+            <TextView
+                android:id="@+id/tv_type_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="类        型："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/tv_phone"
+                app:layout_constraintTop_toTopOf="@id/tv_phone_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_type"
+                app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint"/>
+
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_type_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_phone_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint"/>
+
+            <TextView
+                android:id="@+id/tv_term_of_validity"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="生效时间："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_phone_hint"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintEnd_toStartOf="@id/tv_effect_time"/>
+
+            <TextView
+                android:id="@+id/tv_effect_time"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{DateUtil.DATE_FORMAT.format(item.effectiveTime)}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_term_of_validity"
+                app:layout_constraintTop_toTopOf="@id/tv_term_of_validity"
+                app:layout_constraintEnd_toStartOf="@id/tv_time_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_term_of_validity"/>
+
+            <TextView
+                android:id="@+id/tv_time_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="失效时间："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/tv_phone"
+                app:layout_constraintTop_toTopOf="@id/tv_term_of_validity"
+                app:layout_constraintEnd_toStartOf="@id/tv_invalid_time"
+                app:layout_constraintBottom_toBottomOf="@id/tv_term_of_validity"/>
+
+            <TextView
+                android:id="@+id/tv_invalid_time"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{DateUtil.DATE_FORMAT.format(item.invalidTime)}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_time_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_term_of_validity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_term_of_validity"/>
+
+            <TextView
+                android:id="@+id/tv_update_time_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="本地更新时间："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_term_of_validity"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintEnd_toStartOf="@id/tv_update_time"/>
+
+            <TextView
+                android:id="@+id/tv_update_time"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{DateUtil.DATE_FORMAT.format(item.updateTime)}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_update_time_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_update_time_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_time_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_update_time_hint"/>
+
+            <TextView
+                android:id="@+id/tv_status_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="状        态："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/tv_update_time"
+                app:layout_constraintTop_toTopOf="@id/tv_update_time_hint"
+                app:layout_constraintEnd_toStartOf="@id/tv_status"
+                app:layout_constraintBottom_toBottomOf="@id/tv_update_time_hint"/>
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_status_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_update_time_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_update_time_hint"/>
+
+            <TextView
+                android:id="@+id/tv_feature_status_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="人脸特征："
+                android:gravity="center|start"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_update_time_hint"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintEnd_toStartOf="@id/tv_feature_status"/>
+
+            <TextView
+                android:id="@+id/tv_feature_status"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text=""
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_feature_status_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_feature_status_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_feature_status_hint"
+                app:layout_constraintWidth_percent="0.15"/>
+
+            <TextView
+                android:id="@+id/tv_remarks"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/tv_feature_status"
+                app:layout_constraintTop_toTopOf="@id/tv_feature_status_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_feature_status_hint"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <ImageView
+                android:id="@+id/iv_edit"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_edit_green"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</layout>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:viewadapter="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.miaxis.thermal.bridge.Status" />
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.FaceRegisterViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragment.FaceRegisterFragment">
+
+        <FrameLayout
+            android:id="@+id/fl_camera"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.miaxis.thermal.view.custom.RoundTextureView
+                android:id="@+id/rtv_camera"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:src="@drawable/ic_navigate_before_grey"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="@{viewModel.hint}"
+            app:layout_constraintTop_toBottomOf="@id/fl_camera"
+            app:layout_constraintBottom_toTopOf="@id/cl_panel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_panel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.85"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_take_photo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_take_photo_white"
+                android:background="@drawable/circular_button_grey"
+                android:adjustViewBounds="true"
+                app:layout_constraintWidth_percent="0.15"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                viewadapter:isInvisible="@{viewModel.shootFlag == Status.FAILED}"/>
+
+            <ImageView
+                android:id="@+id/iv_retry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_refresh_white"
+                android:background="@drawable/circular_button_grey"
+                android:adjustViewBounds="true"
+                app:layout_constraintWidth_percent="0.13"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_confirm"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                viewadapter:isInvisible="@{viewModel.shootFlag == Status.SUCCESS}"/>
+
+            <ImageView
+                android:id="@+id/iv_confirm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check_white"
+                android:background="@drawable/circular_button_grey"
+                android:adjustViewBounds="true"
+                app:layout_constraintWidth_percent="0.13"
+                app:layout_constraintStart_toEndOf="@id/iv_retry"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                viewadapter:isInvisible="@{viewModel.shootFlag == Status.SUCCESS}"/>
+
+            <ProgressBar
+                android:id="@+id/pb_loading"
+                android:visibility="invisible"
+                style="@style/progress_bar_style"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="@id/iv_take_photo"
+                app:layout_constraintEnd_toEndOf="@id/iv_take_photo"
+                app:layout_constraintTop_toTopOf="@id/iv_take_photo"
+                app:layout_constraintBottom_toBottomOf="@id/iv_take_photo"
+                viewadapter:isInvisible="@{viewModel.shootFlag == Status.LOADING}"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

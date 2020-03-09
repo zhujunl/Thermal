@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="com.miaxis.thermal.util.DateUtil"/>
+        <variable
+            name="item"
+            type="com.miaxis.thermal.data.entity.Record" />
+
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_item"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_toolbar_height">
+
+            <TextView
+                android:id="@+id/tv_record_name"
+                style="@style/record_item"
+                android:text="@{item.name}"
+                android:layout_weight="0.7"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/lightgrey"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_record_identify_number"
+                style="@style/record_item"
+                android:text="@{item.identifyNumber}"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/lightgrey"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_record_phone"
+                style="@style/record_item"
+                android:text="@{item.phone}"
+                android:layout_weight="0.7"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/lightgrey"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_record_temperature"
+                style="@style/record_item"
+                android:text="@{String.valueOf(item.temperature)}"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/lightgrey"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_record_upload"
+                style="@style/record_item"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/lightgrey"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_record_verify_time"
+                style="@style/record_item"
+                android:text="@{DateUtil.DATE_FORMAT.format(item.verifyTime)}"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/lightgrey"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.miaxis.thermal.util.ValueUtil" />
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.ConfigViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragment.ConfigFragment">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="设    置"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_navigate_before_grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_save"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_check_green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/v_line"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/main_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_back" />
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/white_stroke_shape"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/v_line">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:layout_marginEnd="1dp"
+                        android:text="版本号" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView
+                        android:id="@+id/tv_version"
+                        style="@style/SettingBody"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView
+                        android:id="@+id/tv_update"
+                        style="@style/SettingBody"
+                        android:layout_weight="1"
+                        android:background="@color/whitesmoke"
+                        android:singleLine="true"
+                        android:text="检查更新"
+                        android:textColor="@color/colorPrimary" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="设备模式" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_mix"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="混合" />
+
+                        <RadioButton
+                            android:id="@+id/rb_server"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="主机" />
+
+                        <RadioButton
+                            android:id="@+id/rb_client"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="客户端" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="C：服务器地址" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_host"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:hint="http://ip:port/host/"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="C：下载人员路径" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_download_person_path"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:hint="api/downloadPerson"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="C：更新人员路径" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_update_person_path"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:hint="api/updatePerson"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="C：上传日志路径" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_upload_record_path"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:hint="api/uploadRecord"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="设备MAC" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView
+                        android:id="@+id/tv_mac"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="画面显示摄像头" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_infrared_show"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="红外" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_visible_show"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="可见光" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸处理摄像头" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_infrared_face"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="红外" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_visible_face"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="可见光" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="近红外活体识别" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_liveness_open"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="打开" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_liveness_close"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="关闭" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸比对阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_verify_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789."
+                        android:hint="0.7 - 1.0"
+                        android:inputType="numberDecimal"
+                        android:maxLength="4"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸质量阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_quality_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="50 - 99"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸活体阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_liveness_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="60 - 99"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸瞳距阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_pupil_distance"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="1 - 99"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="心跳间隔" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_heart_beat_interval"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="60 - 600秒"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="失败重查冷却" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_failed_query_cold"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="5 - 120秒"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="成功验证冷却" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_verify_cold"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="12345"
+                        android:hint="1 - 5秒"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="日志保存" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_record_clear_threshold"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="2000 - 10000条"
+                        android:inputType="number"
+                        android:maxLength="5"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="闪光灯持续时间" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_flash_time"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="1234567890"
+                        android:hint="5 - 180 秒"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="设备密码" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_device_password"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:inputType="numberPassword"
+                        android:maxLength="6"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.miaxis.thermal.manager.WebServerManager" />
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.HomeViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/high_blue"
+        tools:context=".view.fragment.HomeFragment">
+
+        <TextView
+            android:id="@+id/tv_address"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:gravity="center|bottom"
+            android:text='@{String.format("%s:%s", WebServerManager.instance.address, WebServerManager.instance.port)}'
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_server_status"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_server_status"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:gravity="center|top"
+            android:text="WebSocketServer服务在线中"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cl_attendance"
+            app:layout_constraintTop_toBottomOf="@id/tv_address"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_attendance"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/reptile_green"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.2"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_attendance_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_local_florist_black"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_attendance_hint"/>
+
+            <TextView
+                android:id="@+id/tv_attendance_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="考    勤"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_attendance_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_person"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/orange_hibiscus"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_attendance"
+            app:layout_constraintEnd_toStartOf="@id/cl_add_person"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_person_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_local_florist_black"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_person_hint"/>
+
+            <TextView
+                android:id="@+id/tv_person_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="人    员"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_person_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_add_person"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/flirtatious"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toEndOf="@id/cl_person"
+            app:layout_constraintTop_toBottomOf="@id/cl_attendance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_add_person_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_local_florist_black"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_add_person_hint"/>
+
+            <TextView
+                android:id="@+id/tv_add_person_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="建    档"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_add_person_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_record"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/fusion_red"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_person"
+            app:layout_constraintEnd_toStartOf="@id/cl_config"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_record_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_local_florist_black"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_record_hint"/>
+
+            <TextView
+                android:id="@+id/tv_record_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="日    志"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_record_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_config"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/prunus_avium"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toEndOf="@id/cl_record"
+            app:layout_constraintTop_toBottomOf="@id/cl_add_person"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_config_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_local_florist_black"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_config_hint"/>
+
+            <TextView
+                android:id="@+id/tv_config_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="设    置"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_config_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.miaxis.thermal.view.custom.ComboCustom
+            android:id="@+id/cc_combo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintHeight_percent="0.15"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

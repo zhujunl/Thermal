@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.AttendanceViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragment.AttendanceFragment">
+
+        <FrameLayout
+            android:id="@+id/fl_camera_root"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextureView
+                android:id="@+id/tv_camera"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.miaxis.thermal.view.custom.RectSurfaceView
+                android:id="@+id/rsv_rect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/iv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/background_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.miaxis.thermal.view.custom.ComboCustom
+            android:id="@+id/cc_combo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@id/iv_title"
+            app:layout_constraintEnd_toEndOf="@id/iv_title"
+            app:layout_constraintTop_toTopOf="@id/iv_title"
+            app:layout_constraintBottom_toBottomOf="@id/iv_title"/>
+
+        <ImageView
+            android:id="@+id/iv_panel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/background_bottom_solid"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_panel"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_panel"
+            app:layout_constraintEnd_toEndOf="@id/iv_panel"
+            app:layout_constraintStart_toStartOf="@id/iv_panel"
+            app:layout_constraintTop_toTopOf="@id/iv_panel">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.8">
+
+                <TextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:text="@{viewModel.dateStr}"
+                    android:gravity="center|start"
+                    app:autoSizeTextType="uniform"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/tv_hint"
+                    app:layout_constraintEnd_toEndOf="@id/tv_hint"/>
+
+                <TextView
+                    android:id="@+id/tv_temperature"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:text="@{viewModel.temperature}"
+                    android:gravity="center"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintStart_toEndOf="@id/tv_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_time"/>
+
+                <TextView
+                    android:id="@+id/tv_hint"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@{viewModel.hint}"
+                    android:textColor="@color/white"
+                    android:textSize="70sp"
+                    app:autoSizeMaxTextSize="70sp"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintHeight_percent="0.6"
+                    app:layout_constraintWidth_percent="0.7"
+                    app:layout_constraintVertical_bias="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_header_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/iv_header_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/head_mask"
+                    android:layout_margin="5dp"
+                    app:layout_constraintStart_toEndOf="@id/tv_hint"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_hint"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_hint"/>
+
+                <ImageView
+                    android:id="@+id/iv_header"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintStart_toStartOf="@id/iv_header_background"
+                    app:layout_constraintEnd_toEndOf="@id/iv_header_background"
+                    app:layout_constraintTop_toTopOf="@id/iv_header_background"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_header_background"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
