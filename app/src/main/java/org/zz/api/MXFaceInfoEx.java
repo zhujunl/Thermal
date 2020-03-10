@@ -36,18 +36,13 @@ public class MXFaceInfoEx {
 	public int reCogId;
 	public int reCogScore;
 
-	//保留位
-	public int reserved1;
-	public int reserved2;
-
+	public int mask;              //口罩分数0~100，建议大于40认为是有口罩
+	public int stranger;          //陌生人标识位
 
 	// head_pose头部姿态
 	public int pitch;         // 抬头、低头,范围-90到90，越大表示越抬头
 	public int yaw;           // 左右转头
 	public int roll;          // 平面内偏头
-
-	public MXFaceInfoEx() {
-	}
 
 	public MXFaceInfoEx(MXFaceInfoEx mxFaceInfoEx) {
 		this.x = mxFaceInfoEx.x;
@@ -67,15 +62,19 @@ public class MXFaceInfoEx {
 		this.reCog = mxFaceInfoEx.reCog;
 		this.reCogId = mxFaceInfoEx.reCogId;
 		this.reCogScore = mxFaceInfoEx.reCogScore;
-		this.reserved1 = mxFaceInfoEx.reserved1;
-		this.reserved2 = mxFaceInfoEx.reserved2;
+		this.mask = mxFaceInfoEx.mask;
+		this.stranger = mxFaceInfoEx.stranger;
 		this.pitch = mxFaceInfoEx.pitch;
 		this.yaw = mxFaceInfoEx.yaw;
 		this.roll = mxFaceInfoEx.roll;
+
 		this.keypt_x = new int[MAX_KEY_POINT_NUM];
 		System.arraycopy(mxFaceInfoEx.keypt_x, 0, this.keypt_x, 0, this.keypt_x.length);
 		this.keypt_y = new int[MAX_KEY_POINT_NUM];
 		System.arraycopy(mxFaceInfoEx.keypt_y, 0, this.keypt_y, 0, this.keypt_y.length);
+	}
+
+	public MXFaceInfoEx() {
 	}
 
 	public static int Int2MXFaceInfoEx(int iFaceNum, int[] iFaceInfo, MXFaceInfoEx[] pMXFaceInfoEx) {
@@ -89,6 +88,11 @@ public class MXFaceInfoEx {
 				pMXFaceInfoEx[i].keypt_x[j] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j];
 				pMXFaceInfoEx[i].keypt_y[j] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j + MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			}
+			for (int j = 0; j < 2; j++) {
+				pMXFaceInfoEx[i].keypt_x[j + 5] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5];
+				pMXFaceInfoEx[i].keypt_y[j + 5] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5 + MXFaceInfoEx.MAX_KEY_POINT_NUM];
+			}
+
 			pMXFaceInfoEx[i].age = iFaceInfo[i* MXFaceInfoEx.SIZE + 5 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].gender = iFaceInfo[i* MXFaceInfoEx.SIZE + 6 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM] ;
 			pMXFaceInfoEx[i].expression = iFaceInfo[i* MXFaceInfoEx.SIZE + 7 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM] ;
@@ -101,8 +105,8 @@ public class MXFaceInfoEx {
 			pMXFaceInfoEx[i].reCog = iFaceInfo[i * MXFaceInfoEx.SIZE + 14 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].reCogId = iFaceInfo[i * MXFaceInfoEx.SIZE + 15 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].reCogScore = iFaceInfo[i * MXFaceInfoEx.SIZE + 16 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
-			pMXFaceInfoEx[i].reserved1 = iFaceInfo[i * MXFaceInfoEx.SIZE + 17 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
-			pMXFaceInfoEx[i].reserved2 = iFaceInfo[i * MXFaceInfoEx.SIZE + 18 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
+			pMXFaceInfoEx[i].mask = iFaceInfo[i * MXFaceInfoEx.SIZE + 17 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
+			pMXFaceInfoEx[i].stranger = iFaceInfo[i * MXFaceInfoEx.SIZE + 18 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].pitch = iFaceInfo[i * MXFaceInfoEx.SIZE + 19 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].yaw = iFaceInfo[i * MXFaceInfoEx.SIZE + 20 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].roll = iFaceInfo[i * MXFaceInfoEx.SIZE + 21 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM];
@@ -121,6 +125,11 @@ public class MXFaceInfoEx {
 				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j] = pMXFaceInfoEx[i].keypt_x[j];
 				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j + MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].keypt_y[j];
 			}
+			for (int j = 0; j < 2; j++) {
+				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5] = pMXFaceInfoEx[i].keypt_x[j+5];
+				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5 + MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].keypt_y[j+5];
+			}
+
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 5 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].age;
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 6 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].gender;
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 7 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].expression;
@@ -133,8 +142,8 @@ public class MXFaceInfoEx {
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 14 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].reCog;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 15 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].reCogId;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 16 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].reCogScore;
-			iFaceInfo[i * MXFaceInfoEx.SIZE + 17 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].reserved1;
-			iFaceInfo[i * MXFaceInfoEx.SIZE + 18 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].reserved2;
+			iFaceInfo[i * MXFaceInfoEx.SIZE + 17 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].mask;
+			iFaceInfo[i * MXFaceInfoEx.SIZE + 18 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].stranger;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 19 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].pitch;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 20 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].yaw;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 21 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].roll;

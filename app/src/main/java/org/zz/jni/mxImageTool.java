@@ -23,7 +23,7 @@ public class mxImageTool {
 	 返	回：	1-成功，其他-失败
 	 *******************************************************************************************/
 	public native int ImageLoad(String szLoadFilePath, int iChannels,
-								byte[] pImgBuf, int[] oImgWidth, int[] oImgHeight);
+                                byte[] pImgBuf, int[] oImgWidth, int[] oImgHeight);
 
 	/*******************************************************************************************
 	 功	能：	保存图像数据
@@ -35,7 +35,7 @@ public class mxImageTool {
 	 返	回：	1-成功，其他-失败
 	 *******************************************************************************************/
 	public native int ImageSave(String szSaveFilePath,
-								byte[] pImgBuf, int iImgWidth, int iImgHeight, int iChannels);
+                                byte[] pImgBuf, int iImgWidth, int iImgHeight, int iChannels);
 
 	/*******************************************************************************************
 	 功	能：	YUV数据转换为RGB数据(Android摄像头获取的数据为YUV格式)
@@ -135,7 +135,7 @@ public class mxImageTool {
 	 返	回：	1-成功，其他-失败
 	 *******************************************************************************************/
 	public native int ImageEncode(byte[] pRGB24Buf, int iWidth, int iHeight,
-								  String szTpye, byte[] pFileDataBuf, int[] iFileDataLen);
+                                  String szTpye, byte[] pFileDataBuf, int[] iFileDataLen);
 
 	/*******************************************************************************************
 	 功	能：	输入的RGB图像，进行顺时针90/180/270角度旋转

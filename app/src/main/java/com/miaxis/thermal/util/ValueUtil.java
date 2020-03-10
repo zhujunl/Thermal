@@ -23,15 +23,19 @@ public class ValueUtil {
     public static final boolean DEFAULT_CAMERA_SHOW = false; //true:近红外，false:可见光
     public static final boolean DEFAULT_CAMERA_FACE = false; //true:近红外，false:可见光
     public static final boolean DEFAULT_LIVENESS = false;
-    public static final int DEFAULT_QUALITY_SCORE = 50;
+    public static final int DEFAULT_QUALITY_SCORE = 35;
+    public static final int DEFAULT_REGISTER_QUALITY_SCORE = 70;
+    public static final int DEFAULT_MASK_SCORE = 40;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
+    public static final float DEFAULT_MASK_VERIFY_SCORE = 0.72f;
     public static final int DEFAULT_LIVENESS_SCORE = 80;
-    public static final int DEFAULT_PUPIL_DISTANCE = 20;
+    public static final int DEFAULT_PUPIL_DISTANCE = 30;
+    public static final float DEFAULT_FEVER_SCORE = 37.3f;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 5;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 10000;
     public static final int DEFAULT_VERIFY_COLD = 3;
-    public static final int DEFAULT_FLASH_TIME = 10;
+    public static final int DEFAULT_FLASH_TIME = 5;
     public static final String DEFAULT_DEVICE_PASSWORD = "666666";
     public static final long DEFAULT_TIME_STAMP = 0;
 

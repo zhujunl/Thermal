@@ -31,6 +31,7 @@ public class ThermalApi extends BaseAPI {
                                                     String startTime,
                                                     String invalidTime,
                                                     String faceFeature,
+                                                    String maskFaceFeature,
                                                     File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
@@ -43,6 +44,7 @@ public class ThermalApi extends BaseAPI {
                 startTime,
                 invalidTime,
                 faceFeature,
+                maskFaceFeature,
                 fileBody);
     }
 
@@ -54,6 +56,7 @@ public class ThermalApi extends BaseAPI {
                                                     float score,
                                                     float temperature,
                                                     String type,
+                                                    String faceType,
                                                     String mac,
                                                     File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -66,6 +69,7 @@ public class ThermalApi extends BaseAPI {
                 score,
                 temperature,
                 type,
+                faceType,
                 mac,
                 fileBody);
     }

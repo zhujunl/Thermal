@@ -16,15 +16,10 @@ public class PersonDto implements Mapper<Person> {
     private String identifyNumber;
     private String startTime;
     private String invalidTime;
-    private String password;
-    private String orgName;
-    private String orgNode;
-    private String orgCode;
     private long updateTime;
     private String facePicture;
     private String faceFeature;
-    private String tenantId;
-    private String status;
+    private String maskFaceFeature;
 
     public PersonDto() {
     }
@@ -85,38 +80,6 @@ public class PersonDto implements Mapper<Person> {
         this.invalidTime = invalidTime;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public String getOrgNode() {
-        return orgNode;
-    }
-
-    public void setOrgNode(String orgNode) {
-        this.orgNode = orgNode;
-    }
-
-    public String getOrgCode() {
-        return orgCode;
-    }
-
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
-    }
-
     public long getUpdateTime() {
         return updateTime;
     }
@@ -141,20 +104,12 @@ public class PersonDto implements Mapper<Person> {
         this.faceFeature = faceFeature;
     }
 
-    public String getTenantId() {
-        return tenantId;
+    public String getMaskFaceFeature() {
+        return maskFaceFeature;
     }
 
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setMaskFaceFeature(String maskFaceFeature) {
+        this.maskFaceFeature = maskFaceFeature;
     }
 
     @Override
@@ -182,6 +137,7 @@ public class PersonDto implements Mapper<Person> {
                     .invalidTime(invalidDate)
                     .faceFeature(faceFeature)
                     .facePicturePath(facePicture)
+                    .maskFaceFeature(maskFaceFeature)
                     .timeStamp(updateTime)
                     .upload(true)
                     .build();

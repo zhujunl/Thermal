@@ -40,9 +40,8 @@
             android:layout_height="0dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            android:src="@drawable/default_header"
-            app:layout_constraintWidth_percent="0.25"
-            app:layout_constraintDimensionRatio="48:64"
+            app:layout_constraintWidth_percent="0.35"
+            app:layout_constraintDimensionRatio="64:48"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_name"
@@ -53,7 +52,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_number">
@@ -111,7 +110,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_phone">
@@ -170,7 +169,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_effect_time">
@@ -229,7 +228,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_invalid_time">
@@ -286,7 +285,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_type">
@@ -343,10 +342,10 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/cl_header">
+            app:layout_constraintBottom_toTopOf="@id/cl_face_feature">
 
             <TextView
                 android:id="@+id/tv_type_hint"
@@ -416,18 +415,17 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_header"
+            android:id="@+id/cl_face_feature"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="10dp"
             app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.075"
+            app:layout_constraintHeight_percent="0.065"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/guideline_bottom">
 
             <TextView
-                android:id="@+id/tv_header_hint"
+                android:id="@+id/tv_face_feature_hint"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:text="人脸信息"
@@ -445,11 +443,11 @@
                 app:layout_constraintHeight_percent="0.5"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tv_header"
-                app:layout_constraintStart_toEndOf="@id/tv_header_hint"/>
+                app:layout_constraintEnd_toStartOf="@id/tv_face_feature"
+                app:layout_constraintStart_toEndOf="@id/tv_face_feature_hint"/>
 
             <TextView
-                android:id="@+id/tv_header"
+                android:id="@+id/tv_face_feature"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:text="@{viewModel.faceFeatureHint}"

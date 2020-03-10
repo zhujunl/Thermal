@@ -15,6 +15,7 @@ public class Record {
     private String phone;
     private String name;
     private String type;
+    private String faceType;
     private Date verifyTime;
     private String verifyPicturePath;
     private float score;
@@ -31,6 +32,7 @@ public class Record {
         setPhone(builder.phone);
         setName(builder.name);
         setType(builder.type);
+        setFaceType(builder.faceType);
         setVerifyTime(builder.verifyTime);
         setVerifyPicturePath(builder.verifyPicturePath);
         setScore(builder.score);
@@ -86,6 +88,14 @@ public class Record {
         this.type = type;
     }
 
+    public String getFaceType() {
+        return faceType;
+    }
+
+    public void setFaceType(String faceType) {
+        this.faceType = faceType;
+    }
+
     public Date getVerifyTime() {
         return verifyTime;
     }
@@ -133,6 +143,7 @@ public class Record {
         private String phone;
         private String name;
         private String type;
+        private String faceType;
         private Date verifyTime;
         private String verifyPicturePath;
         private float score;
@@ -169,6 +180,11 @@ public class Record {
 
         public Builder type(String val) {
             type = val;
+            return this;
+        }
+
+        public Builder faceType(String val) {
+            faceType = val;
             return this;
         }
 

@@ -56,7 +56,6 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
     @Override
     protected void initData() {
-
     }
 
     @Override

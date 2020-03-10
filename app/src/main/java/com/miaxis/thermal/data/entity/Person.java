@@ -19,6 +19,7 @@ public class Person {
     private Date invalidTime;
     private Date updateTime;
     private String faceFeature;
+    private String maskFaceFeature;
     private String facePicturePath;
     private long timeStamp;
     private String remarks;
@@ -37,6 +38,7 @@ public class Person {
         setInvalidTime(builder.invalidTime);
         setUpdateTime(builder.updateTime);
         setFaceFeature(builder.faceFeature);
+        setMaskFaceFeature(builder.maskFaceFeature);
         setFacePicturePath(builder.facePicturePath);
         setTimeStamp(builder.timeStamp);
         setRemarks(builder.remarks);
@@ -115,6 +117,14 @@ public class Person {
         this.faceFeature = faceFeature;
     }
 
+    public String getMaskFaceFeature() {
+        return maskFaceFeature;
+    }
+
+    public void setMaskFaceFeature(String maskFaceFeature) {
+        this.maskFaceFeature = maskFaceFeature;
+    }
+
     public String getFacePicturePath() {
         return facePicturePath;
     }
@@ -157,6 +167,7 @@ public class Person {
         private Date invalidTime;
         private Date updateTime;
         private String faceFeature;
+        private String maskFaceFeature;
         private String facePicturePath;
         private long timeStamp;
         private String remarks;
@@ -207,6 +218,11 @@ public class Person {
 
         public Builder faceFeature(String val) {
             faceFeature = val;
+            return this;
+        }
+
+        public Builder maskFaceFeature(String val) {
+            maskFaceFeature = val;
             return this;
         }
 

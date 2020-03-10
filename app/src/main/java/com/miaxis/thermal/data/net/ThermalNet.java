@@ -33,7 +33,8 @@ public interface ThermalNet {
                                       @Part("startTime") String startTime,
                                       @Part("invalidTime") String invalidTime,
                                       @Part("faceFeature") String faceFeature,
-                                      @Part MultipartBody.Part file);
+                                      @Part("maskFaceFeature") String maskFaceFeature,
+                                      @Part MultipartBody.Part faceFile);
     @Multipart
     @POST
     Call<ResponseEntity> uploadRecord(@Url String url,
@@ -44,6 +45,7 @@ public interface ThermalNet {
                                       @Part("score") float score,
                                       @Part("temperature") float temperature,
                                       @Part("type") String type,
+                                      @Part("faceType") String faceType,
                                       @Part("mac") String mac,
                                       @Part MultipartBody.Part file);
 

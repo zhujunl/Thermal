@@ -6,7 +6,7 @@ public class PersonSearch {
     private int pageSize;
     private String identifyNumber;
     private String phone;
-    private boolean upload;
+    private Boolean upload;
 
     public PersonSearch() {
     }
@@ -43,11 +43,11 @@ public class PersonSearch {
         this.phone = phone;
     }
 
-    public boolean isUpload() {
+    public Boolean isUpload() {
         return upload;
     }
 
-    public void setUpload(boolean upload) {
+    public void setUpload(Boolean upload) {
         this.upload = upload;
     }
 }

@@ -40,6 +40,7 @@ public class AddPersonViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> registerFlag = new SingleLiveEvent<>();
 
     private String featureCache;
+    private String maskFeatureCache;
     private Bitmap headerCache;
 
     private Person personCache;
@@ -55,6 +56,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 || TextUtils.isEmpty(invalidTime.get())
                 || TextUtils.equals(invalidTime.get(), "请选择失效日期")
                 || TextUtils.isEmpty(featureCache)
+                || TextUtils.isEmpty(maskFeatureCache)
                 || headerCache == null) {
             return false;
         }
@@ -80,6 +82,7 @@ public class AddPersonViewModel extends BaseViewModel {
                     .effectiveTime(DateUtil.DATE_FORMAT.parse(effectTime.get()))
                     .invalidTime(DateUtil.DATE_FORMAT.parse(invalidTime.get()))
                     .faceFeature(featureCache)
+                    .maskFaceFeature(maskFeatureCache)
                     .timeStamp(new Date().getTime())
                     .type(type.get() ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR)
                     .upload(false)
@@ -129,6 +132,7 @@ public class AddPersonViewModel extends BaseViewModel {
                     FileUtil.saveBitmap(headerCache, FileUtil.FACE_STOREHOUSE_PATH, fileName);
                     person.setFacePicturePath(facePicturePath);
                     person.setFaceFeature(featureCache);
+                    person.setMaskFaceFeature(maskFeatureCache);
                     person.setUpload(false);
                     person.setUpdateTime(new Date());
                     PersonRepository.getInstance().savePerson(person);
@@ -159,6 +163,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 .subscribe(result -> {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息已上传");
+                    PersonManager.getInstance().startUploadPerson();
                 }, throwable -> {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息上传失败，已缓存至本地，将自动尝试续传");
@@ -176,4 +181,9 @@ public class AddPersonViewModel extends BaseViewModel {
     public void setPersonCache(Person personCache) {
         this.personCache = personCache;
     }
+
+    public void setMaskFeatureCache(String maskFeatureCache) {
+        this.maskFeatureCache = maskFeatureCache;
+    }
+
 }

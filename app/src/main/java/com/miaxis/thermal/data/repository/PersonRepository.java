@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.miaxis.thermal.data.dto.PersonDto;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.Person;
+import com.miaxis.thermal.data.entity.PersonSearch;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.model.PersonModel;
@@ -70,7 +71,7 @@ public class PersonRepository {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getUpdatePersonPath();
         String mac = config.getMac();
-        File file = new File(person.getFacePicturePath());
+        File faceFile = new File(person.getFacePicturePath());
         Response<ResponseEntity> execute = ThermalApi.updatePerson(url,
                 mac,
                 person.getName(),
@@ -80,7 +81,8 @@ public class PersonRepository {
                 DateUtil.DATE_FORMAT.format(person.getEffectiveTime()),
                 DateUtil.DATE_FORMAT.format(person.getInvalidTime()),
                 person.getFaceFeature(),
-                file)
+                person.getMaskFaceFeature(),
+                faceFile)
                 .execute();
         try {
             ResponseEntity body = execute.body();
@@ -121,6 +123,10 @@ public class PersonRepository {
 
     public Person findOldestRecord() {
         return PersonModel.findOldestPerson();
+    }
+
+    public List<Person> searchPerson(PersonSearch personSearch) {
+        return PersonModel.searchPerson(personSearch);
     }
 
     public void clearAll() {

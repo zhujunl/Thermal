@@ -31,7 +31,7 @@ public class MXFaceAPI {
 	 * 			 szLicense     - 输入，授权码
 	 * @return   0-成功，其他-失败
 	 * */
-	public int mxInitAlg(Context context,String szModelPath,String szLicense)
+	public int mxInitAlg(Context context, String szModelPath, String szLicense)
 	{
 		int nRet = 0;
 		nRet = m_dllFaceApi.initAlg(context,szModelPath,szLicense);
@@ -320,6 +320,115 @@ public class MXFaceAPI {
 		bt_time = time2.getTimeInMillis() - time1.getTimeInMillis();
 		MXFaceInfoEx.Int2MXFaceInfoEx(iFaceNum,bInfo,pFaceInfo);
 		return 0;
+	}
+
+	/****************************************************************************
+	 功  能：	口罩检测
+	 参  数：
+	 pImage      - 输入，图像数据
+	 nImgWidth   - 输入，图像宽度
+	 nImgHeight  - 输入，图像高度
+	 pFaceNum    - 输入，人脸数
+	 pFaceInfo   - 输入\输出，人脸信息
+	 返	回：	0-成功，其他-失败
+	 *****************************************************************************/
+	public int mxMaskDetect(byte[] pImage, int nWidth, int nHeight,
+							  int iFaceNum, MXFaceInfoEx[] pFaceInfo)
+	{
+		if (m_bInit!=true){
+			return -10;
+		}
+		Calendar time1, time2;
+		long bt_time;
+		int nRet = -1;
+		int[] bInfo = new int[MXFaceInfoEx.SIZE * iFaceNum];
+		MXFaceInfoEx.MXFaceInfoEx2Int(iFaceNum,bInfo,pFaceInfo);
+		time1 = Calendar.getInstance();
+		nRet = m_dllFaceApi.maskDetect(pImage, nWidth, nHeight,iFaceNum,bInfo);
+		time2 = Calendar.getInstance();
+		bt_time = time2.getTimeInMillis() - time1.getTimeInMillis();
+		MXFaceInfoEx.Int2MXFaceInfoEx(iFaceNum,bInfo,pFaceInfo);
+		return nRet;
+	}
+
+	/**
+	 * @author   chen.gs
+	 * @category 人脸特征提取,用于比对（戴口罩算法）
+	 * @param    pImage       - 输入，RGB图像数据
+	 * 			 nWidth       - 输入，图像宽度
+	 * 			 nHeight      - 输入，图像高度
+	 * 			 nFaceNum     - 输入，人脸个数
+	 * 			 faceInfo     - 输入，人脸信息
+	 * 			 pFeatureData - 输出，人脸特征，特征长度*人脸个数
+	 * @return   0-成功，其他-失败
+	 * */
+	public int mxMaskFeatureExtract(byte[] pImage, int nWidth, int nHeight,
+                                    int nFaceNum, MXFaceInfoEx[] pFaceInfo, byte[] pFeatureData)
+	{
+		if (m_bInit!=true){
+			return -10;
+		}
+		//Log.e("MIAXIS", "mxFeatureExtract");
+		int nRet = -1;
+		int iFeatureSize = m_dllFaceApi.getFeatureSize();
+
+		int[] bInfo = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
+		MXFaceInfoEx.MXFaceInfoEx2Int(nFaceNum,bInfo,pFaceInfo);
+
+		nRet = m_dllFaceApi.maskFeatureExtract(pImage, nWidth, nHeight,nFaceNum, bInfo,pFeatureData);
+		if(nRet!=0){
+			return -11;
+		}
+
+		return nRet;
+	}
+
+	/**
+	 * @author   chen.gs
+	 * @category 人脸特征提取,用于注册（戴口罩算法）
+	 * @param    pImage       - 输入，RGB图像数据
+	 * 			 nWidth       - 输入，图像宽度
+	 * 			 nHeight      - 输入，图像高度
+	 * 			 nFaceNum     - 输入，人脸个数
+	 * 			 faceInfo     - 输入，人脸信息
+	 * 			 pFeatureData - 输出，人脸特征，特征长度*人脸个数
+	 * @return   0-成功，其他-失败
+	 * */
+	public int mxMaskFeatureExtract4Reg(byte[] pImage, int nWidth, int nHeight,
+                                        int nFaceNum, MXFaceInfoEx[] pFaceInfo, byte[] pFeatureData)
+	{
+		if (m_bInit!=true){
+			return -10;
+		}
+		//Log.e("MIAXIS", "mxFeatureExtract");
+		int nRet = -1;
+		int iFeatureSize = m_dllFaceApi.getFeatureSize();
+
+		int[] bInfo = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
+		MXFaceInfoEx.MXFaceInfoEx2Int(nFaceNum,bInfo,pFaceInfo);
+
+		nRet = m_dllFaceApi.maskFeatureExtract4Reg(pImage, nWidth, nHeight,nFaceNum, bInfo,pFeatureData);
+		if(nRet!=0){
+			return -11;
+		}
+
+		return nRet;
+	}
+
+	/**
+	 * @author   chen.gs
+	 * @category 人脸特征比对（戴口罩算法）
+	 * @param    pFaceFeaA - 输入，人脸特征A
+	 * 			 pFaceFeaB - 输入，人脸特征B
+	 * 			 fScore    - 输出，相似性度量值，0~1.0 ，越大越相似。
+	 * @return   0-成功，其他-失败
+	 * */
+	public int mxMaskFeatureMatch(byte[] pFaceFeaA,byte[] pFaceFeaB,float[] fScore)
+	{
+		if (m_bInit!=true){
+			return -10;
+		}
+		return m_dllFaceApi.maskFeatureMatch(pFaceFeaA, pFaceFeaB,fScore);
 	}
 
 }

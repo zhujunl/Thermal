@@ -8,6 +8,7 @@ import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.CrashExceptionManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
@@ -37,6 +38,7 @@ public class App extends Application {
             ConfigManager.getInstance().checkConfig();
             CrashExceptionManager.getInstance().init(this);
             TTSManager.getInstance().init(getApplicationContext());
+            GpioManager.getInstance().init(this);
             int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.MODEL_PATH, FileUtil.LICENCE_PATH);
             listener.onInit(result == FaceManager.INIT_SUCCESS, FaceManager.getFaceInitResultDetail(result));
 //            listener.onInit(true, "");

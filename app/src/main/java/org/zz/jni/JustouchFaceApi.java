@@ -22,7 +22,7 @@ public class JustouchFaceApi {
             szLicense      - 输入，授权码
      返  回：0-成功，其他-失败
     *****************************************************************************/
-    public native int initAlg(Object context,String path,String license);
+    public native int initAlg(Object context, String path, String license);
 
     /****************************************************************************
      功  能：初始化算法（1:N）
@@ -32,7 +32,7 @@ public class JustouchFaceApi {
             iMaxSearchNum  - 输入，最大搜索库容
      返  回：0-成功，其他-失败
     *****************************************************************************/
-    public native int initAlgN(Object context,String path,String license,int iMaxSearchNum);
+    public native int initAlgN(Object context, String path, String license, int iMaxSearchNum);
 
     /****************************************************************************
      功  能：释放算法
@@ -197,4 +197,56 @@ public class JustouchFaceApi {
      返	回：	0-成功，其他-失败
      *****************************************************************************/
     public native int nirLivenessDetect(byte[] pImage, int nImgWidth, int nImgHeight, int iFaceNum,int[] pFaceInfo);
+
+    /*******************************************************************************************
+     功	能：检测人脸是否戴口罩
+     参	数：
+             pImage        - 输入，图像数据
+             nImgWidth     - 输入，图像宽度
+             nImgHeight    - 输入，图像高度
+             iFaceNum      - 输入，人脸数
+             pFaceInfo     - 输入/输出，人脸检测结果,内存分配大小 new int[262*100],结构详见MXFaceInfoEx
+     返	回：0-成功，-1 人脸过多，其他-失败
+     *******************************************************************************************/
+    public native int maskDetect(byte[] pImage, int nWidth, int nHeight,
+                                 int iFaceNum, int[] pFaceInfo);
+
+    /*******************************************************************************************
+     功	能：	提取人脸特征，用于比对（戴口罩算法）
+     参	数：
+                 pImage      - 输入，RGB图像数据
+                 nImgWidth   - 输入，图像宽度
+                 nImgHeight  - 输入，图像高度
+                 pFaceNum    - 输入，人脸个数
+                 pFaceInfo	- 输入，人脸信息
+                 pFaceFea    - 输出，人脸特征
+     返	回：	0-成功，其他-失败
+     *******************************************************************************************/
+    public native int maskFeatureExtract(byte[] pImage, int nWidth, int nHeight,
+                                     int pFaceNum, int[] pFaceInfo, byte[] pFaceFea);
+
+    /*******************************************************************************************
+     功	能：	提取人脸特征，用于注册（戴口罩算法）
+     参	数：
+                 pImage      - 输入，RGB图像数据
+                 nImgWidth   - 输入，图像宽度
+                 nImgHeight  - 输入，图像高度
+                 pFaceNum    - 输入，人脸个数
+                 pFaceInfo	- 输入，人脸信息
+                 pFaceFea    - 输出，人脸特征
+     返	回：	0-成功，其他-失败
+     *******************************************************************************************/
+    public native int maskFeatureExtract4Reg(byte[] pImage, int nWidth, int nHeight,
+                                         int pFaceNum, int[] pFaceInfo, byte[] pFaceFea);
+
+    /*******************************************************************************************
+     功	能：比对人脸特征（戴口罩算法）
+     参	数：
+             pFaceFeaA - 输入，人脸特征A
+             pFaceFeaB - 输入，人脸特征B
+             fScore    - 输出，相似性度量值，0~1.0 ，越大越相似。
+     返	回：0-成功，其他-失败
+     *******************************************************************************************/
+    public native int maskFeatureMatch(byte[] pFaceFeaA,byte[] pFaceFeaB, float[] fScore);
 }
+

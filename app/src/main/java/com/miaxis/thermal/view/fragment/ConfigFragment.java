@@ -100,9 +100,9 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     return;
                 }
                 if (TextUtils.isEmpty(binding.etQualityScore.getText().toString())
-                        || Integer.valueOf(binding.etQualityScore.getText().toString()) < 50
+                        || Integer.valueOf(binding.etQualityScore.getText().toString()) < 20
                         || Integer.valueOf(binding.etQualityScore.getText().toString()) > 100) {
-                    ToastManager.toast("质量阈值范围 50 - 100", ToastManager.INFO);
+                    ToastManager.toast("质量阈值范围 20 - 100", ToastManager.INFO);
                     return;
                 }
                 if (TextUtils.isEmpty(binding.etHeartBeatInterval.getText().toString())

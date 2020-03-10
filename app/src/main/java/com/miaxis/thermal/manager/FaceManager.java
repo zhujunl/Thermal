@@ -12,6 +12,7 @@ import android.util.Log;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.Intermediary;
 import com.miaxis.thermal.data.entity.MxRGBImage;
+import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.util.FileUtil;
 
 import org.zz.api.MXFaceAPI;
@@ -71,7 +72,7 @@ public class FaceManager {
     private String errorMessage = "";
 
     public interface OnFaceHandleListener {
-        void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature);
+        void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature, boolean mask);
         void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes, float temperature);
         void onFaceIntercept(int code, String message);
     }
@@ -137,7 +138,7 @@ public class FaceManager {
         try {
             long time = System.currentTimeMillis();
             WatchDogManager.getInstance().feedFaceDog();
-            Config config = ConfigManager.getInstance().getConfig();
+//            Config config = ConfigManager.getInstance().getConfig();
 //            int orientation = config.isFaceCamera() ? 270 : 90;
             byte[] zoomedRgbData = cameraPreviewConvert(detectData, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, 0, ZOOM_WIDTH, ZOOM_HEIGHT);
             if (zoomedRgbData == null) {
@@ -156,12 +157,12 @@ public class FaceManager {
                 if (faceHandleListener != null) {
                     faceHandleListener.onFaceDetect(faceNum[0], faceBuffer, temperature);
                 }
-//                GpioManager.getInstance().openLedInTime();
+                GpioManager.getInstance().openLedInTime();
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(faceBuffer);
                 result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
                 if (result) {
 //                    float temperature = TemperatureManager.getInstance().readTemperature();
-                    if (temperature != 0f) {
+                    if (temperature > 0f) {
                         Intermediary intermediary = new Intermediary();
                         intermediary.width = ZOOM_WIDTH;
                         intermediary.height = ZOOM_HEIGHT;
@@ -201,45 +202,66 @@ public class FaceManager {
     private void extract(Intermediary intermediary) {
         try {
             if (needNextFeature) {
-                long time = System.currentTimeMillis();
-                if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
-                    if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
-                        byte[] feature = null;
-                        if (intermediary.liveness == null) {
-                            feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
-                        } else {
-                            Config config = ConfigManager.getInstance().getConfig();
-                            boolean liveness;
-                            if (config.isFaceCamera()) {
-                                liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
-                            } else {
-                                liveness = livenessDetect(intermediary.liveness, true, null);
-                            }
-                            if (liveness) {
-                                feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
-                            } else {
-                                if (faceHandleListener != null) {
-                                    faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
+                if (intermediary.temperature > 35.5f) {
+                    if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
+                        if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
+                            boolean result = detectMask(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                            if (result) {
+                                boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
+                                byte[] feature = null;
+                                if (intermediary.liveness == null) {
+                                    if (mask) {
+                                        feature = extractMaskFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                    } else {
+                                        feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                    }
+                                } else {
+                                    Config config = ConfigManager.getInstance().getConfig();
+                                    boolean liveness;
+                                    if (config.isFaceCamera()) {
+                                        liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
+                                    } else {
+                                        liveness = livenessDetect(intermediary.liveness, true, null);
+                                    }
+                                    if (liveness) {
+                                        if (mask) {
+                                            feature = extractMaskFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                        } else {
+                                            feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                        }
+                                    } else {
+                                        if (faceHandleListener != null) {
+                                            faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
+                                        }
+                                    }
                                 }
+                                if (feature != null) {
+                                    needNextFeature = false;
+                                    if (faceHandleListener != null) {
+                                        faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT),
+                                                intermediary.mxFaceInfoEx,
+                                                intermediary.temperature,
+                                                feature,
+                                                mask);
+                                    }
+                                }
+                            } else {
+                                //是否戴口罩检测失败，直接丢弃
+                                Log.e("asd", "检测是否戴口罩失败");
                             }
-                        }
-                        if (feature != null) {
-                            needNextFeature = false;
+                        } else {
                             if (faceHandleListener != null) {
-                                faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT),
-                                        intermediary.mxFaceInfoEx,
-                                        intermediary.temperature,
-                                        feature);
+                                faceHandleListener.onFaceIntercept(-2, "瞳距阈值拦截");
                             }
                         }
                     } else {
                         if (faceHandleListener != null) {
-                            faceHandleListener.onFaceIntercept(-2, "瞳距阈值拦截");
+                            faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
                         }
                     }
                 } else {
                     if (faceHandleListener != null) {
-                        faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
+                        faceHandleListener.onFaceIntercept(-5, "温度阈值拦截");
                     }
                 }
             }
@@ -304,6 +326,44 @@ public class FaceManager {
         return null;
     }
 
+    public PhotoFaceFeature getPhotoFaceFeatureByBitmapForRegisterPosting(Bitmap bitmap) {
+        String message = "";
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] rgbData = imageFileDecode(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight());
+        if (rgbData == null) {
+            message = "图片转码失败";
+            return new PhotoFaceFeature(message);
+        }
+        int[] pFaceNum = new int[]{0};
+        MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
+        boolean result = faceDetect(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum, pFaceBuffer);
+        if (result && pFaceNum[0] > 0) {
+            if (pFaceNum[0] == 1) {
+                result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
+                MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
+                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
+                    byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                    if (faceFeature != null) {
+                        byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                        if (maskFaceFeature != null) {
+                            return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                        }
+                    } else {
+                        message = "提取特征失败";
+                    }
+                } else {
+                    message = "人脸质量过低";
+                }
+            } else {
+                message = "检测到多张人脸";
+            }
+        } else {
+            message = "未检测到人脸";
+        }
+        return new PhotoFaceFeature(message);
+    }
+
     public byte[] getPhotoFeatureByBitmapPosting(Bitmap bitmap) {
         errorMessage = "";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
@@ -320,7 +380,7 @@ public class FaceManager {
             if (pFaceNum[0] == 1) {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
-                if (result && mxFaceInfoEx.quality > 70) {
+                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
                     byte[] feature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
                     if (feature != null) {
                         return feature;
@@ -397,9 +457,12 @@ public class FaceManager {
     private int initFaceModel(Context context, String modelPath) {
         String hsLibDirName = "MIAXISModelsV5";
         String modelFile1 = "MIAXIS_V5.0.0_FaceDetect.model";
-        String modelFile2 = "MIAXIS_V5.0.0_FaceQuality.model";
-        String modelFile3 = "MIAXIS_V5.0.0_FaceRecog.model";
-        String modelFile4 = "MIAXIS_V5.0.0_LivenessDetect.model";
+        String modelFile2 = "MIAXIS_V5.0.0_FaceMaskAlign.model";
+        String modelFile3 = "MIAXIS_V5.0.0_FaceMaskDetect.model";
+        String modelFile4 = "MIAXIS_V5.0.0_FaceMaskRecog.model";
+        String modelFile5 = "MIAXIS_V5.0.0_FaceQuality.model";
+        String modelFile6 = "MIAXIS_V5.0.0_FaceRecog.model";
+        String modelFile7 = "MIAXIS_V5.0.0_LivenessDetect.model";
         File modelDir = new File(modelPath);
         if (modelDir.exists()) {
             if (!new File(modelDir + File.separator + modelFile1).exists()) {
@@ -413,6 +476,15 @@ public class FaceManager {
             }
             if (!new File(modelDir + File.separator + modelFile4).exists()) {
                 FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile4, modelDir + File.separator + modelFile4);
+            }
+            if (!new File(modelDir + File.separator + modelFile5).exists()) {
+                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile5, modelDir + File.separator + modelFile5);
+            }
+            if (!new File(modelDir + File.separator + modelFile6).exists()) {
+                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile6, modelDir + File.separator + modelFile6);
+            }
+            if (!new File(modelDir + File.separator + modelFile7).exists()) {
+                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile7, modelDir + File.separator + modelFile7);
             }
             return 0;
         } else {
@@ -444,6 +516,25 @@ public class FaceManager {
         if (alpha != null && beta != null) {
             float[] score = new float[1];
             int re = mxFaceAPI.mxFeatureMatch(alpha, beta, score);
+            if (re == 0) {
+                return score[0];
+            }
+            return -1;
+        }
+        return 0;
+    }
+
+    /**
+     * 比对口罩人脸特征
+     *
+     * @param alpha
+     * @param beta
+     * @return
+     */
+    public float matchMaskFeature(byte[] alpha, byte[] beta) {
+        if (alpha != null && beta != null) {
+            float[] score = new float[1];
+            int re = mxFaceAPI.mxMaskFeatureMatch(alpha, beta, score);
             if (re == 0) {
                 return score[0];
             }
@@ -607,11 +698,25 @@ public class FaceManager {
      * @param width      图像数据宽度
      * @param height     图像数据高度
      * @param faceNum    检测到人脸数量
-     * @param faceBuffer 输入，人脸检测结果，native输出，根据瞳距进行从大到小排序
+     * @param faceBuffer 输入，人脸检测结果
      * @return
      */
     private boolean faceQuality(byte[] rgbData, int width, int height, int faceNum, MXFaceInfoEx[] faceBuffer) {
         int result = mxFaceAPI.mxFaceQuality(rgbData, width, height, faceNum, faceBuffer);
+        return result == 0;
+    }
+
+    /**
+     * 口罩检测
+     *
+     * @param rgbData    RGB裸图像数据
+     * @param width      图像数据宽度
+     * @param height     图像数据高度
+     * @param faceInfo 输入，人脸检测结果
+     * @return
+     */
+    private boolean detectMask(byte[] rgbData, int width, int height, MXFaceInfoEx faceInfo) {
+        int result = mxFaceAPI.mxMaskDetect(rgbData, width, height, 1, new MXFaceInfoEx[]{faceInfo});
         return result == 0;
     }
 
@@ -643,6 +748,38 @@ public class FaceManager {
         synchronized (lock1) {
             byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
             int result = mxFaceAPI.mxFeatureExtract(pImage, width, height, 1, new MXFaceInfoEx[]{faceInfo}, feature);
+            return result == 0 ? feature : null;
+        }
+    }
+
+    /**
+     * @category 人脸特征提取,用于比对（戴口罩算法）
+     * @param pImage - 输入，RGB图像数据
+     * @param width - 输入，图像宽度
+     * @param height - 输入，图像高度
+     * @param faceInfo - 输入，人脸信息
+     * @return 0-成功，其他-失败
+      */
+    public byte[] extractMaskFeature(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
+        synchronized (lock1) {
+            byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
+            int result = mxFaceAPI.mxMaskFeatureExtract(pImage, width, height, 1, new MXFaceInfoEx[]{faceInfo}, feature);
+            return result == 0 ? feature : null;
+        }
+    }
+
+    /**
+     * @category 人脸特征提取,用于注册（戴口罩算法）
+     * @param pImage - 输入，RGB图像数据
+     * @param width - 输入，图像宽度
+     * @param height - 输入，图像高度
+     * @param faceInfo - 输入，人脸信息
+     * @return 0-成功，其他-失败
+     */
+    public byte[] extractMaskFeatureForRegister(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
+        synchronized (lock1) {
+            byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
+            int result = mxFaceAPI.mxMaskFeatureExtract4Reg(pImage, width, height, 1, new MXFaceInfoEx[]{faceInfo}, feature);
             return result == 0 ? feature : null;
         }
     }

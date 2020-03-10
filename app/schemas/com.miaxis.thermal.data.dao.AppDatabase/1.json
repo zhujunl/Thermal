@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1e3d3abfc075839788d740aca23723df",
+    "identityHash": "ea9d229b1050cf8f903a909f92b27d23",
     "entities": [
       {
         "tableName": "Config",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `serverMode` TEXT, `host` TEXT, `downloadPersonPath` TEXT, `updatePersonPath` TEXT, `uploadRecordPath` TEXT, `mac` TEXT, `showCamera` INTEGER NOT NULL, `faceCamera` INTEGER NOT NULL, `liveness` INTEGER NOT NULL, `qualityScore` INTEGER NOT NULL, `verifyScore` REAL NOT NULL, `livenessScore` INTEGER NOT NULL, `pupilDistance` INTEGER NOT NULL, `heartBeatInterval` INTEGER NOT NULL, `failedQueryCold` INTEGER NOT NULL, `recordClearThreshold` INTEGER NOT NULL, `verifyCold` INTEGER NOT NULL, `flashTime` INTEGER NOT NULL, `devicePassword` TEXT, `timeStamp` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `serverMode` TEXT, `host` TEXT, `downloadPersonPath` TEXT, `updatePersonPath` TEXT, `uploadRecordPath` TEXT, `mac` TEXT, `showCamera` INTEGER NOT NULL, `faceCamera` INTEGER NOT NULL, `liveness` INTEGER NOT NULL, `registerQualityScore` INTEGER NOT NULL, `qualityScore` INTEGER NOT NULL, `verifyScore` REAL NOT NULL, `maskVerifyScore` REAL NOT NULL, `maskScore` INTEGER NOT NULL, `livenessScore` INTEGER NOT NULL, `pupilDistance` INTEGER NOT NULL, `feverScore` REAL NOT NULL, `heartBeatInterval` INTEGER NOT NULL, `failedQueryCold` INTEGER NOT NULL, `recordClearThreshold` INTEGER NOT NULL, `verifyCold` INTEGER NOT NULL, `flashTime` INTEGER NOT NULL, `devicePassword` TEXT, `timeStamp` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -69,6 +69,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "registerQualityScore",
+            "columnName": "registerQualityScore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "qualityScore",
             "columnName": "qualityScore",
             "affinity": "INTEGER",
@@ -81,6 +87,18 @@
             "notNull": true
           },
           {
+            "fieldPath": "maskVerifyScore",
+            "columnName": "maskVerifyScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maskScore",
+            "columnName": "maskScore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "livenessScore",
             "columnName": "livenessScore",
             "affinity": "INTEGER",
@@ -90,6 +108,12 @@
             "fieldPath": "pupilDistance",
             "columnName": "pupilDistance",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "feverScore",
+            "columnName": "feverScore",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -146,7 +170,7 @@
       },
       {
         "tableName": "Person",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `identifyNumber` TEXT, `phone` TEXT, `name` TEXT, `type` TEXT, `effectiveTime` INTEGER, `invalidTime` INTEGER, `updateTime` INTEGER, `faceFeature` TEXT, `facePicturePath` TEXT, `timeStamp` INTEGER NOT NULL, `remarks` TEXT, `upload` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `identifyNumber` TEXT, `phone` TEXT, `name` TEXT, `type` TEXT, `effectiveTime` INTEGER, `invalidTime` INTEGER, `updateTime` INTEGER, `faceFeature` TEXT, `maskFaceFeature` TEXT, `facePicturePath` TEXT, `timeStamp` INTEGER NOT NULL, `remarks` TEXT, `upload` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -203,6 +227,12 @@
             "notNull": false
           },
           {
+            "fieldPath": "maskFaceFeature",
+            "columnName": "maskFaceFeature",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "facePicturePath",
             "columnName": "facePicturePath",
             "affinity": "TEXT",
@@ -247,7 +277,7 @@
       },
       {
         "tableName": "Record",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `personId` INTEGER, `identifyNumber` TEXT, `phone` TEXT, `name` TEXT, `type` TEXT, `verifyTime` INTEGER, `verifyPicturePath` TEXT, `score` REAL NOT NULL, `upload` INTEGER NOT NULL, `temperature` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `personId` INTEGER, `identifyNumber` TEXT, `phone` TEXT, `name` TEXT, `type` TEXT, `faceType` TEXT, `verifyTime` INTEGER, `verifyPicturePath` TEXT, `score` REAL NOT NULL, `upload` INTEGER NOT NULL, `temperature` REAL NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -282,6 +312,12 @@
           {
             "fieldPath": "type",
             "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "faceType",
+            "columnName": "faceType",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -329,7 +365,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e3d3abfc075839788d740aca23723df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ea9d229b1050cf8f903a909f92b27d23')"
     ]
   }
 }

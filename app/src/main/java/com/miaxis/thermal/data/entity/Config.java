@@ -17,10 +17,14 @@ public class Config {
     private boolean showCamera;
     private boolean faceCamera;
     private boolean liveness;
+    private int registerQualityScore;
     private int qualityScore;
     private float verifyScore;
+    private float maskVerifyScore;
+    private int maskScore;
     private int livenessScore;
     private int pupilDistance;
+    private float feverScore;
     private int heartBeatInterval;
     private int failedQueryCold;
     private int recordClearThreshold;
@@ -43,10 +47,14 @@ public class Config {
         setShowCamera(builder.showCamera);
         setFaceCamera(builder.faceCamera);
         setLiveness(builder.liveness);
+        setRegisterQualityScore(builder.registerQualityScore);
         setQualityScore(builder.qualityScore);
         setVerifyScore(builder.verifyScore);
+        setMaskVerifyScore(builder.maskVerifyScore);
+        setMaskScore(builder.maskScore);
         setLivenessScore(builder.livenessScore);
         setPupilDistance(builder.pupilDistance);
+        setFeverScore(builder.feverScore);
         setHeartBeatInterval(builder.heartBeatInterval);
         setFailedQueryCold(builder.failedQueryCold);
         setRecordClearThreshold(builder.recordClearThreshold);
@@ -136,6 +144,14 @@ public class Config {
         this.liveness = liveness;
     }
 
+    public int getRegisterQualityScore() {
+        return registerQualityScore;
+    }
+
+    public void setRegisterQualityScore(int registerQualityScore) {
+        this.registerQualityScore = registerQualityScore;
+    }
+
     public int getQualityScore() {
         return qualityScore;
     }
@@ -152,6 +168,22 @@ public class Config {
         this.verifyScore = verifyScore;
     }
 
+    public float getMaskVerifyScore() {
+        return maskVerifyScore;
+    }
+
+    public void setMaskVerifyScore(float maskVerifyScore) {
+        this.maskVerifyScore = maskVerifyScore;
+    }
+
+    public int getMaskScore() {
+        return maskScore;
+    }
+
+    public void setMaskScore(int maskScore) {
+        this.maskScore = maskScore;
+    }
+
     public int getLivenessScore() {
         return livenessScore;
     }
@@ -166,6 +198,14 @@ public class Config {
 
     public void setPupilDistance(int pupilDistance) {
         this.pupilDistance = pupilDistance;
+    }
+
+    public float getFeverScore() {
+        return feverScore;
+    }
+
+    public void setFeverScore(float feverScore) {
+        this.feverScore = feverScore;
     }
 
     public int getHeartBeatInterval() {
@@ -235,10 +275,14 @@ public class Config {
         private boolean showCamera;
         private boolean faceCamera;
         private boolean liveness;
+        private int registerQualityScore;
         private int qualityScore;
         private float verifyScore;
+        private float maskVerifyScore;
+        private int maskScore;
         private int livenessScore;
         private int pupilDistance;
+        private float feverScore;
         private int heartBeatInterval;
         private int failedQueryCold;
         private int recordClearThreshold;
@@ -300,6 +344,11 @@ public class Config {
             return this;
         }
 
+        public Builder registerQualityScore(int val) {
+            registerQualityScore = val;
+            return this;
+        }
+
         public Builder qualityScore(int val) {
             qualityScore = val;
             return this;
@@ -310,6 +359,16 @@ public class Config {
             return this;
         }
 
+        public Builder maskVerifyScore(float val) {
+            maskVerifyScore = val;
+            return this;
+        }
+
+        public Builder maskScore(int val) {
+            maskScore = val;
+            return this;
+        }
+
         public Builder livenessScore(int val) {
             livenessScore = val;
             return this;
@@ -317,6 +376,11 @@ public class Config {
 
         public Builder pupilDistance(int val) {
             pupilDistance = val;
+            return this;
+        }
+
+        public Builder feverScore(float val) {
+            feverScore = val;
             return this;
         }
 

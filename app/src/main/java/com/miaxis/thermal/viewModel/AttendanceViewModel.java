@@ -25,6 +25,7 @@ import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
@@ -112,11 +113,11 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private FaceManager.OnFaceHandleListener faceHandleListener = new FaceManager.OnFaceHandleListener() {
         @Override
-        public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature,  byte[] feature) {
+        public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature,  byte[] feature, boolean mask) {
             if (cardMode) {
                 onCardVerify(mxRGBImage, mxFaceInfoEx, temperature, feature);
             } else {
-                PersonManager.getInstance().handleFeature(feature, new PersonManager.OnPersonMatchResultListener() {
+                PersonManager.getInstance().handleFeature(feature, mask, new PersonManager.OnPersonMatchResultListener() {
                     @Override
                     public void onMatchFailed() {
                         personMatchFailed();
@@ -124,7 +125,11 @@ public class AttendanceViewModel extends BaseViewModel {
 
                     @Override
                     public void onMatchSuccess(MatchPerson matchPerson) {
-                        personMatchSuccess(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        if (temperature < ConfigManager.getInstance().getConfig().getFeverScore()) {
+                            personMatchSuccess(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        } else {
+                            personMatchSuccessButFever(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        }
                     }
 
                     @Override
@@ -141,13 +146,13 @@ public class AttendanceViewModel extends BaseViewModel {
             if (!lock && faceNum == 0) {
                 hint.set("");
             }
-            if (!lock) {
-                if (temperature == 0f) {
-                    AttendanceViewModel.this.temperature.set("");
-                } else {
-                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-                }
-            }
+//            if (!lock) {
+//                if (temperature == 0f) {
+//                    AttendanceViewModel.this.temperature.set("");
+//                } else {
+//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
+//                }
+//            }
         }
 
         @Override
@@ -163,6 +168,17 @@ public class AttendanceViewModel extends BaseViewModel {
         hint.set(person.getName() + "-考勤成功");
         this.temperature.set(temperature + "°C");
         TTSManager.getInstance().playVoiceMessageFlush("考勤成功");
+        showHeader(mxRGBImage, mxFaceInfoEx);
+        HeartBeatManager.getInstance().relieveLimit();
+        RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
+    }
+
+    private void personMatchSuccessButFever(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
+        detectCold();
+        GpioManager.getInstance().openRedLed();
+        hint.set(person.getName() + "-体温异常");
+        this.temperature.set(temperature + "°C");
+        TTSManager.getInstance().playVoiceMessageFlush("体温异常");
         showHeader(mxRGBImage, mxFaceInfoEx);
         HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);

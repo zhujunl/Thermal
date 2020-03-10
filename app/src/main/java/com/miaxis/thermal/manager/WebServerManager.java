@@ -1,6 +1,9 @@
 package com.miaxis.thermal.manager;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,6 +15,7 @@ import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.dto.PersonDto;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PersonSearch;
+import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.entity.RecordSearch;
 import com.miaxis.thermal.data.entity.WebServerRequest;
@@ -20,12 +24,15 @@ import com.miaxis.thermal.data.net.ResponseEntity;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.data.repository.RecordRepository;
 import com.miaxis.thermal.util.DeviceUtil;
+import com.miaxis.thermal.util.FileUtil;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -112,8 +119,10 @@ public class WebServerManager {
             }
             switch (request) {
                 case "person/addPerson":
+                    addPerson(conn, message);
                     break;
                 case "person/updatePerson":
+                    updatePerson(conn, message);
                     break;
                 case "person/deletePerson":
                     deletePerson(conn, message);
@@ -158,6 +167,7 @@ public class WebServerManager {
                 transform = parameter.transform();
             } catch (MyException e) {
                 e.printStackTrace();
+                throw new MyException("数据解析出错-" + e.getMessage());
             }
             if (TextUtils.isEmpty(transform.getName())
                     || TextUtils.isEmpty(transform.getIdentifyNumber())
@@ -176,21 +186,109 @@ public class WebServerManager {
             } else {
                 throw new MyException("该身份证号码已重复");
             }
-//            if (TextUtils.isEmpty(parameter)) {
-//                conn.send(GSON.toJson(new ResponseEntity("400", "删除人员时，参数不应为空")));
-//                return;
-//            }
-//            Person person = PersonRepository.getInstance().findPerson(parameter);
-//            if (person == null) {
-//                conn.send(GSON.toJson(new ResponseEntity("400", "未找到该人员")));
-//                return;
-//            }
-//            PersonRepository.getInstance().deletePerson(person);
+            if (TextUtils.isEmpty(transform.getFacePicturePath())) {
+                throw new MyException("人员图片不应为空");
+            }
+            Bitmap bitmap;
+            try {
+                byte[] decode = Base64.decode(transform.getFacePicturePath(), Base64.NO_WRAP);
+                bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException("人员图片解码出错");
+            }
+            if (TextUtils.isEmpty(transform.getFaceFeature()) || TextUtils.isEmpty(transform.getMaskFaceFeature())) {
+                PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
+                if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
+                    transform.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
+                    transform.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
+                } else {
+                    throw new MyException("图片处理失败-" + photoFaceFeature.getMessage());
+                }
+            }
+            String fileName = transform.getName() + "-" + transform.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
+            String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
+            FileUtil.saveBitmap(bitmap, FileUtil.FACE_STOREHOUSE_PATH, fileName);
+            transform.setFacePicturePath(facePicturePath);
+            transform.setUpload(false);
+            transform.setUpdateTime(new Date());
+            PersonRepository.getInstance().savePerson(transform);
             PersonManager.getInstance().loadPersonDataFromCache();
-            conn.send(GSON.toJson(new ResponseEntity("200", "删除成功")));
+            conn.send(GSON.toJson(new ResponseEntity("200", "新增人员成功")));
         } catch (Exception e) {
             e.printStackTrace();
-            conn.send(GSON.toJson(new ResponseEntity("400", "新增人员时遇到错误:" + e.getMessage())));
+            conn.send(GSON.toJson(new ResponseEntity("400", "新增人员时遇到错误：" + e.getMessage())));
+        }
+    }
+
+    public void updatePerson(WebSocket conn, String message) {
+        try {
+            WebServerRequest<PersonDto> webServerRequest;
+            try {
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonDto>>() {}.getType());
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+                throw new MyException("无法解析请求Json");
+            }
+            PersonDto parameter = webServerRequest.getParameter();
+            Person transform = null;
+            try {
+                transform = parameter.transform();
+            } catch (MyException e) {
+                e.printStackTrace();
+                throw new MyException("数据解析出错-" + e.getMessage());
+            }
+            if (TextUtils.isEmpty(transform.getIdentifyNumber())) {
+                throw new MyException("请包含需要修改人员的证件号码");
+            }
+            Person findPerson = PersonRepository.getInstance().findPerson(transform.getIdentifyNumber());
+            if (findPerson == null) {
+                throw new MyException("未找到该人员");
+            }
+            if (transform.getEffectiveTime() != null) {
+                findPerson.setEffectiveTime(transform.getEffectiveTime());
+            }
+            if (transform.getInvalidTime() != null) {
+                findPerson.setInvalidTime(transform.getInvalidTime());
+            }
+            if (!TextUtils.isEmpty(transform.getFaceFeature())) {
+                findPerson.setFaceFeature(transform.getFaceFeature());
+            }
+            if (!TextUtils.isEmpty(transform.getMaskFaceFeature())) {
+                findPerson.setMaskFaceFeature(transform.getMaskFaceFeature());
+            }
+            if (!TextUtils.isEmpty(transform.getFacePicturePath())) {
+                Bitmap bitmap;
+                try {
+                    byte[] decode = Base64.decode(transform.getFacePicturePath(), Base64.NO_WRAP);
+                    bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new MyException("人员图片解码出错");
+                }
+                String fileName = findPerson.getName() + "-" + findPerson.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
+                String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
+                FileUtil.saveBitmap(bitmap, FileUtil.FACE_STOREHOUSE_PATH, fileName);
+                FileUtil.deleteImg(findPerson.getFacePicturePath());
+                findPerson.setFacePicturePath(facePicturePath);
+                if (TextUtils.isEmpty(transform.getFaceFeature()) || TextUtils.isEmpty(transform.getMaskFaceFeature())) {
+                    PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
+                    if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
+                        findPerson.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
+                        findPerson.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
+                    } else {
+                        throw new MyException("图片处理失败-" + photoFaceFeature.getMessage());
+                    }
+                }
+            }
+            findPerson.setUpload(false);
+            findPerson.setUpdateTime(new Date());
+            PersonRepository.getInstance().savePerson(findPerson);
+            PersonManager.getInstance().loadPersonDataFromCache();
+            conn.send(GSON.toJson(new ResponseEntity("200", "修改人员成功")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            conn.send(GSON.toJson(new ResponseEntity("400", "修改人员时遇到错误：" + e.getMessage())));
         }
     }
 
@@ -201,18 +299,15 @@ public class WebServerManager {
                 webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<String>>() {}.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
-                conn.send(GSON.toJson(new ResponseEntity("400", "无法解析请求Json")));
-                return;
+                throw new MyException("无法解析请求Json");
             }
             String parameter = webServerRequest.getParameter();
             if (TextUtils.isEmpty(parameter)) {
-                conn.send(GSON.toJson(new ResponseEntity("400", "删除人员时，参数不应为空")));
-                return;
+                throw new MyException("参数不应为空");
             }
             Person person = PersonRepository.getInstance().findPerson(parameter);
             if (person == null) {
-                conn.send(GSON.toJson(new ResponseEntity("400", "未找到该人员")));
-                return;
+                throw new MyException("未找到该人员");
             }
             PersonRepository.getInstance().deletePerson(person);
             PersonManager.getInstance().loadPersonDataFromCache();
@@ -230,16 +325,13 @@ public class WebServerManager {
                 webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonSearch>>() {}.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
-                conn.send(GSON.toJson(new ResponseEntity("400", "无法解析请求Json")));
-                return;
+                throw new MyException("无法解析请求Json");
             }
             PersonSearch parameter = webServerRequest.getParameter();
             if (parameter.getPageNum() == 0 || parameter.getPageSize() == 0) {
-                conn.send(GSON.toJson(new ResponseEntity("400", "获取人员：页码和容量不应为0")));
-                return;
+                throw new MyException("页码和容量不应为0");
             }
-            List<Person> personList = PersonRepository.getInstance().loadPersonByPage(parameter.getPageNum(),
-                    parameter.getPageSize());
+            List<Person> personList = PersonRepository.getInstance().searchPerson(parameter);
             conn.send(GSON.toJson(new ResponseEntity<>("200", "获取人员成功", personList)));
         } catch (Exception e) {
             e.printStackTrace();
@@ -274,13 +366,11 @@ public class WebServerManager {
                 webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<RecordSearch>>() {}.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
-                conn.send(GSON.toJson(new ResponseEntity("400", "无法解析请求Json")));
-                return;
+                throw new MyException("无法解析请求Json");
             }
             RecordSearch parameter = webServerRequest.getParameter();
             if (parameter.getPageNum() == 0 || parameter.getPageSize() == 0) {
-                conn.send(GSON.toJson(new ResponseEntity("400", "获取日志：页码和容量不应为0")));
-                return;
+                throw new MyException("页码和容量不应为0");
             }
             List<Record> recordList = RecordRepository.getInstance().searchRecord(parameter);
             conn.send(GSON.toJson(new ResponseEntity<>("200", "获取日志成功", recordList)));

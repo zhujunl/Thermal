@@ -158,6 +158,7 @@ public class CameraManager {
             infraredCamera.setParameters(parameters);
 //            infraredCamera.setDisplayOrientation(90);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
+            GpioManager.getInstance().openInfraredLed();
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,6 +174,7 @@ public class CameraManager {
     private void closeInfraredCamera() {
         try {
             if (infraredCamera != null) {
+                GpioManager.getInstance().closeInfraredLed();
                 infraredCamera.setPreviewCallback(null);
                 infraredCamera.stopPreview();
                 infraredCamera.release();

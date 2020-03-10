@@ -101,7 +101,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             }
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
-        binding.tvHeader.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FaceRegisterFragment.newInstance())));
+        binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
+            mListener.replaceFragment(FaceRegisterFragment.newInstance());
+        }));
         binding.tvEffectTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
             new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
@@ -148,8 +150,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onFaceRegisterEvent(FaceRegisterEvent event) {
         viewModel.faceFeatureHint.set("已采集");
-        binding.tvHeader.setOnClickListener(null);
-        viewModel.setFeatureCache(event.getFeature());
+        binding.tvFaceFeature.setOnClickListener(null);
+        viewModel.setFeatureCache(event.getFaceFeature());
+        viewModel.setMaskFeatureCache(event.getMaskFaceFeature());
         viewModel.setHeaderCache(event.getBitmap());
         GlideApp.with(this).load(event.getBitmap()).into(binding.ivHeader);
         EventBus.getDefault().removeStickyEvent(event);

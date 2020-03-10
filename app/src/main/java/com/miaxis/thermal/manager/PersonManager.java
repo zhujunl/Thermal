@@ -1,6 +1,5 @@
 package com.miaxis.thermal.manager;
 
-import android.app.Application;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,28 +15,21 @@ import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.MatchPerson;
-import com.miaxis.thermal.data.entity.MxRGBImage;
 import com.miaxis.thermal.data.entity.Person;
+import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
-import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
-
-import org.zz.api.MXFaceInfoEx;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class PersonManager {
@@ -145,12 +137,13 @@ public class PersonManager {
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
-            if (TextUtils.isEmpty(person.getFaceFeature()) && bitmap != null) {
-                byte[] feature = FaceManager.getInstance().getPhotoFeatureByBitmapPosting(bitmap);
-                if (feature != null) {
-                    person.setFaceFeature(Base64.encodeToString(feature, Base64.NO_WRAP));
+            if ((TextUtils.isEmpty(person.getFaceFeature()) || TextUtils.isEmpty(person.getMaskFaceFeature())) && bitmap != null) {
+                PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
+                if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
+                    person.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
+                    person.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
                 } else {
-                    person.setRemarks("图片处理失败");
+                    person.setRemarks("图片处理失败：" + photoFaceFeature.getMessage());
                 }
             }
             if (bitmap != null) {
@@ -184,9 +177,9 @@ public class PersonManager {
         return futureTarget.get();
     }
 
-    public void handleFeature(byte[] feature, @NonNull OnPersonMatchResultListener listener) {
+    public void handleFeature(byte[] feature, boolean mask, @NonNull OnPersonMatchResultListener listener) {
         Observable.create((ObservableOnSubscribe<MatchPerson>) emitter -> {
-            MatchPerson matchPerson = getMatchPerson(feature);
+            MatchPerson matchPerson = getMatchPerson(feature, mask);
             if (matchPerson != null) {
                 emitter.onNext(matchPerson);
             } else {
@@ -214,20 +207,33 @@ public class PersonManager {
                 });
     }
 
-    private MatchPerson getMatchPerson(byte[] feature) {
+    private MatchPerson getMatchPerson(byte[] feature, boolean mask) {
         float maxScore = 0f;
         Person bestMatchPerson = null;
         for (Person person : PersonManager.getInstance().getPersonList()) {
-            if (!TextUtils.isEmpty(person.getFaceFeature())) {
-                float score = FaceManager.getInstance().matchFeature(Base64.decode(person.getFaceFeature(), Base64.NO_WRAP), feature);
-                if (score > maxScore) {
-                    maxScore = score;
-                    bestMatchPerson = person;
+            float score = -1f;
+            if (!TextUtils.isEmpty(person.getFaceFeature()) && !mask) {
+                try {
+                    score = FaceManager.getInstance().matchFeature(Base64.decode(person.getFaceFeature(), Base64.NO_WRAP), feature);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (!TextUtils.isEmpty(person.getMaskFaceFeature()) && mask) {
+                try {
+                    score = FaceManager.getInstance().matchMaskFeature(Base64.decode(person.getMaskFaceFeature(), Base64.NO_WRAP), feature);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+            if (score > maxScore) {
+                maxScore = score;
+                bestMatchPerson = person;
+            }
         }
-        if (maxScore > ConfigManager.getInstance().getConfig().getVerifyScore() && bestMatchPerson != null) {
-            return new MatchPerson(bestMatchPerson, maxScore);
+        if (!mask && maxScore > ConfigManager.getInstance().getConfig().getVerifyScore() && bestMatchPerson != null) {
+            return new MatchPerson(bestMatchPerson, maxScore, mask);
+        } else if (mask && maxScore > ConfigManager.getInstance().getConfig().getMaskVerifyScore() && bestMatchPerson != null) {
+            return new MatchPerson(bestMatchPerson, maxScore, mask);
         } else {
             return null;
         }

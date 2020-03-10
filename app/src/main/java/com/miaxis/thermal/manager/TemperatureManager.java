@@ -156,12 +156,12 @@ public class TemperatureManager {
         try {
             outputStream.write(COMMAND_SEARCH);
             outputStream.flush();
-            Log.e("asd", "发送时间：" + System.currentTimeMillis());
+//            Log.e("asd", "发送时间：" + System.currentTimeMillis());
             int size = inputStream.read(readData);
             if (size > 0) {
-                Log.e("asd", "接收时间：" + System.currentTimeMillis());
+//                Log.e("asd", "接收时间：" + System.currentTimeMillis());
                 float temperature = (readData[2] + 256 * readData[3]) / 100f;
-                Log.e("sad", "------" + temperature);
+                Log.e("sad", "温度" + temperature);
                 return temperature;
             }
         } catch (IOException e) {
