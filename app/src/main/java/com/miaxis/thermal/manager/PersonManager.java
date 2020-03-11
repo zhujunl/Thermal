@@ -147,10 +147,9 @@ public class PersonManager {
                 }
             }
             if (bitmap != null) {
-                String fileName = person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
-                String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
-                FileUtil.saveBitmap(bitmap, FileUtil.FACE_STOREHOUSE_PATH, fileName);
-                person.setFacePicturePath(facePicturePath);
+                String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                FileUtil.saveBitmap(bitmap, filePath);
+                person.setFacePicturePath(filePath);
             } else {
                 person.setRemarks("图片下载失败");
             }

@@ -13,6 +13,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.dto.PersonDto;
+import com.miaxis.thermal.data.dto.RecordDto;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PersonSearch;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
@@ -23,6 +24,7 @@ import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.net.ResponseEntity;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.data.repository.RecordRepository;
+import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.FileUtil;
 
@@ -32,6 +34,8 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +122,9 @@ public class WebServerManager {
                 return;
             }
             switch (request) {
+                case "device/getDeviceMac":
+                    getDeviceMac(conn);
+                    break;
                 case "person/addPerson":
                     addPerson(conn, message);
                     break;
@@ -145,6 +152,12 @@ public class WebServerManager {
                 case "record/clearRecord":
                     clearRecord(conn);
                     break;
+                case "record/deleteRecord":
+                    deleteRecord(conn, message);
+                    break;
+                default:
+                    conn.send(GSON.toJson(new ResponseEntity("400", "未找到对应请求")));
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,11 +165,22 @@ public class WebServerManager {
         }
     }
 
-    public void addPerson(WebSocket conn, String message) {
+    private void getDeviceMac(WebSocket conn) {
+        try {
+            String mac = ConfigManager.getInstance().getMacAddress();
+            conn.send(GSON.toJson(new ResponseEntity<>("200", "获取设备MAC成功", mac)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            conn.send(GSON.toJson(new ResponseEntity("400", "获取设备MAC时遇到错误:" + e.getMessage())));
+        }
+    }
+
+    private void addPerson(WebSocket conn, String message) {
         try {
             WebServerRequest<PersonDto> webServerRequest;
             try {
-                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonDto>>() {}.getType());
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonDto>>() {
+                }.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 throw new MyException("无法解析请求Json");
@@ -179,7 +203,7 @@ public class WebServerManager {
             }
             Person findPerson = PersonRepository.getInstance().findPerson(transform.getIdentifyNumber());
             if (findPerson == null) {
-                findPerson = PersonRepository.getInstance().findPerson(transform.getIdentifyNumber());
+                findPerson = PersonRepository.getInstance().findPerson(transform.getPhone());
                 if (findPerson != null) {
                     throw new MyException("该手机号码已重复");
                 }
@@ -206,10 +230,9 @@ public class WebServerManager {
                     throw new MyException("图片处理失败-" + photoFaceFeature.getMessage());
                 }
             }
-            String fileName = transform.getName() + "-" + transform.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
-            String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
-            FileUtil.saveBitmap(bitmap, FileUtil.FACE_STOREHOUSE_PATH, fileName);
-            transform.setFacePicturePath(facePicturePath);
+            String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + transform.getName() + "-" + transform.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+            FileUtil.saveBitmap(bitmap, filePath);
+            transform.setFacePicturePath(filePath);
             transform.setUpload(false);
             transform.setUpdateTime(new Date());
             PersonRepository.getInstance().savePerson(transform);
@@ -221,11 +244,12 @@ public class WebServerManager {
         }
     }
 
-    public void updatePerson(WebSocket conn, String message) {
+    private void updatePerson(WebSocket conn, String message) {
         try {
             WebServerRequest<PersonDto> webServerRequest;
             try {
-                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonDto>>() {}.getType());
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonDto>>() {
+                }.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 throw new MyException("无法解析请求Json");
@@ -244,6 +268,9 @@ public class WebServerManager {
             Person findPerson = PersonRepository.getInstance().findPerson(transform.getIdentifyNumber());
             if (findPerson == null) {
                 throw new MyException("未找到该人员");
+            }
+            if (!TextUtils.isEmpty(transform.getType())) {
+                findPerson.setType(transform.getType());
             }
             if (transform.getEffectiveTime() != null) {
                 findPerson.setEffectiveTime(transform.getEffectiveTime());
@@ -266,11 +293,10 @@ public class WebServerManager {
                     e.printStackTrace();
                     throw new MyException("人员图片解码出错");
                 }
-                String fileName = findPerson.getName() + "-" + findPerson.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
-                String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
-                FileUtil.saveBitmap(bitmap, FileUtil.FACE_STOREHOUSE_PATH, fileName);
+                String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + findPerson.getName() + "-" + findPerson.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                FileUtil.saveBitmap(bitmap, filePath);
                 FileUtil.deleteImg(findPerson.getFacePicturePath());
-                findPerson.setFacePicturePath(facePicturePath);
+                findPerson.setFacePicturePath(filePath);
                 if (TextUtils.isEmpty(transform.getFaceFeature()) || TextUtils.isEmpty(transform.getMaskFaceFeature())) {
                     PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                     if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
@@ -296,7 +322,8 @@ public class WebServerManager {
         try {
             WebServerRequest<String> webServerRequest;
             try {
-                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<String>>() {}.getType());
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<String>>() {
+                }.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 throw new MyException("无法解析请求Json");
@@ -322,7 +349,8 @@ public class WebServerManager {
         try {
             WebServerRequest<PersonSearch> webServerRequest;
             try {
-                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonSearch>>() {}.getType());
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<PersonSearch>>() {
+                }.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 throw new MyException("无法解析请求Json");
@@ -332,7 +360,22 @@ public class WebServerManager {
                 throw new MyException("页码和容量不应为0");
             }
             List<Person> personList = PersonRepository.getInstance().searchPerson(parameter);
-            conn.send(GSON.toJson(new ResponseEntity<>("200", "获取人员成功", personList)));
+            List<PersonDto> personDtoList = new ArrayList<>();
+            for (Person person : personList) {
+                PersonDto personDto = new PersonDto.Builder()
+                        .userName(person.getName())
+                        .userType(person.getType())
+                        .userPhone(person.getPhone())
+                        .identifyNumber(person.getIdentifyNumber())
+                        .startTime(DateUtil.DATE_FORMAT.format(person.getEffectiveTime()))
+                        .invalidTime(DateUtil.DATE_FORMAT.format(person.getInvalidTime()))
+                        .facePicture(FileUtil.fileToBase64(new File(person.getFacePicturePath())))
+                        .faceFeature(person.getFaceFeature())
+                        .maskFaceFeature(person.getMaskFaceFeature())
+                        .build();
+                personDtoList.add(personDto);
+            }
+            conn.send(GSON.toJson(new ResponseEntity<>("200", "获取人员成功", personDtoList)));
         } catch (Exception e) {
             e.printStackTrace();
             conn.send(GSON.toJson(new ResponseEntity("400", "获取人员时遇到错误:" + e.getMessage())));
@@ -363,7 +406,8 @@ public class WebServerManager {
         try {
             WebServerRequest<RecordSearch> webServerRequest;
             try {
-                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<RecordSearch>>() {}.getType());
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<RecordSearch>>() {
+                }.getType());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
                 throw new MyException("无法解析请求Json");
@@ -373,7 +417,22 @@ public class WebServerManager {
                 throw new MyException("页码和容量不应为0");
             }
             List<Record> recordList = RecordRepository.getInstance().searchRecord(parameter);
-            conn.send(GSON.toJson(new ResponseEntity<>("200", "获取日志成功", recordList)));
+            List<RecordDto> recordDtoList = new ArrayList<>();
+            for (Record record : recordList) {
+                RecordDto build = new RecordDto.Builder()
+                        .identifyNumber(record.getIdentifyNumber())
+                        .userName(record.getName())
+                        .userPhone(record.getPhone())
+                        .verifyTime(DateUtil.DATE_FORMAT.format(record.getVerifyTime()))
+                        .score(record.getScore())
+                        .temperature(record.getTemperature())
+                        .type(record.getType())
+                        .faceType(record.getFaceType())
+                        .verifyImage(FileUtil.fileToBase64(new File(record.getVerifyPicturePath())))
+                        .build();
+                recordDtoList.add(build);
+            }
+            conn.send(GSON.toJson(new ResponseEntity<>("200", "获取日志成功", recordDtoList)));
         } catch (Exception e) {
             e.printStackTrace();
             conn.send(GSON.toJson(new ResponseEntity("400", "获取日志时遇到错误:" + e.getMessage())));
@@ -397,6 +456,38 @@ public class WebServerManager {
         } catch (Exception e) {
             e.printStackTrace();
             conn.send(GSON.toJson(new ResponseEntity("400", "清除日志时遇到错误:" + e.getMessage())));
+        }
+    }
+
+    private void deleteRecord(WebSocket conn, String message) {
+        try {
+            WebServerRequest<RecordSearch> webServerRequest;
+            try {
+                webServerRequest = GSON.fromJson(message, new TypeToken<WebServerRequest<RecordSearch>>() {
+                }.getType());
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+                throw new MyException("无法解析请求Json");
+            }
+            RecordSearch parameter = webServerRequest.getParameter();
+            if (TextUtils.isEmpty(parameter.getStartTime()) || TextUtils.isEmpty(parameter.getEndTime())) {
+                throw new MyException("开始时间和结束时间不能为空");
+            }
+            Date startTime;
+            Date endTime;
+            try {
+                startTime = DateUtil.DATE_FORMAT.parse(parameter.getStartTime());
+                endTime = DateUtil.DATE_FORMAT.parse(parameter.getEndTime());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException("时间字符串解析失败-" + e.getMessage());
+            }
+            List<Record> recordList = RecordRepository.getInstance().searchRecordInTime(startTime, endTime);
+            RecordRepository.getInstance().deleteRecordList(recordList);
+            conn.send(GSON.toJson(new ResponseEntity("200", "删除日志成功")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            conn.send(GSON.toJson(new ResponseEntity("400", "获取日志时遇到错误:" + e.getMessage())));
         }
     }
 

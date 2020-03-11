@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.miaxis.thermal.manager.AmapManager;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
@@ -43,6 +45,8 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
     private static DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
+
+    private boolean feverCache = false;
 
     public  static AttendanceLandFragment newInstance() {
         return new AttendanceLandFragment();
@@ -71,6 +75,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     protected void initData() {
         viewModel.faceDraw.observe(this, faceDrawObserver);
         viewModel.updateHeader.observe(this, headerObserver);
+        viewModel.fever.observe(this, feverObserver);
     }
 
     @Override
@@ -85,12 +90,6 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         AmapManager.getInstance().setListener(weather -> {
             viewModel.weather.set(weather);
         });
-        binding.ivHeader.setOnClickListener(new OnLimitClickHelper(new OnLimitClickListener() {
-            @Override
-            public void onClick(View view) {
-                CardManager.getInstance().test();
-            }
-        }));
     }
 
     @Override
@@ -103,6 +102,8 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         super.onDestroyView();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
+        GpioManager.getInstance().closeLed();
+        GpioManager.getInstance().clearLedThread();
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener globalListener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -137,6 +138,21 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
                     .load(header)
                     .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                     .into(binding.ivHeader);
+        }
+    };
+
+    private Observer<Boolean> feverObserver = fever -> {
+        if (fever) {
+            binding.ivPanel.setImageResource(R.drawable.line_board_red);
+            binding.clRoot.setBackgroundResource(R.drawable.background_land_red);
+            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
+            feverCache = true;
+        } else if (feverCache) {
+            Log.e("asd", "No fever~~~~~~~~~~~~````");
+            binding.ivPanel.setImageResource(R.drawable.line_board);
+            binding.clRoot.setBackgroundResource(R.drawable.background_land);
+            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
+            feverCache = false;
         }
     };
 

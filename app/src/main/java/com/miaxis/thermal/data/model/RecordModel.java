@@ -37,6 +37,14 @@ public class RecordModel {
         AppDatabase.getInstance().recordDao().deleteAll();
     }
 
+    public static void deleteRecordList(List<Record> recordList) {
+        AppDatabase.getInstance().recordDao().deleteRecordList(recordList);
+    }
+
+    public static List<Record> searchRecordInTime(Date startTime, Date endTime) {
+        return AppDatabase.getInstance().recordDao().searchRecordInTime(startTime.getTime(), endTime.getTime());
+    }
+
     public static List<Record> searchRecord(RecordSearch recordSearch) {
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder("select * from Record");

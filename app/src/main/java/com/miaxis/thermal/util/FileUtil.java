@@ -239,18 +239,15 @@ public class FileUtil {
         return result;
     }
 
-    public static void saveBitmap(Bitmap bitmap, String path, String name) {
+    public static void saveBitmap(Bitmap bitmap, String filePath) {
         try {
-            File dir = new File(path);
-            if (!dir.exists() || !dir.isDirectory()) {
-                dir.mkdirs();
-            }
-            File file = new File(path, name);
+            File file = new File(filePath);
             if (file.exists()) {
                 file.delete();
             }
             FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.getFD().sync();
             out.close();

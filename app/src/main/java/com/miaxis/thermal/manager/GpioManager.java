@@ -35,14 +35,23 @@ public class GpioManager {
 
     private XHApiManager xhApiManager;
 
-    private volatile boolean warnning = false;
+    private volatile boolean warning = false;
 
     public void init(Application application) {
         this.application = application;
         xhApiManager = new XHApiManager();
+        resetGpio();
         handlerThread = new HandlerThread("FLASH_LED_THREAD");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
+    }
+
+    public void resetGpio() {
+        xhApiManager.XHSetGpioValue(0, 0);
+        xhApiManager.XHSetGpioValue(1, 0);
+        xhApiManager.XHSetGpioValue(2, 0);
+        xhApiManager.XHSetGpioValue(3, 0);
+        xhApiManager.XHSetGpioValue(4, 0);
     }
 
     public void setStatusBar(Context context, boolean show) {
@@ -72,7 +81,7 @@ public class GpioManager {
     private void openLed() {
         executorService.execute(() -> {
             try {
-                if (warnning) return;
+                if (warning) return;
                 xhApiManager.XHSetGpioValue(0, 1);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -93,7 +102,7 @@ public class GpioManager {
     public void openRedLed() {
         executorService.execute(() -> {
             try {
-                warnning = true;
+                warning = true;
                 xhApiManager.XHSetGpioValue(0, 0);
                 xhApiManager.XHSetGpioValue(2, 1);
                 Thread.sleep(500);
@@ -106,6 +115,8 @@ public class GpioManager {
                 xhApiManager.XHSetGpioValue(2, 0);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                warning = false;
             }
         });
     }

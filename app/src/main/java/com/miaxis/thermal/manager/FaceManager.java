@@ -546,7 +546,7 @@ public class FaceManager {
     public byte[] imageEncode(byte[] rgbBuf, int width, int height) {
         byte[] fileBuf = new byte[width * height * 4];
         int[] fileLength = new int[]{0};
-        int re = dtTool.ImageEncode(rgbBuf, width, height, ".png", fileBuf, fileLength);
+        int re = dtTool.ImageEncode(rgbBuf, width, height, ".jpg", fileBuf, fileLength);
         if (re == 1 && fileLength[0] != 0) {
             byte[] fileImage = new byte[fileLength[0]];
             System.arraycopy(fileBuf, 0, fileImage, 0, fileImage.length);

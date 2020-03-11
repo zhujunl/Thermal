@@ -95,7 +95,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 .doOnNext(person -> {
                     Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
                     if (findPerson == null) {
-                        findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
+                        findPerson = PersonRepository.getInstance().findPerson(person.getPhone());
                         if (findPerson != null) {
                             throw new MyException("该手机号码已重复");
                         }
@@ -104,10 +104,9 @@ public class AddPersonViewModel extends BaseViewModel {
                     }
                 })
                 .doOnNext(person -> {
-                    String fileName = person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
-                    String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
-                    FileUtil.saveBitmap(headerCache, FileUtil.FACE_STOREHOUSE_PATH, fileName);
-                    person.setFacePicturePath(facePicturePath);
+                    String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                    FileUtil.saveBitmap(headerCache, filePath);
+                    person.setFacePicturePath(filePath);
                     PersonRepository.getInstance().savePerson(person);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -127,10 +126,9 @@ public class AddPersonViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .doOnNext(person -> {
-                    String fileName = person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
-                    String facePicturePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + fileName;
-                    FileUtil.saveBitmap(headerCache, FileUtil.FACE_STOREHOUSE_PATH, fileName);
-                    person.setFacePicturePath(facePicturePath);
+                    String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                    FileUtil.saveBitmap(headerCache, filePath);
+                    person.setFacePicturePath(filePath);
                     person.setFaceFeature(featureCache);
                     person.setMaskFaceFeature(maskFeatureCache);
                     person.setUpload(false);

@@ -393,6 +393,48 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="人脸注册质量阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_register_quality_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="50 - 99"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="人脸质量阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_quality_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="20 - 99"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="人脸比对阈值" />
 
                     <View style="@style/VerticalLine" />
@@ -414,17 +456,38 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸质量阈值" />
+                        android:text="戴口罩人脸比对阈值" />
 
                     <View style="@style/VerticalLine" />
 
                     <EditText
-                        android:id="@+id/et_quality_score"
+                        android:id="@+id/et_mask_verify_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789."
+                        android:hint="0.65 - 1.0"
+                        android:inputType="numberDecimal"
+                        android:maxLength="4"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="口罩检测阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_mask_score"
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789"
-                        android:hint="50 - 99"
-                        android:inputType="number"
+                        android:hint="20 - 99"
+                        android:inputType="numberDecimal"
                         android:maxLength="2"
                         android:singleLine="true"
                         android:textColor="@color/dark" />
@@ -468,6 +531,27 @@
                         android:hint="1 - 99"
                         android:inputType="number"
                         android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="发热报警阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_fever_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789."
+                        android:hint=""
+                        android:inputType="number"
+                        android:maxLength="4"
                         android:singleLine="true"
                         android:textColor="@color/dark" />
 

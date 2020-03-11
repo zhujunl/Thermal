@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ea9d229b1050cf8f903a909f92b27d23",
+    "identityHash": "aec38a9e2be901a528902e1fc547e78e",
     "entities": [
       {
         "tableName": "Config",
@@ -265,12 +265,13 @@
         },
         "indices": [
           {
-            "name": "index_Person_identifyNumber",
+            "name": "index_Person_identifyNumber_phone",
             "unique": true,
             "columnNames": [
-              "identifyNumber"
+              "identifyNumber",
+              "phone"
             ],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Person_identifyNumber` ON `${TABLE_NAME}` (`identifyNumber`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Person_identifyNumber_phone` ON `${TABLE_NAME}` (`identifyNumber`, `phone`)"
           }
         ],
         "foreignKeys": []
@@ -365,7 +366,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ea9d229b1050cf8f903a909f92b27d23')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aec38a9e2be901a528902e1fc547e78e')"
     ]
   }
 }

@@ -24,6 +24,20 @@ public class PersonDto implements Mapper<Person> {
     public PersonDto() {
     }
 
+    private PersonDto(Builder builder) {
+        setId(builder.id);
+        setUserName(builder.userName);
+        setUserType(builder.userType);
+        setUserPhone(builder.userPhone);
+        setIdentifyNumber(builder.identifyNumber);
+        setStartTime(builder.startTime);
+        setInvalidTime(builder.invalidTime);
+        setUpdateTime(builder.updateTime);
+        setFacePicture(builder.facePicture);
+        setFaceFeature(builder.faceFeature);
+        setMaskFaceFeature(builder.maskFaceFeature);
+    }
+
     public long getId() {
         return id;
     }
@@ -144,6 +158,82 @@ public class PersonDto implements Mapper<Person> {
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException("解析人员详细信息失败，原因：" + e.getMessage());
+        }
+    }
+
+    public static final class Builder {
+        private long id;
+        private String userName;
+        private String userType;
+        private String userPhone;
+        private String identifyNumber;
+        private String startTime;
+        private String invalidTime;
+        private long updateTime;
+        private String facePicture;
+        private String faceFeature;
+        private String maskFaceFeature;
+
+        public Builder() {
+        }
+
+        public Builder id(long val) {
+            id = val;
+            return this;
+        }
+
+        public Builder userName(String val) {
+            userName = val;
+            return this;
+        }
+
+        public Builder userType(String val) {
+            userType = val;
+            return this;
+        }
+
+        public Builder userPhone(String val) {
+            userPhone = val;
+            return this;
+        }
+
+        public Builder identifyNumber(String val) {
+            identifyNumber = val;
+            return this;
+        }
+
+        public Builder startTime(String val) {
+            startTime = val;
+            return this;
+        }
+
+        public Builder invalidTime(String val) {
+            invalidTime = val;
+            return this;
+        }
+
+        public Builder updateTime(long val) {
+            updateTime = val;
+            return this;
+        }
+
+        public Builder facePicture(String val) {
+            facePicture = val;
+            return this;
+        }
+
+        public Builder faceFeature(String val) {
+            faceFeature = val;
+            return this;
+        }
+
+        public Builder maskFaceFeature(String val) {
+            maskFaceFeature = val;
+            return this;
+        }
+
+        public PersonDto build() {
+            return new PersonDto(this);
         }
     }
 }

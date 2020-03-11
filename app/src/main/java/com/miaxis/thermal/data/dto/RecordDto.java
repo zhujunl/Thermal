@@ -9,7 +9,7 @@ public class RecordDto {
     private float score;
     private float temperature;
     private String type;
-    private String mac;
+    private String faceType;
     private String verifyImage;
 
     public RecordDto() {
@@ -23,7 +23,7 @@ public class RecordDto {
         setScore(builder.score);
         setTemperature(builder.temperature);
         setType(builder.type);
-        setMac(builder.mac);
+        setFaceType(builder.faceType);
         setVerifyImage(builder.verifyImage);
     }
 
@@ -83,12 +83,12 @@ public class RecordDto {
         this.type = type;
     }
 
-    public String getMac() {
-        return mac;
+    public String getFaceType() {
+        return faceType;
     }
 
-    public void setMac(String mac) {
-        this.mac = mac;
+    public void setFaceType(String faceType) {
+        this.faceType = faceType;
     }
 
     public String getVerifyImage() {
@@ -107,7 +107,7 @@ public class RecordDto {
         private float score;
         private float temperature;
         private String type;
-        private String mac;
+        private String faceType;
         private String verifyImage;
 
         public Builder() {
@@ -148,8 +148,8 @@ public class RecordDto {
             return this;
         }
 
-        public Builder mac(String val) {
-            mac = val;
+        public Builder faceType(String val) {
+            faceType = val;
             return this;
         }
 

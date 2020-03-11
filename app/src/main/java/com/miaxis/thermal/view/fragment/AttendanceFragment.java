@@ -27,6 +27,7 @@ import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.databinding.FragmentAttendanceBinding;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.custom.ComboCustom;
@@ -39,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@Deprecated
 public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendanceBinding, AttendanceViewModel> {
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm", Locale.CHINA);
@@ -95,6 +97,8 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         super.onDestroyView();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
+        GpioManager.getInstance().closeLed();
+        GpioManager.getInstance().clearLedThread();
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener globalListener = new ViewTreeObserver.OnGlobalLayoutListener() {

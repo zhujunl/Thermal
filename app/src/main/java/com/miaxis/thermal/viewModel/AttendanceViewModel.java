@@ -61,6 +61,7 @@ public class AttendanceViewModel extends BaseViewModel {
     public ObservableField<String> countDown = new ObservableField<>();
     public MutableLiveData<FaceDraw> faceDraw = new MutableLiveData<>();
     public MutableLiveData<Boolean> updateHeader = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -158,7 +159,21 @@ public class AttendanceViewModel extends BaseViewModel {
         @Override
         public void onFaceIntercept(int code, String message) {
             if (!lock) {
-                hint.set(message);
+//                hint.set(message);
+                switch (code) {
+                    case -1:
+                        hint.set("请正对屏幕");
+                        break;
+                    case -2:
+                        hint.set("请靠近屏幕");
+                        break;
+                    case -4:
+                        hint.set("活体检测失败");
+                        break;
+                    case -5:
+                        hint.set("检测到人脸");
+                        break;
+                }
             }
         }
     };
@@ -175,6 +190,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void personMatchSuccessButFever(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
+        fever.setValue(Boolean.TRUE);
         GpioManager.getInstance().openRedLed();
         hint.set(person.getName() + "-体温异常");
         this.temperature.set(temperature + "°C");
@@ -210,6 +226,7 @@ public class AttendanceViewModel extends BaseViewModel {
         headerCache = null;
         updateHeader.setValue(Boolean.TRUE);
         idCardMessage = null;
+        fever.setValue(Boolean.FALSE);
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);

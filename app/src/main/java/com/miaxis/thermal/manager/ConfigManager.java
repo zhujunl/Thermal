@@ -1,5 +1,7 @@
 package com.miaxis.thermal.manager;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
 import com.miaxis.thermal.data.entity.Config;
@@ -10,6 +12,7 @@ import com.miaxis.thermal.util.ValueUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class ConfigManager {
@@ -88,6 +91,21 @@ public class ConfigManager {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> listener.onConfigSave(true, "保存成功")
                         , throwable -> listener.onConfigSave(false, "保存失败，" + throwable.getMessage()));
+    }
+
+    public String getMacAddress() {
+        if (config != null && !TextUtils.isEmpty(config.getMac())) {
+            return config.getMac();
+        }
+        String macFromHardware = DeviceUtil.getMacFromHardware();
+        Observable.just(macFromHardware)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(s -> {
+                    config.setMac(s);
+                    saveConfigSync(config);
+                }, Throwable::printStackTrace);
+        return macFromHardware;
     }
 
     public interface OnConfigSaveListener {

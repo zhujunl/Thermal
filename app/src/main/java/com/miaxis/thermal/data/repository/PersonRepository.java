@@ -43,7 +43,7 @@ public class PersonRepository {
     public List<Person> downloadPerson() throws IOException, MyException, NetResultFailedException {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getDownloadPersonPath();
-        String mac = config.getMac();
+        String mac = ConfigManager.getInstance().getMacAddress();
         long timeStamp = config.getTimeStamp();
         Response<ResponseEntity<List<PersonDto>>> execute = ThermalApi.downloadPerson(url,
                 timeStamp,
@@ -70,7 +70,7 @@ public class PersonRepository {
     public void updatePerson(Person person) throws IOException, MyException, NetResultFailedException {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getUpdatePersonPath();
-        String mac = config.getMac();
+        String mac = ConfigManager.getInstance().getMacAddress();
         File faceFile = new File(person.getFacePicturePath());
         Response<ResponseEntity> execute = ThermalApi.updatePerson(url,
                 mac,

@@ -1,6 +1,8 @@
 package com.miaxis.thermal.manager;
 
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -94,10 +96,12 @@ public class RecordManager {
 
     public void handlerFaceRecord(Person person, MxRGBImage mxRGBImage, float score, float temperature) {
         Observable.create((ObservableOnSubscribe<Record>) emitter -> {
-            String fileName = person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".png";
+            String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
             byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
-            FileUtil.writeBytesToFile(fileImage, FileUtil.FACE_IMAGE_PATH, fileName);
-            Record record = makeFaceRecord(person, score, FileUtil.FACE_IMAGE_PATH + File.separator + fileName, temperature);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+            FileUtil.saveBitmap(bitmap, filePath);
+//            FileUtil.writeBytesToFile(fileImage, FileUtil.FACE_IMAGE_PATH, fileName);
+            Record record = makeFaceRecord(person, score, filePath, temperature);
             emitter.onNext(record);
         })
                 .subscribeOn(Schedulers.io())

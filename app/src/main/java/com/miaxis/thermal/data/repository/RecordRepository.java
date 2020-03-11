@@ -18,6 +18,7 @@ import com.miaxis.thermal.util.ValueUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Response;
@@ -42,14 +43,14 @@ public class RecordRepository {
     public void uploadRecord(Record record) throws IOException, MyException, NetResultFailedException {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getUploadRecordPath();
-        String mac = config.getMac();
+        String mac = ConfigManager.getInstance().getMacAddress();
         File file = new File(record.getVerifyPicturePath());
         Response<ResponseEntity> execute = ThermalApi.uploadRecord(url,
                 record.getIdentifyNumber(),
                 record.getName(),
                 record.getPhone(),
                 DateUtil.DATE_FORMAT.format(record.getVerifyTime()),
-                record.getScore(),
+                record.getScore() * 100,
                 record.getTemperature(),
                 record.getType(),
                 record.getFaceType(),
@@ -98,9 +99,15 @@ public class RecordRepository {
         return RecordModel.searchRecord(recordSearch);
     }
 
-    public RecordDto recordToRecordDto(Record record) {
-        return new RecordDto.Builder()
-                .build();
+    public void deleteRecordList(List<Record> recordList) {
+        for (Record record : recordList) {
+            FileUtil.deleteImg(record.getVerifyPicturePath());
+        }
+        RecordModel.deleteRecordList(recordList);
+    }
+
+    public List<Record> searchRecordInTime(Date startTime, Date endTime) {
+        return RecordModel.searchRecordInTime(startTime, endTime);
     }
 
 }

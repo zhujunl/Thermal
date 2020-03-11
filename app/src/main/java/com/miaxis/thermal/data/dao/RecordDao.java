@@ -1,6 +1,7 @@
 package com.miaxis.thermal.data.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -27,5 +28,11 @@ public interface RecordDao {
 
     @Query("delete from Record")
     void deleteAll();
+
+    @Delete
+    void deleteRecordList(List<Record> recordList);
+
+    @Query("select * from Record where Record.verifyTime >= :startTime and Record.verifyTime <= :endTime")
+    List<Record> searchRecordInTime(long startTime, long endTime);
 
 }
