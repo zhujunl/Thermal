@@ -29,8 +29,8 @@ public class ValueUtil {
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
     public static final float DEFAULT_MASK_VERIFY_SCORE = 0.72f;
     public static final int DEFAULT_LIVENESS_SCORE = 80;
-    public static final int DEFAULT_PUPIL_DISTANCE = 30;
-    public static final float DEFAULT_FEVER_SCORE = 37.3f;
+    public static final int DEFAULT_PUPIL_DISTANCE = 80;
+    public static final float DEFAULT_FEVER_SCORE = 37.2f;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 5;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 10000;

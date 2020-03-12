@@ -100,6 +100,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
         GpioManager.getInstance().closeLed();

@@ -528,9 +528,9 @@
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789"
-                        android:hint="1 - 99"
+                        android:hint="1 - 200"
                         android:inputType="number"
-                        android:maxLength="2"
+                        android:maxLength="3"
                         android:singleLine="true"
                         android:textColor="@color/dark" />
 
@@ -570,9 +570,9 @@
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789"
-                        android:hint="60 - 600秒"
+                        android:hint="60 - 6000秒"
                         android:inputType="number"
-                        android:maxLength="3"
+                        android:maxLength="4"
                         android:singleLine="true"
                         android:textColor="@color/dark" />
 
@@ -633,7 +633,7 @@
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789"
-                        android:hint="2000 - 10000条"
+                        android:hint="2000 - 20000条"
                         android:inputType="number"
                         android:maxLength="5"
                         android:singleLine="true"

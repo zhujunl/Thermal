@@ -125,13 +125,13 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     if (TextUtils.isEmpty(binding.etMaskScore.getText().toString())
                             || Integer.valueOf(binding.etRegisterQualityScore.getText().toString()) < 20
                             || Integer.valueOf(binding.etMaskScore.getText().toString()) > 100) {
-                        ToastManager.toast("注册质量阈值范围 50 - 100", ToastManager.INFO);
+                        ToastManager.toast("口罩检测阈值范围 20 - 100", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etHeartBeatInterval.getText().toString())
                             || Integer.valueOf(binding.etHeartBeatInterval.getText().toString()) < 60
-                            || Integer.valueOf(binding.etHeartBeatInterval.getText().toString()) > 600) {
-                        ToastManager.toast("心跳间隔时间 60 - 600 秒", ToastManager.INFO);
+                            || Integer.valueOf(binding.etHeartBeatInterval.getText().toString()) > 6000) {
+                        ToastManager.toast("心跳间隔时间 60 - 6000 秒", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etFailedQueryCold.getText().toString())
@@ -148,14 +148,14 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     }
                     if (TextUtils.isEmpty(binding.etRecordClearThreshold.getText().toString())
                             || Integer.valueOf(binding.etRecordClearThreshold.getText().toString()) < 2000
-                            || Integer.valueOf(binding.etRecordClearThreshold.getText().toString()) > 10000) {
-                        ToastManager.toast("最大日志保存数目 2000 - 10000 条", ToastManager.INFO);
+                            || Integer.valueOf(binding.etRecordClearThreshold.getText().toString()) > 20000) {
+                        ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etPupilDistance.getText().toString())
                             || Integer.valueOf(binding.etPupilDistance.getText().toString()) < 1
-                            || Integer.valueOf(binding.etPupilDistance.getText().toString()) > 99) {
-                        ToastManager.toast("瞳距阈值范围 1 - 99 ", ToastManager.INFO);
+                            || Integer.valueOf(binding.etPupilDistance.getText().toString()) > 200) {
+                        ToastManager.toast("瞳距阈值范围 1 - 200", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etLivenessScore.getText().toString())
@@ -185,7 +185,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setMaskScore(Integer.valueOf(binding.etMaskScore.getText().toString()));
                     config.setLivenessScore(Integer.valueOf(binding.etLivenessScore.getText().toString()));
                     config.setPupilDistance(Integer.valueOf(binding.etPupilDistance.getText().toString()));
-                    config.setFeverScore(Integer.valueOf(binding.etFeverScore.getText().toString()));
+                    config.setFeverScore(Float.valueOf(binding.etFeverScore.getText().toString()));
                     config.setHeartBeatInterval(Integer.valueOf(binding.etHeartBeatInterval.getText().toString()));
                     config.setFailedQueryCold(Integer.valueOf(binding.etFailedQueryCold.getText().toString()));
                     config.setRecordClearThreshold(Integer.valueOf(binding.etRecordClearThreshold.getText().toString()));
