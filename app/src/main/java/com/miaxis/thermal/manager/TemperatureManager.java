@@ -162,6 +162,8 @@ public class TemperatureManager {
 //                Log.e("asd", "接收时间：" + System.currentTimeMillis());
                 float temperature = (readData[2] + 256 * readData[3]) / 100f;
                 Log.e("sad", "温度" + temperature);
+                //四舍五入
+                temperature = (float) Math.round(temperature * 10) / 10;
                 return temperature;
             }
         } catch (IOException e) {

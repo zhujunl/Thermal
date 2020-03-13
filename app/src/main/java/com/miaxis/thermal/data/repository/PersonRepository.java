@@ -129,6 +129,13 @@ public class PersonRepository {
         return PersonModel.searchPerson(personSearch);
     }
 
+    public void clearOverduePerson() {
+        List<Person> overduePerson = PersonModel.findOverduePerson();
+        for (Person person : overduePerson) {
+            deletePerson(person);
+        }
+    }
+
     public void clearAll() {
         PersonModel.deleteAll();
         FileUtil.deleteDirectory(new File(FileUtil.FACE_STOREHOUSE_PATH));

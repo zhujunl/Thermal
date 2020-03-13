@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 public class GpioManager {
 
     private GpioManager() {
+        xhApiManager = new XHApiManager();
     }
 
     public static GpioManager getInstance() {
@@ -39,7 +40,6 @@ public class GpioManager {
 
     public void init(Application application) {
         this.application = application;
-        xhApiManager = new XHApiManager();
         resetGpio();
         handlerThread = new HandlerThread("FLASH_LED_THREAD");
         handlerThread.start();
@@ -54,10 +54,8 @@ public class GpioManager {
         xhApiManager.XHSetGpioValue(4, 0);
     }
 
-    public void setStatusBar(Context context, boolean show) {
-        if (show) {
-        } else {
-        }
+    public void setStatusBar(boolean show) {
+        xhApiManager.XHShowOrHideStatusBar(show);
     }
 
     public void openLedInTime() {
@@ -162,5 +160,13 @@ public class GpioManager {
     }
 
     private Runnable closeLedRunnable = this::closeLed;
+
+    public void setGpioWatchDog(boolean status) {
+        xhApiManager.XHWatchDogEnable(status);
+    }
+
+    public void feedGpioWatchDog() {
+        xhApiManager.XHWatchDogFeed();
+    }
 
 }

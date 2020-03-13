@@ -1,10 +1,13 @@
 package com.miaxis.thermal.view.activity;
 
+import android.os.Handler;
+
 import androidx.fragment.app.Fragment;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.databinding.ActivityMainBinding;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
@@ -21,6 +24,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     private MaterialDialog resultDialog;
     private MaterialDialog quitDialog;
 
+    private Handler handler;
+
     private String root;
 
     @Override
@@ -30,6 +35,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     protected void initData() {
+        handler = new Handler(getMainLooper());
+        GpioManager.getInstance().setStatusBar(false);
+        GpioManager.getInstance().setGpioWatchDog(true);
+        handler.post(watchDogRunnable);
     }
 
     @Override
@@ -41,9 +50,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        GpioManager.getInstance().setStatusBar(true);
         WebServerManager.getInstance().stopServer();
         HeartBeatManager.getInstance().stopHeartBeat();
         WatchDogManager.getInstance().stopANRWatchDog();
+        GpioManager.getInstance().setGpioWatchDog(false);
+        handler.removeCallbacks(watchDogRunnable);
         AppDatabase.getInstance().close();
     }
 
@@ -153,5 +165,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
                 .positiveText("确认")
                 .build();
     }
+
+    private Runnable watchDogRunnable = new Runnable() {
+        @Override
+        public void run() {
+            GpioManager.getInstance().feedGpioWatchDog();
+            handler.postDelayed(watchDogRunnable, 10 * 1000);
+        }
+    };
 
 }

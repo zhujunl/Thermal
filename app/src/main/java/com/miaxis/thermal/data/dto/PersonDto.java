@@ -20,6 +20,7 @@ public class PersonDto implements Mapper<Person> {
     private String facePicture;
     private String faceFeature;
     private String maskFaceFeature;
+    private String status;
 
     public PersonDto() {
     }
@@ -36,6 +37,7 @@ public class PersonDto implements Mapper<Person> {
         setFacePicture(builder.facePicture);
         setFaceFeature(builder.faceFeature);
         setMaskFaceFeature(builder.maskFaceFeature);
+        setStatus(builder.status);
     }
 
     public long getId() {
@@ -126,6 +128,14 @@ public class PersonDto implements Mapper<Person> {
         this.maskFaceFeature = maskFaceFeature;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public Person transform() throws MyException {
         try {
@@ -154,6 +164,7 @@ public class PersonDto implements Mapper<Person> {
                     .maskFaceFeature(maskFaceFeature)
                     .timeStamp(updateTime)
                     .upload(true)
+                    .status(status)
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,6 +184,7 @@ public class PersonDto implements Mapper<Person> {
         private String facePicture;
         private String faceFeature;
         private String maskFaceFeature;
+        private String status;
 
         public Builder() {
         }
@@ -229,6 +241,11 @@ public class PersonDto implements Mapper<Person> {
 
         public Builder maskFaceFeature(String val) {
             maskFaceFeature = val;
+            return this;
+        }
+
+        public Builder status(String val) {
+            status = val;
             return this;
         }
 

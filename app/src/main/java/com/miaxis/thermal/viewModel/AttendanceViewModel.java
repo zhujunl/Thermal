@@ -182,7 +182,7 @@ public class AttendanceViewModel extends BaseViewModel {
         detectCold();
         hint.set(person.getName() + "-考勤成功");
         this.temperature.set(temperature + "°C");
-        TTSManager.getInstance().playVoiceMessageFlush("考勤成功");
+        TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
         showHeader(mxRGBImage, mxFaceInfoEx);
         HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);

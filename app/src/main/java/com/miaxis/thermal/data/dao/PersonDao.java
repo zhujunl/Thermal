@@ -37,4 +37,7 @@ public interface PersonDao {
     @Delete
     void delete(Person person);
 
+    @Query("select * from Person where Person.invalidTime <= :now")
+    List<Person> findOverduePerson(long now);
+
 }

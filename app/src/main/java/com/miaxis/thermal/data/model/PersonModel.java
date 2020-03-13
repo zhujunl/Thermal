@@ -37,6 +37,10 @@ public class PersonModel {
         AppDatabase.getInstance().personDao().insert(person);
     }
 
+    public static List<Person> findOverduePerson() {
+        return AppDatabase.getInstance().personDao().findOverduePerson(new Date().getTime());
+    }
+
     public static void deletePerson(Person person) {
         AppDatabase.getInstance().personDao().delete(person);
     }

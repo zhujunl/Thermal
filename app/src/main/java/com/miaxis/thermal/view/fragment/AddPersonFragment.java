@@ -31,6 +31,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBinding, AddPersonViewModel> {
 
@@ -140,7 +141,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 ToastManager.toast("请输入手机号码", ToastManager.INFO);
                 return;
             }
-            if (TextUtils.equals(viewModel.effectTime.get(), "请选择生效日期")) {
+            if (TextUtils.isEmpty(viewModel.effectTime.get()) || TextUtils.equals(viewModel.effectTime.get(), "请选择生效日期")) {
                 ToastManager.toast("请输入生效日期", ToastManager.INFO);
                 return;
             }
@@ -159,6 +160,16 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                     ToastManager.toast("请修改人脸信息", ToastManager.INFO);
                 }
                 return;
+            }
+            try {
+                Date effectTime = DateUtil.DATE_FORMAT.parse(viewModel.effectTime.get());
+                Date invalidTime = DateUtil.DATE_FORMAT.parse(viewModel.invalidTime.get());
+                if (invalidTime.getTime() <= effectTime.getTime()) {
+                    ToastManager.toast("失效时间必须大于生效时间", ToastManager.INFO);
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             viewModel.savePerson();
         });

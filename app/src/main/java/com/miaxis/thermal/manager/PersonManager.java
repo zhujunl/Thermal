@@ -87,6 +87,7 @@ public class PersonManager {
                 .observeOn(Schedulers.io())
                 .doOnNext(person -> {
                     PersonRepository.getInstance().updatePerson(person);
+                    PersonRepository.getInstance().clearOverduePerson();
                 })
                 .subscribe(person -> {
                     Log.e("asd", "上传人员成功");
@@ -130,6 +131,18 @@ public class PersonManager {
     }
 
     public void handlePersonHeartBeat(Person person) {
+        try {
+            if (TextUtils.equals(person.getStatus(), "2")) {
+                Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
+                if (findPerson != null) {
+                    PersonRepository.getInstance().deletePerson(findPerson);
+                }
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         try {
             Bitmap bitmap = null;
             try {

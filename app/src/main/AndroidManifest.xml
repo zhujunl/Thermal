@@ -39,6 +39,16 @@
 
         <service android:name="com.amap.api.location.APSService" />
 
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -49,7 +59,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".view.activity.MainActivity"
+        <activity
+            android:name=".view.activity.MainActivity"
             android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

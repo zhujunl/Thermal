@@ -1,6 +1,7 @@
 package com.miaxis.thermal.data.entity;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -25,6 +26,9 @@ public class Person {
     private String remarks;
     private boolean upload;
 
+    @Ignore
+    private String status;
+
     public Person() {
     }
 
@@ -43,6 +47,7 @@ public class Person {
         setTimeStamp(builder.timeStamp);
         setRemarks(builder.remarks);
         setUpload(builder.upload);
+        setStatus(builder.status);
     }
 
     public Long getId() {
@@ -157,6 +162,14 @@ public class Person {
         this.upload = upload;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public static final class Builder {
         private Long id;
         private String identifyNumber;
@@ -172,6 +185,7 @@ public class Person {
         private long timeStamp;
         private String remarks;
         private boolean upload;
+        private String status;
 
         public Builder() {
         }
@@ -243,6 +257,11 @@ public class Person {
 
         public Builder upload(boolean val) {
             upload = val;
+            return this;
+        }
+
+        public Builder status(String val) {
+            status = val;
             return this;
         }
 
