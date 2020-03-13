@@ -111,7 +111,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="设备模式" />
+                        android:text="设备模式(未生效)" />
 
                     <View style="@style/VerticalLine" />
 
@@ -236,6 +236,43 @@
                         android:background="@color/white"
                         android:singleLine="true"
                         android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout style="@style/SettingItem">
+
+                        <TextView
+                            style="@style/SettingName"
+                            android:layout_marginEnd="1dp"
+                            android:text="同步时间戳" />
+
+                        <View style="@style/VerticalLine" />
+
+                        <TextView
+                            android:id="@+id/tv_time_stamp"
+                            style="@style/SettingBody"
+                            android:layout_weight="1"
+                            android:background="@color/white"
+                            android:singleLine="true"
+                            android:textColor="@color/dark" />
+
+                        <View style="@style/VerticalLine" />
+
+                        <TextView
+                            android:id="@+id/tv_clear_time_stamp"
+                            style="@style/SettingBody"
+                            android:layout_weight="1"
+                            android:background="@color/whitesmoke"
+                            android:singleLine="true"
+                            android:text="清空时间戳"
+                            android:textColor="@color/colorPrimary" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

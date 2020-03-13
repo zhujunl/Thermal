@@ -99,6 +99,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             if (!TextUtils.isEmpty(person.getFacePicturePath())) {
                 GlideApp.with(this).load(person.getFacePicturePath()).into(binding.ivHeader);
             }
+            binding.btnRegister.setText("修改");
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
@@ -127,11 +128,39 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                     , calendar.get(Calendar.DAY_OF_MONTH)).show();
         }));
         binding.btnRegister.setOnClickListener(v -> {
-            if (viewModel.checkInput()) {
-                viewModel.savePerson();
-            } else {
-                ToastManager.toast("请修改信息", ToastManager.INFO);
+            if (TextUtils.isEmpty(viewModel.name.get())) {
+                ToastManager.toast("请输入姓名", ToastManager.INFO);
+                return;
             }
+            if (TextUtils.isEmpty(viewModel.number.get())) {
+                ToastManager.toast("请输入证件号码", ToastManager.INFO);
+                return;
+            }
+            if (TextUtils.isEmpty(viewModel.phone.get())) {
+                ToastManager.toast("请输入手机号码", ToastManager.INFO);
+                return;
+            }
+            if (TextUtils.equals(viewModel.effectTime.get(), "请选择生效日期")) {
+                ToastManager.toast("请输入生效日期", ToastManager.INFO);
+                return;
+            }
+            if (TextUtils.equals(viewModel.invalidTime.get(), "请选择失效日期")) {
+                ToastManager.toast("请输入失效日期", ToastManager.INFO);
+                return;
+            }
+            if (viewModel.type.get() == null) {
+                ToastManager.toast("请选择人员类型", ToastManager.INFO);
+                return;
+            }
+            if (!viewModel.checkFaceInfo()) {
+                if (person == null) {
+                    ToastManager.toast("请采集人脸信息", ToastManager.INFO);
+                } else {
+                    ToastManager.toast("请修改人脸信息", ToastManager.INFO);
+                }
+                return;
+            }
+            viewModel.savePerson();
         });
         EventBus.getDefault().register(this);
     }

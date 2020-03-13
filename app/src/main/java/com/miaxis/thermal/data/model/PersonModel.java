@@ -57,10 +57,10 @@ public class PersonModel {
             args.add(personSearch.getPhone());
         }
         if (personSearch.isUpload() != null) {
-            sql.append(" where Record.upload = ?");
+            sql.append(" where Person.upload = ?");
             args.add(personSearch.isUpload() ? "1" : "0");
         }
-        sql.append(" order by Record.id desc limit ? offset ? * (? - 1)");
+        sql.append(" order by Person.updateTime desc limit ? offset ? * (? - 1)");
         args.add(personSearch.getPageSize());
         args.add(personSearch.getPageSize());
         args.add(personSearch.getPageNum());

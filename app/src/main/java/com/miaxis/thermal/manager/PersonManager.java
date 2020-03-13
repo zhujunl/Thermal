@@ -171,7 +171,7 @@ public class PersonManager {
         if (TextUtils.isEmpty(url)) return null;
         FutureTarget<Bitmap> futureTarget = GlideApp.with(App.getInstance().getApplicationContext())
                 .asBitmap()
-                .load(url)
+                .load(url + "?" + System.currentTimeMillis())
                 .submit();
         return futureTarget.get();
     }

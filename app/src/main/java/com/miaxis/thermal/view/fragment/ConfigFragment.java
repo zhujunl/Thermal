@@ -1,10 +1,15 @@
 package com.miaxis.thermal.view.fragment;
 
 import android.text.TextUtils;
+import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.entity.Config;
@@ -13,6 +18,8 @@ import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.ValueUtil;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.ConfigViewModel;
 
@@ -43,6 +50,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
 
     @Override
     protected void initData() {
+        viewModel.clearTimeStampResult.observe(this, clearTimeStamp);
         Config config = ConfigManager.getInstance().getConfig();
         binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
         if (TextUtils.equals(config.getServerMode(), "0")) {
@@ -63,6 +71,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etUpdatePersonPath.setText(config.getUpdatePersonPath());
         binding.etUploadRecordPath.setText(config.getUploadRecordPath());
         binding.tvMac.setText(ConfigManager.getInstance().getMacAddress());
+        binding.tvTimeStamp.setText(String.valueOf(config.getTimeStamp()));
         binding.rbInfraredShow.setChecked(config.isShowCamera());
         binding.rbVisibleShow.setChecked(!config.isShowCamera());
         binding.rbInfraredFace.setChecked(config.isFaceCamera());
@@ -89,6 +98,16 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
     @Override
     protected void initView() {
         binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
+        binding.tvClearTimeStamp.setOnClickListener(new OnLimitClickHelper(view -> {
+            new MaterialDialog.Builder(getContext())
+                    .title("确认清空同步时间戳？")
+                    .onPositive((dialog, which) -> {
+                        viewModel.clearTimeStamp();
+                    })
+                    .positiveText("确认")
+                    .negativeText("取消")
+                    .show();
+        }));
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.ivSave.setOnClickListener(v -> {
             try {
@@ -204,4 +223,9 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
     public void onBackPressed() {
         mListener.backToStack(null);
     }
+
+    private Observer<Boolean> clearTimeStamp = result -> {
+        binding.tvTimeStamp.setText("0");
+    };
+
 }

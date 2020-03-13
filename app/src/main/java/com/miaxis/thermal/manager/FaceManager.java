@@ -204,13 +204,7 @@ public class FaceManager {
             if (needNextFeature) {
                 if (intermediary.temperature > 35.5f) {
                     if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
-                        double v = calculationPupilDistance(intermediary.mxFaceInfoEx);
-                        Log.e("asd", "瞳距计算：" + v);
-                        Log.e("asd", "x0计算：" + intermediary.mxFaceInfoEx.keypt_x[0]);
-                        Log.e("asd", "x1计算：" + intermediary.mxFaceInfoEx.keypt_x[1]);
-                        Log.e("asd", "y0计算：" + intermediary.mxFaceInfoEx.keypt_y[0]);
-                        Log.e("asd", "y1计算：" + intermediary.mxFaceInfoEx.keypt_y[1]);
-                        if (v > ConfigManager.getInstance().getConfig().getPupilDistance()) {
+                        if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
                             boolean result = detectMask(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
                             if (result) {
                                 boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();

@@ -2,6 +2,7 @@ package com.miaxis.thermal.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -173,43 +174,16 @@ public class FileUtil {
         }
     }
 
-    public static String fileToBase64(File file) {
+    public static Bitmap openImage(String path) {
+        Bitmap bitmap = null;
         try {
-            byte[] bytes = toByteArray(file);
-            String str = Base64.encodeToString(bytes, Base64.NO_WRAP);
-            bytes = null;
-            System.gc();
-            return str;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-
-    }
-
-    public static byte[] toByteArray(File f) throws Exception {
-        BufferedInputStream in = null;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream((int) f.length())) {
-            in = new BufferedInputStream(new FileInputStream(f));
-            int buf_size = 1024;
-            byte[] buffer = new byte[buf_size];
-            int len = 0;
-            while (-1 != (len = in.read(buffer, 0, buf_size))) {
-                bos.write(buffer, 0, len);
-            }
-            return bos.toByteArray();
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(path));
+            bitmap = BitmapFactory.decodeStream(bis);
+            bis.close();
         } catch (IOException e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+        return bitmap;
     }
 
     public static String bitmapToBase64(Bitmap bitmap) {

@@ -48,14 +48,8 @@ public class AddPersonViewModel extends BaseViewModel {
     public AddPersonViewModel() {
     }
 
-    public boolean checkInput() {
-        if (TextUtils.isEmpty(name.get())
-                || TextUtils.isEmpty(number.get())
-                || TextUtils.isEmpty(phone.get())
-                || TextUtils.isEmpty(effectTime.get())
-                || TextUtils.isEmpty(invalidTime.get())
-                || TextUtils.equals(invalidTime.get(), "请选择失效日期")
-                || TextUtils.isEmpty(featureCache)
+    public boolean checkFaceInfo() {
+        if (TextUtils.isEmpty(featureCache)
                 || TextUtils.isEmpty(maskFeatureCache)
                 || headerCache == null) {
             return false;
@@ -128,6 +122,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 .doOnNext(person -> {
                     String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
                     FileUtil.saveBitmap(headerCache, filePath);
+                    FileUtil.deleteImg(person.getFacePicturePath());
                     person.setFacePicturePath(filePath);
                     person.setFaceFeature(featureCache);
                     person.setMaskFaceFeature(maskFeatureCache);

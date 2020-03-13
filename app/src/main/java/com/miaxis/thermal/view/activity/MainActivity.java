@@ -63,12 +63,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         root = fragment.getClass().getName();
         replaceFragment(fragment);
         WatchDogManager.getInstance().startANRWatchDog();
-        HeartBeatManager.getInstance().startHeartBeat();
-        PersonManager.getInstance().init();
-        RecordManager.getInstance().init();
-        WebServerManager.getInstance().startServer((status, message) -> {
-
-        });
+        new Thread(() -> {
+            HeartBeatManager.getInstance().startHeartBeat();
+            PersonManager.getInstance().init();
+            RecordManager.getInstance().init();
+            WebServerManager.getInstance().startServer();
+        }).start();
     }
 
     @Override

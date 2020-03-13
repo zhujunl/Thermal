@@ -64,23 +64,15 @@ public class WebServerManager {
 
     private MyWebSocketServer socketServer;
 
-    private OnServerStatusListener listener;
-
-    public interface OnServerStatusListener {
-        void onServerStatus(boolean status, String message);
-    }
-
-    public boolean startServer(@NonNull OnServerStatusListener listener) {
+    public boolean startServer() {
         try {
             socketServer = new MyWebSocketServer(port);
             socketServer.start();
             address = DeviceUtil.getIP(App.getInstance());
             Log.e("asd", "Start ServerSocket Success...");
-            listener.onServerStatus(true, "开启成功");
             return true;
         } catch (Exception e) {
             Log.e("asd", "Start Failed...");
-            listener.onServerStatus(false, "开启失败");
             e.printStackTrace();
             return false;
         }
@@ -88,7 +80,9 @@ public class WebServerManager {
 
     public boolean stopServer() {
         try {
-            socketServer.stop();
+            if (socketServer != null) {
+                socketServer.stop();
+            }
             Log.e("asd", "Stop ServerSocket Success...");
             return true;
         } catch (Exception e) {
@@ -219,6 +213,9 @@ public class WebServerManager {
                 bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
             } catch (Exception e) {
                 e.printStackTrace();
+                throw new MyException("人员图片Base64解码出错");
+            }
+            if (bitmap == null) {
                 throw new MyException("人员图片解码出错");
             }
             if (TextUtils.isEmpty(transform.getFaceFeature()) || TextUtils.isEmpty(transform.getMaskFaceFeature())) {
@@ -238,6 +235,7 @@ public class WebServerManager {
             PersonRepository.getInstance().savePerson(transform);
             PersonManager.getInstance().loadPersonDataFromCache();
             conn.send(GSON.toJson(new ResponseEntity("200", "新增人员成功")));
+            PersonManager.getInstance().startUploadPerson();
         } catch (Exception e) {
             e.printStackTrace();
             conn.send(GSON.toJson(new ResponseEntity("400", "新增人员时遇到错误：" + e.getMessage())));
@@ -312,6 +310,7 @@ public class WebServerManager {
             PersonRepository.getInstance().savePerson(findPerson);
             PersonManager.getInstance().loadPersonDataFromCache();
             conn.send(GSON.toJson(new ResponseEntity("200", "修改人员成功")));
+            PersonManager.getInstance().startUploadPerson();
         } catch (Exception e) {
             e.printStackTrace();
             conn.send(GSON.toJson(new ResponseEntity("400", "修改人员时遇到错误：" + e.getMessage())));
@@ -369,7 +368,7 @@ public class WebServerManager {
                         .identifyNumber(person.getIdentifyNumber())
                         .startTime(DateUtil.DATE_FORMAT.format(person.getEffectiveTime()))
                         .invalidTime(DateUtil.DATE_FORMAT.format(person.getInvalidTime()))
-                        .facePicture(FileUtil.fileToBase64(new File(person.getFacePicturePath())))
+                        .facePicture(FileUtil.bitmapToBase64(FileUtil.openImage(person.getFacePicturePath())))
                         .faceFeature(person.getFaceFeature())
                         .maskFaceFeature(person.getMaskFaceFeature())
                         .build();
@@ -428,7 +427,7 @@ public class WebServerManager {
                         .temperature(record.getTemperature())
                         .type(record.getType())
                         .faceType(record.getFaceType())
-                        .verifyImage(FileUtil.fileToBase64(new File(record.getVerifyPicturePath())))
+                        .verifyImage(FileUtil.bitmapToBase64(FileUtil.openImage(record.getVerifyPicturePath())))
                         .build();
                 recordDtoList.add(build);
             }
@@ -491,10 +490,6 @@ public class WebServerManager {
         }
     }
 
-    public void setListener(OnServerStatusListener listener) {
-        this.listener = listener;
-    }
-
     private class MyWebSocketServer extends WebSocketServer {
 
         public MyWebSocketServer(int port) {
@@ -519,6 +514,11 @@ public class WebServerManager {
         @Override
         public void onError(WebSocket conn, Exception ex) {
             Log.e("asd", "onError：" + ex.getMessage());
+            port++;
+            if (("" + ex.getMessage()).contains("Address already in use")) {
+                stopServer();
+                startServer();
+            }
         }
 
         @Override

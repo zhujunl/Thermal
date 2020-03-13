@@ -34,7 +34,7 @@ public class ThermalApi extends BaseAPI {
                                                     String maskFaceFeature,
                                                     File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("faceFile", file.getName(), requestBody);
         return getThermalNetSync().updatePerson(url,
                 mac,
                 userName,
