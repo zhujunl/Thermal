@@ -17,15 +17,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.fragment.FaceRegisterFragment">
+        tools:context=".view.fragment.FaceRegisterLandFragment">
 
         <FrameLayout
             android:id="@+id/fl_camera"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintWidth_percent="0.7"
-            app:layout_constraintVertical_bias="0.15"
+            app:layout_constraintVertical_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -52,19 +51,22 @@
         <TextView
             android:id="@+id/tv_hint"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:text="@{viewModel.hint}"
-            app:layout_constraintHeight_percent="0.2"
             app:layout_constraintTop_toBottomOf="@id/fl_camera"
+            app:layout_constraintBottom_toTopOf="@id/cl_panel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_panel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_hint"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.85"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

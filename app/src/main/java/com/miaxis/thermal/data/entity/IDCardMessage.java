@@ -35,7 +35,7 @@ public class IDCardMessage {
     /** 指纹1 **/
     private String fingerprint1;
     /** 指纹1指位 **/
-    private String localeFingerprint;
+    private String fingerprintPosition1;
 
     /** 港澳台：通行证号码 **/
     private String passNumber;
@@ -69,7 +69,7 @@ public class IDCardMessage {
         setFingerprint0(builder.fingerprint0);
         setFingerprintPosition0(builder.fingerprintPosition0);
         setFingerprint1(builder.fingerprint1);
-        setLocaleFingerprint(builder.localeFingerprint);
+        setFingerprintPosition1(builder.fingerprintPosition1);
         setPassNumber(builder.passNumber);
         setIssueCount(builder.issueCount);
         setChineseName(builder.chineseName);
@@ -190,12 +190,12 @@ public class IDCardMessage {
         this.fingerprint1 = fingerprint1;
     }
 
-    public String getLocaleFingerprint() {
-        return localeFingerprint;
+    public String getFingerprintPosition1() {
+        return fingerprintPosition1;
     }
 
-    public void setLocaleFingerprint(String localeFingerprint) {
-        this.localeFingerprint = localeFingerprint;
+    public void setFingerprintPosition1(String fingerprintPosition1) {
+        this.fingerprintPosition1 = fingerprintPosition1;
     }
 
     public String getPassNumber() {
@@ -261,7 +261,7 @@ public class IDCardMessage {
         private String fingerprint0;
         private String fingerprintPosition0;
         private String fingerprint1;
-        private String localeFingerprint;
+        private String fingerprintPosition1;
         private String passNumber;
         private String issueCount;
         private String chineseName;
@@ -342,8 +342,8 @@ public class IDCardMessage {
             return this;
         }
 
-        public Builder localeFingerprint(String val) {
-            localeFingerprint = val;
+        public Builder fingerprintPosition1(String val) {
+            fingerprintPosition1 = val;
             return this;
         }
 

@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 
 import com.miaxis.thermal.data.dao.AppDatabase;
+import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.CrashExceptionManager;
 import com.miaxis.thermal.manager.FaceManager;
@@ -12,6 +13,7 @@ import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
+import com.miaxis.thermal.manager.TemperatureManager;
 import com.miaxis.thermal.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,6 +40,8 @@ public class App extends Application {
             ConfigManager.getInstance().checkConfig();
             CrashExceptionManager.getInstance().init(this);
             TTSManager.getInstance().init(getApplicationContext());
+            CameraManager.getInstance().init();
+            TemperatureManager.getInstance().init();
             GpioManager.getInstance().init(this);
             int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.MODEL_PATH, FileUtil.LICENCE_PATH);
             listener.onInit(result == FaceManager.INIT_SUCCESS, FaceManager.getFaceInitResultDetail(result));

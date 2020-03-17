@@ -8,11 +8,13 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Size;
 
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.Intermediary;
 import com.miaxis.thermal.data.entity.MxRGBImage;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
+import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.util.FileUtil;
 
 import org.zz.api.MXFaceAPI;
@@ -41,11 +43,11 @@ public class FaceManager {
      * ================================ 静态内部类单例 ================================
      **/
 
-    public static final int ERR_LICENCE         = -2009;
-    public static final int ERR_FILE_COMPARE    = -101;
-    public static final int INIT_SUCCESS        = 0;
-    public static final int ZOOM_WIDTH = 640;
-    public static final int ZOOM_HEIGHT = 480;
+    public static final int ERR_LICENCE = -2009;
+    public static final int ERR_FILE_COMPARE = -101;
+    public static final int INIT_SUCCESS = 0;
+    private static int zoomWidth = 640;
+    private static int zoomHeight = 480;
 
     private static final int MAX_FACE_NUM = 50;
     private static final Byte lock1 = 1;
@@ -73,7 +75,9 @@ public class FaceManager {
 
     public interface OnFaceHandleListener {
         void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature, boolean mask);
+
         void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes, float temperature);
+
         void onFaceIntercept(int code, String message);
     }
 
@@ -84,6 +88,9 @@ public class FaceManager {
         lastInfraredPreviewData = null;
         intermediaryData = null;
         needNextFeature = true;
+        Size previewSize = CameraManager.getInstance().getPreviewSize();
+        zoomWidth = previewSize.getWidth();
+        zoomHeight = previewSize.getHeight();
         asyncDetectHandler.sendEmptyMessage(0);
         asyncExtractHandler.sendEmptyMessage(0);
     }
@@ -138,34 +145,39 @@ public class FaceManager {
         try {
             long time = System.currentTimeMillis();
             WatchDogManager.getInstance().feedFaceDog();
-//            Config config = ConfigManager.getInstance().getConfig();
-//            int orientation = config.isFaceCamera() ? 270 : 90;
-            byte[] zoomedRgbData = cameraPreviewConvert(detectData, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, 0, ZOOM_WIDTH, ZOOM_HEIGHT);
+            Size cameraPreviewSize = CameraManager.getInstance().getCameraPreviewSize();
+            if (cameraPreviewSize == null) {
+                throw new MyException("未获取到摄像头尺寸信息");
+            }
+            byte[] zoomedRgbData = cameraPreviewConvert(detectData,
+                    cameraPreviewSize.getWidth(),
+                    cameraPreviewSize.getHeight(),
+                    CameraManager.getInstance().getOrientation(),
+                    zoomWidth,
+                    zoomHeight);
             if (zoomedRgbData == null) {
                 if (faceHandleListener != null) {
                     faceHandleListener.onFaceDetect(0, null, 0f);
                 }
-                return;
+                throw new MyException("数据转码失败");
             }
             int[] faceNum = new int[]{MAX_FACE_NUM};
             MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
-//            boolean result = faceTrace(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, faceNum, faceBuffer);
-            boolean result = faceDetect(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, faceNum, faceBuffer);
+            boolean result = faceDetect(zoomedRgbData, zoomWidth, zoomHeight, faceNum, faceBuffer);
             if (result) {
                 float temperature = TemperatureManager.getInstance().readTemperature();
-//                float temperature = 0f;
+//                float temperature = 36.5f;
                 if (faceHandleListener != null) {
                     faceHandleListener.onFaceDetect(faceNum[0], faceBuffer, temperature);
                 }
-                GpioManager.getInstance().openLedInTime();
+                GpioManager.getInstance().openWhiteLedInTime();
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(faceBuffer);
-                result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
+                result = faceQuality(zoomedRgbData, zoomWidth, zoomHeight, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
                 if (result) {
-//                    float temperature = TemperatureManager.getInstance().readTemperature();
-                    if (temperature > 0f) {
+                    if (temperature > 0f || temperature == -1f) {
                         Intermediary intermediary = new Intermediary();
-                        intermediary.width = ZOOM_WIDTH;
-                        intermediary.height = ZOOM_HEIGHT;
+                        intermediary.width = zoomWidth;
+                        intermediary.height = zoomHeight;
                         intermediary.mxFaceInfoEx = new MXFaceInfoEx(mxFaceInfoEx);
                         intermediary.data = zoomedRgbData;
                         intermediary.liveness = livenessData;
@@ -202,18 +214,18 @@ public class FaceManager {
     private void extract(Intermediary intermediary) {
         try {
             if (needNextFeature) {
-                if (intermediary.temperature > 35.5f) {
+                if (intermediary.temperature > 36.0f || intermediary.temperature == -1f) {
                     if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
                         if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
-                            boolean result = detectMask(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                            boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                             if (result) {
                                 boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
                                 byte[] feature = null;
                                 if (intermediary.liveness == null) {
                                     if (mask) {
-                                        feature = extractMaskFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                        feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     } else {
-                                        feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                        feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     }
                                 } else {
                                     Config config = ConfigManager.getInstance().getConfig();
@@ -225,9 +237,9 @@ public class FaceManager {
                                     }
                                     if (liveness) {
                                         if (mask) {
-                                            feature = extractMaskFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                            feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                         } else {
-                                            feature = extractFeature(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT, intermediary.mxFaceInfoEx);
+                                            feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                         }
                                     } else {
                                         if (faceHandleListener != null) {
@@ -238,7 +250,7 @@ public class FaceManager {
                                 if (feature != null) {
                                     needNextFeature = false;
                                     if (faceHandleListener != null) {
-                                        faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, ZOOM_WIDTH, ZOOM_HEIGHT),
+                                        faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, zoomWidth, zoomHeight),
                                                 intermediary.mxFaceInfoEx,
                                                 intermediary.temperature,
                                                 feature,
@@ -272,24 +284,33 @@ public class FaceManager {
         }
     }
 
-    private boolean livenessDetect(byte[] data, boolean needExtraHandle, MXFaceInfoEx mxFaceInfoEx) {
+    private boolean livenessDetect(byte[] data, boolean needExtraHandle, MXFaceInfoEx mxFaceInfoEx) throws MyException {
         boolean result;
         if (needExtraHandle) {
-            byte[] zoomedRgbData = cameraPreviewConvert(data, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, 270, ZOOM_WIDTH, ZOOM_HEIGHT);
+            Size cameraPreviewSize = CameraManager.getInstance().getCameraPreviewSize();
+            if (cameraPreviewSize == null) {
+                throw new MyException("未获取到摄像头尺寸信息");
+            }
+            byte[] zoomedRgbData = cameraPreviewConvert(data,
+                    cameraPreviewSize.getWidth(),
+                    cameraPreviewSize.getHeight(),
+                    CameraManager.getInstance().getOrientation(),
+                    zoomWidth,
+                    zoomHeight);
             if (zoomedRgbData != null) {
                 int[] faceNum = new int[]{MAX_FACE_NUM};
                 MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
-                result = faceDetect(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, faceNum, faceBuffer);
+                result = faceDetect(zoomedRgbData, zoomWidth, zoomHeight, faceNum, faceBuffer);
                 if (result) {
                     MXFaceInfoEx faceInfo = sortMXFaceInfoEx(faceBuffer);
-                    result = infraredLivenessDetect(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, 1, faceInfo);
+                    result = infraredLivenessDetect(zoomedRgbData, zoomWidth, zoomHeight, 1, faceInfo);
 //                    Log.e("asd", "liveness:" + faceInfo.liveness);
                     return result && faceInfo.liveness > ConfigManager.getInstance().getConfig().getLivenessScore();
                 }
             }
             return false;
         } else {
-            result = infraredLivenessDetect(data, ZOOM_WIDTH, ZOOM_HEIGHT, 1, mxFaceInfoEx);
+            result = infraredLivenessDetect(data, zoomWidth, zoomHeight, 1, mxFaceInfoEx);
 //            Log.e("asd", "liveness:" + mxFaceInfoEx.liveness);
             return result && mxFaceInfoEx.liveness > ConfigManager.getInstance().getConfig().getLivenessScore();
         }
@@ -426,22 +447,28 @@ public class FaceManager {
 
     private void initThread() {
         asyncDetectThread = new HandlerThread("detect_thread");
-        asyncDetectThread.setPriority(3);
         asyncDetectThread.start();
         asyncDetectHandler = new Handler(asyncDetectThread.getLooper()) {
             public void handleMessage(Message msg) {
                 if (detectLoop) {
-                    previewDataLoop();
+                    try {
+                        previewDataLoop();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
         asyncExtractThread = new HandlerThread("extract_thread");
-        asyncExtractThread.setPriority(4);
         asyncExtractThread.start();
         asyncExtractHandler = new Handler(asyncExtractThread.getLooper()) {
             public void handleMessage(Message msg) {
                 if (extractLoop) {
-                    intermediaryDataLoop();
+                    try {
+                        intermediaryDataLoop();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
@@ -709,9 +736,9 @@ public class FaceManager {
     /**
      * 口罩检测
      *
-     * @param rgbData    RGB裸图像数据
-     * @param width      图像数据宽度
-     * @param height     图像数据高度
+     * @param rgbData  RGB裸图像数据
+     * @param width    图像数据宽度
+     * @param height   图像数据高度
      * @param faceInfo 输入，人脸检测结果
      * @return
      */
@@ -753,13 +780,13 @@ public class FaceManager {
     }
 
     /**
-     * @category 人脸特征提取,用于比对（戴口罩算法）
-     * @param pImage - 输入，RGB图像数据
-     * @param width - 输入，图像宽度
-     * @param height - 输入，图像高度
+     * @param pImage   - 输入，RGB图像数据
+     * @param width    - 输入，图像宽度
+     * @param height   - 输入，图像高度
      * @param faceInfo - 输入，人脸信息
      * @return 0-成功，其他-失败
-      */
+     * @category 人脸特征提取, 用于比对（戴口罩算法）
+     */
     public byte[] extractMaskFeature(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
         synchronized (lock1) {
             byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
@@ -769,12 +796,12 @@ public class FaceManager {
     }
 
     /**
-     * @category 人脸特征提取,用于注册（戴口罩算法）
-     * @param pImage - 输入，RGB图像数据
-     * @param width - 输入，图像宽度
-     * @param height - 输入，图像高度
+     * @param pImage   - 输入，RGB图像数据
+     * @param width    - 输入，图像宽度
+     * @param height   - 输入，图像高度
      * @param faceInfo - 输入，人脸信息
      * @return 0-成功，其他-失败
+     * @category 人脸特征提取, 用于注册（戴口罩算法）
      */
     public byte[] extractMaskFeatureForRegister(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
         synchronized (lock1) {

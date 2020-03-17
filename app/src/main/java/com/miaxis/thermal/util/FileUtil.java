@@ -332,4 +332,18 @@ public class FileUtil {
         }
     }
 
+    public static byte[] readSDFile(String path, String fileName) {
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + path + File.separator + fileName);
+        byte[] b = null;
+        try {
+            @SuppressWarnings("resource")
+            FileInputStream inputStream = new FileInputStream(file);
+            b = new byte[inputStream.available()];
+            inputStream.read(b);
+        } catch(Exception ex)  {
+            return null;
+        }
+        return b;
+    }
+
 }

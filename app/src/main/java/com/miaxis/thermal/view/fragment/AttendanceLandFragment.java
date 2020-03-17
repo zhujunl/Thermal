@@ -5,21 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
@@ -27,12 +23,9 @@ import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.databinding.FragmentAttendanceLandBinding;
 import com.miaxis.thermal.manager.AmapManager;
 import com.miaxis.thermal.manager.CameraManager;
-import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.util.DateUtil;
-import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
-import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
 
@@ -103,7 +96,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
-        GpioManager.getInstance().closeLed();
+        GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
     }
 
@@ -117,12 +110,11 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
 
     private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
         int rootHeight = binding.flCameraRoot.getHeight();
-//        int rootWidth = rootHeight * previewSize.height / previewSize.width;
         int rootWidth = binding.flCameraRoot.getWidth();
         resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
         resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
         binding.rsvRect.setRootSize(rootWidth, rootHeight);
-        binding.rsvRect.setZoomRate((float) rootWidth / FaceManager.ZOOM_WIDTH);
+        binding.rsvRect.setZoomRate((float) rootWidth / CameraManager.getInstance().getPreviewSize().getWidth());
         viewModel.startFaceDetect();
     };
 

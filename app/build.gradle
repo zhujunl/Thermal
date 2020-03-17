@@ -83,8 +83,12 @@ dependencies {
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
     //WebSocket
     implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+    //AutoSize
+    implementation 'me.jessyan:autosize:1.1.2'
     implementation project(path: ':serialport')
     implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')
     implementation files('src/main/libs/AMap_Search_V6.5.0_20180930.jar')
     implementation files('src/main/libs/XHApi.jar')
+    implementation files('src/main/libs/zkandroidcore.jar')
+    implementation files('src/main/libs/zkandroididcardreader.jar')
 }

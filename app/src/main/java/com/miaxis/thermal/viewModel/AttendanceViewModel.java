@@ -1,5 +1,6 @@
 package com.miaxis.thermal.viewModel;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -33,7 +34,9 @@ import com.miaxis.thermal.manager.TTSManager;
 import com.miaxis.thermal.manager.TemperatureManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.WatchDogManager;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
+import com.miaxis.thermal.util.ValueUtil;
 
 import org.zz.api.MXFaceInfoEx;
 
@@ -62,6 +65,7 @@ public class AttendanceViewModel extends BaseViewModel {
     public MutableLiveData<FaceDraw> faceDraw = new MutableLiveData<>();
     public MutableLiveData<Boolean> updateHeader = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -101,7 +105,10 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setFaceHandleListener(faceHandleListener);
         FaceManager.getInstance().startLoop();
         WatchDogManager.getInstance().startFaceFeedDog();
-        CardManager.getInstance().setListener(cardReadListener);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            CardManager.getInstance().setListener(cardReadListener);
+            initCard.setValue(Boolean.TRUE);
+        }
     }
 
     public void stopFaceDetect() {
@@ -109,6 +116,9 @@ public class AttendanceViewModel extends BaseViewModel {
         TemperatureManager.getInstance().close();
         FaceManager.getInstance().setFaceHandleListener(null);
         FaceManager.getInstance().stopLoop();
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            CardManager.getInstance().release();
+        }
         handler.removeMessages(MSG_VERIFY_LOCK);
     }
 
@@ -147,13 +157,13 @@ public class AttendanceViewModel extends BaseViewModel {
             if (!lock && faceNum == 0) {
                 hint.set("");
             }
-//            if (!lock) {
-//                if (temperature == 0f) {
-//                    AttendanceViewModel.this.temperature.set("");
-//                } else {
-//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-//                }
-//            }
+            if (!lock) {
+                if (temperature == 0f) {
+                    AttendanceViewModel.this.temperature.set("");
+                } else {
+                    AttendanceViewModel.this.temperature.set(temperature + "°C");
+                }
+            }
         }
 
         @Override
@@ -181,8 +191,14 @@ public class AttendanceViewModel extends BaseViewModel {
     private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
         hint.set(person.getName() + "-考勤成功");
-        this.temperature.set(temperature + "°C");
-        TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
+        GpioManager.getInstance().openGreenLedInTime();
+        if (temperature > 0) {
+            this.temperature.set(temperature + "°C");
+            TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
+        } else {
+            this.temperature.set("");
+            TTSManager.getInstance().playVoiceMessageFlush("考勤成功");
+        }
         showHeader(mxRGBImage, mxFaceInfoEx);
         HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
@@ -230,6 +246,7 @@ public class AttendanceViewModel extends BaseViewModel {
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);
+        CardManager.getInstance().setNeedReadCard(true);
     }
 
     private void showHeader(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx) {
@@ -254,25 +271,46 @@ public class AttendanceViewModel extends BaseViewModel {
                 });
     }
 
-    private CardManager.OnCardReadListener cardReadListener = idCardMessage -> {
-        //如果已经在人证核验模式下，直接返回
-        if (cardMode) return;
-        Observable.create((ObservableOnSubscribe<byte[]>) emitter -> {
-            byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
-            emitter.onNext(feature);
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(feature -> {
-                    onCardRead(idCardMessage, feature);
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e("asd", "证件照片处理失败");
-                    toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
-                });
+    private CardManager.OnCardReadListener cardReadListener = new CardManager.OnCardReadListener() {
+        @Override
+        public void onDeviceStatus(boolean status) {
+            if (status) {
+                CardManager.getInstance().startReadCard();
+            } else {
+                CardManager.getInstance().release();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    initCard.setValue(Boolean.TRUE);
+                }, 5 * 1000);
+            }
+        }
+
+        @Override
+        public void onCardRead(IDCardMessage idCardMessage) {
+            if (idCardMessage != null) {
+                //如果已经在人证核验模式下，直接返回
+                if (cardMode) return;
+                Observable.create((ObservableOnSubscribe<byte[]>) emitter -> {
+                    byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
+                    emitter.onNext(feature);
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(feature -> {
+                            onIDCardMessage(idCardMessage, feature);
+                        }, throwable -> {
+                            throwable.printStackTrace();
+                            Log.e("asd", "证件照片处理失败");
+                            toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
+                            CardManager.getInstance().setNeedReadCard(true);
+                        });
+            } else {
+
+            }
+        }
     };
 
-    private void onCardRead(IDCardMessage mIdCardMessage, byte[] feature) {
+    private void onIDCardMessage(IDCardMessage mIdCardMessage, byte[] feature) {
+        TTSManager.getInstance().stop();
         idCardMessage = mIdCardMessage;
         idCardMessage.setCardFeature(feature);
         handler.removeMessages(MSG_VERIFY_LOCK);
@@ -304,7 +342,9 @@ public class AttendanceViewModel extends BaseViewModel {
                         handler.removeCallbacks(cardVerifyDelayRunnable);
                         countDown.set("");
                         hint.set(idCardMessage.getName() + "-比对成功");
-                        this.temperature.set(temperature + "°C");
+                        if (temperature > 0) {
+                            this.temperature.set(temperature + "°C");
+                        }
                         showHeader(mxRGBImage, mxFaceInfoEx);
                         detectCold();
                     } else {

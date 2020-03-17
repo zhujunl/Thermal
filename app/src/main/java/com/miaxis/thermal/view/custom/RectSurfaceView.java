@@ -73,11 +73,11 @@ public class RectSurfaceView extends SurfaceView {
 //            drawFaceRect(faceInfos, canvas, faceNum);
 //            drawFaceMirrorRect(faceInfos, canvas, faceNum);
             Config config = ConfigManager.getInstance().getConfig();
-            if (!config.isShowCamera()) {
-                drawFaceRect(faceInfos, canvas, faceNum);
-            } else {
+//            if (!config.isShowCamera()) {
+//                drawFaceRect(faceInfos, canvas, faceNum);
+//            } else {
                 drawFaceMirrorRect(faceInfos, canvas, faceNum);
-            }
+//            }
         }
         shRect.unlockCanvasAndPost(canvas);
     }

@@ -1,18 +1,14 @@
 package com.miaxis.thermal.view.fragment;
 
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import com.miaxis.thermal.R;
-import com.miaxis.thermal.databinding.FragmentFaceRegisterBinding;
+import com.miaxis.thermal.databinding.FragmentFaceRegisterLandBinding;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
@@ -20,22 +16,22 @@ import com.miaxis.thermal.view.custom.RoundBorderView;
 import com.miaxis.thermal.view.custom.RoundFrameLayout;
 import com.miaxis.thermal.viewModel.FaceRegisterViewModel;
 
-public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegisterBinding, FaceRegisterViewModel> {
+public class FaceRegisterLandFragment extends BaseViewModelFragment<FragmentFaceRegisterLandBinding, FaceRegisterViewModel> {
 
     private RoundBorderView roundBorderView;
     private RoundFrameLayout roundFrameLayout;
 
-    public static FaceRegisterFragment newInstance() {
-        return new FaceRegisterFragment();
+    public static FaceRegisterLandFragment newInstance() {
+        return new FaceRegisterLandFragment();
     }
 
-    public FaceRegisterFragment() {
+    public FaceRegisterLandFragment() {
         // Required empty public constructor
     }
 
     @Override
     protected int setContentView() {
-        return R.layout.fragment_face_register;
+        return R.layout.fragment_face_register_land;
     }
 
     @Override
@@ -90,12 +86,15 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
     private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
         FrameLayout.LayoutParams textureViewLayoutParams = (FrameLayout.LayoutParams) binding.rtvCamera.getLayoutParams();
-        int newHeight = textureViewLayoutParams.width * previewSize.width / previewSize.height;
         int newWidth = textureViewLayoutParams.width;
+        int newHeight = textureViewLayoutParams.width * previewSize.height / previewSize.width;
 
+        //当不是正方形预览的情况下，添加一层ViewGroup限制View的显示区域
         roundFrameLayout = new RoundFrameLayout(getContext());
         int sideLength = Math.min(newWidth, newHeight);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sideLength, sideLength);
+        int margin = (newWidth - newHeight) / 2;
+        layoutParams.setMargins(margin, margin, margin, margin);
         roundFrameLayout.setLayoutParams(layoutParams);
         FrameLayout parentView = (FrameLayout) binding.rtvCamera.getParent();
         parentView.removeView(binding.rtvCamera);
@@ -103,7 +102,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
         roundFrameLayout.addView(binding.rtvCamera);
         FrameLayout.LayoutParams newTextureViewLayoutParams = new FrameLayout.LayoutParams(newWidth, newHeight);
-        newTextureViewLayoutParams.topMargin = -(newHeight - newWidth) / 2;
+        newTextureViewLayoutParams.rightMargin = margin * 4;
         binding.rtvCamera.setLayoutParams(newTextureViewLayoutParams);
 
         View siblingView = roundFrameLayout != null ? roundFrameLayout : binding.rtvCamera;

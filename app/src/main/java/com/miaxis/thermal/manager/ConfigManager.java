@@ -4,8 +4,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.model.ConfigModel;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
@@ -52,7 +54,6 @@ public class ConfigManager {
                     .downloadPersonPath(ValueUtil.DEFAULT_DOWNLOAD_PERSON_PATH)
                     .updatePersonPath(ValueUtil.DEFAULT_UPDATE_PERSON_PATH)
                     .uploadRecordPath(ValueUtil.DEFAULT_UPLOAD_RECORD_PATH)
-                    .mac(DeviceUtil.getMacFromHardware())
                     .showCamera(ValueUtil.DEFAULT_CAMERA_SHOW)
                     .faceCamera(ValueUtil.DEFAULT_CAMERA_FACE)
                     .liveness(ValueUtil.DEFAULT_LIVENESS)
@@ -72,6 +73,11 @@ public class ConfigManager {
                     .devicePassword(ValueUtil.DEFAULT_DEVICE_PASSWORD)
                     .timeStamp(ValueUtil.DEFAULT_TIME_STAMP)
                     .build();
+            if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+                config.setMac(DeviceUtil.getDeviceId(App.getInstance()));
+            } else {
+                config.setMac(DeviceUtil.getMacFromHardware());
+            }
             ConfigModel.saveConfig(config);
         }
     }

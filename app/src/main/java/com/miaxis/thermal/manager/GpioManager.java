@@ -1,12 +1,15 @@
 package com.miaxis.thermal.manager;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.android.xhapimanager.XHApiManager;
 import com.miaxis.thermal.data.entity.Config;
+import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
+import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
+import com.miaxis.thermal.manager.strategy.zh.ZhGpioStrategy;
+import com.miaxis.thermal.util.ValueUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,7 +17,6 @@ import java.util.concurrent.Executors;
 public class GpioManager {
 
     private GpioManager() {
-        xhApiManager = new XHApiManager();
     }
 
     public static GpioManager getInstance() {
@@ -29,144 +31,136 @@ public class GpioManager {
      * ================================ 静态内部类单例 ================================
      **/
 
-    private Application application;
+    private GpioStrategy gpioStrategy;
+
+    public void init(Application application) {
+        if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+            gpioStrategy = new XhGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
+            gpioStrategy = new MR870GpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            gpioStrategy = new ZhGpioStrategy();
+        }
+        initGpio(application);
+        resetGpio();
+        initThread();
+    }
+
+    private void initGpio(Application application) {
+        if (gpioStrategy != null) {
+            gpioStrategy.init(application);
+        }
+    }
+
+    public void resetGpio() {
+        if (gpioStrategy != null) {
+            gpioStrategy.resetGpio();
+        }
+    }
+
+    public void setStatusBar(boolean show) {
+        if (gpioStrategy != null) {
+            gpioStrategy.setStatusBar(show);
+        }
+    }
+
+    public interface GpioStrategy {
+        void init(Application application);
+        void resetGpio();
+        void controlWhiteLed(boolean status);
+        void controlGreenLed(boolean status);
+        void controlRedLed(boolean status);
+        void setStatusBar(boolean show);
+    }
+
+    /**
+     * ================================================================
+     **/
+
     private static ExecutorService executorService = Executors.newFixedThreadPool(5);
     private HandlerThread handlerThread;
     private Handler handler;
 
-    private XHApiManager xhApiManager;
-
     private volatile boolean warning = false;
 
-    public void init(Application application) {
-        this.application = application;
-        resetGpio();
+    public void initThread() {
         handlerThread = new HandlerThread("FLASH_LED_THREAD");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
     }
 
-    public void resetGpio() {
-        xhApiManager.XHSetGpioValue(0, 0);
-        xhApiManager.XHSetGpioValue(1, 0);
-        xhApiManager.XHSetGpioValue(2, 0);
-        xhApiManager.XHSetGpioValue(3, 0);
-        xhApiManager.XHSetGpioValue(4, 0);
-    }
-
-    public void setStatusBar(boolean show) {
-        xhApiManager.XHShowOrHideStatusBar(show);
-    }
-
-    public void openLedInTime() {
+    public void openWhiteLedInTime() {
+        if (warning) return;
         executorService.execute(() -> {
             Config config = ConfigManager.getInstance().getConfig();
             if (!config.isFaceCamera()) {
                 int delay = config.getFlashTime() * 1000;
-                handler.removeCallbacks(closeLedRunnable);
-                if (xhApiManager.XHReadGpioValue(0) == 0) {
-                    openLed();
+                handler.removeCallbacks(closeWhiteLedRunnable);
+                if (gpioStrategy != null) {
+                    gpioStrategy.controlGreenLed(false);
+                    gpioStrategy.controlRedLed(false);
+                    gpioStrategy.controlWhiteLed(true);
                 }
-                handler.postDelayed(closeLedRunnable, delay);
+                handler.postDelayed(closeWhiteLedRunnable, delay);
             }
         });
     }
+
+    private Runnable closeWhiteLedRunnable = () -> {
+        if (warning) return;
+        if (gpioStrategy != null) {
+            gpioStrategy.controlWhiteLed(false);
+        }
+    };
+
+    public void openGreenLedInTime() {
+        if (warning) return;
+        executorService.execute(() -> {
+            Config config = ConfigManager.getInstance().getConfig();
+            if (!config.isFaceCamera()) {
+                int delay = config.getVerifyCold() * 1000;
+                handler.removeCallbacks(closeGreenLedRunnable);
+                if (gpioStrategy != null) {
+                    gpioStrategy.controlWhiteLed(false);
+                    gpioStrategy.controlRedLed(false);
+                    gpioStrategy.controlGreenLed(true);
+                }
+                handler.postDelayed(closeGreenLedRunnable, delay);
+            }
+        });
+    }
+
+    private Runnable closeGreenLedRunnable = () -> {
+        if (warning) return;
+        if (gpioStrategy != null) {
+            gpioStrategy.controlGreenLed(false);
+        }
+    };
 
     public void clearLedThread() {
-        handler.removeCallbacks(closeLedRunnable);
-    }
-
-    private void openLed() {
-        executorService.execute(() -> {
-            try {
-                if (warning) return;
-                xhApiManager.XHSetGpioValue(0, 1);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void closeLed() {
-        executorService.execute(() -> {
-            try {
-                xhApiManager.XHSetGpioValue(0, 0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        handler.removeCallbacks(closeWhiteLedRunnable);
+        handler.removeCallbacks(closeGreenLedRunnable);
     }
 
     public void openRedLed() {
         executorService.execute(() -> {
             try {
                 warning = true;
-                xhApiManager.XHSetGpioValue(0, 0);
-                xhApiManager.XHSetGpioValue(2, 1);
+                gpioStrategy.controlWhiteLed(false);
+                gpioStrategy.controlGreenLed(false);
+                gpioStrategy.controlRedLed(true);
                 Thread.sleep(500);
-                xhApiManager.XHSetGpioValue(0, 1);
-                xhApiManager.XHSetGpioValue(2, 0);
+                gpioStrategy.controlRedLed(false);
                 Thread.sleep(500);
-                xhApiManager.XHSetGpioValue(0, 0);
-                xhApiManager.XHSetGpioValue(2, 1);
+                gpioStrategy.controlRedLed(true);
                 Thread.sleep(500);
-                xhApiManager.XHSetGpioValue(2, 0);
+                gpioStrategy.controlRedLed(false);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 warning = false;
             }
         });
-    }
-
-    public void openInfraredLed() {
-        executorService.execute(() -> {
-            try {
-                xhApiManager.XHSetGpioValue(3, 1);
-                xhApiManager.XHSetGpioValue(4, 1);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void closeInfraredLed() {
-        executorService.execute(() -> {
-            try {
-                xhApiManager.XHSetGpioValue(3, 0);
-                xhApiManager.XHSetGpioValue(4, 0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    //由于闸机关门时间不定，且上下电都会造成门两向开启
-    public void openDoor(long delay) {
-        executorService.execute(() -> {
-//            try {
-//                int level = HwitManager.HwitGetIOValue(9);
-//                if (level == 1) {
-//                    HwitManager.HwitSetIOValue(9, 0);
-//                    Thread.sleep(500);
-//                    HwitManager.HwitSetIOValue(9, 1);
-//                } else {
-//                    HwitManager.HwitSetIOValue(9, 1);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-        });
-    }
-
-    private Runnable closeLedRunnable = this::closeLed;
-
-    public void setGpioWatchDog(boolean status) {
-        xhApiManager.XHWatchDogEnable(status);
-    }
-
-    public void feedGpioWatchDog() {
-        xhApiManager.XHWatchDogFeed();
     }
 
 }

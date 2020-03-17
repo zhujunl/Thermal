@@ -1,28 +1,21 @@
 package com.miaxis.thermal.view.fragment;
 
 import android.app.DatePickerDialog;
-import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.DatePicker;
 
-import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.event.FaceRegisterEvent;
 import com.miaxis.thermal.databinding.FragmentAddPersonBinding;
 import com.miaxis.thermal.manager.ToastManager;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
-import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.AddPersonViewModel;
 
@@ -104,7 +97,13 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
-            mListener.replaceFragment(FaceRegisterFragment.newInstance());
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+                mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
+                mListener.replaceFragment(FaceRegisterFragment.newInstance());
+            }  else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+                mListener.replaceFragment(FaceRegisterFragment.newInstance());
+            }
         }));
         binding.tvEffectTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();

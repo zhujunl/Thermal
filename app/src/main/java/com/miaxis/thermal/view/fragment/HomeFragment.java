@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.databinding.FragmentHomeBinding;
+import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
@@ -50,7 +53,15 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
 
     @Override
     protected void initView() {
-        binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(AttendanceLandFragment.newInstance())));
+        binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+                mListener.replaceFragment(AttendanceLandFragment.newInstance());
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
+                mListener.replaceFragment(AttendanceFragment.newInstance());
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+                mListener.replaceFragment(AttendanceFragment.newInstance());
+            }
+        }));
         binding.clPerson.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(PersonFragment.newInstance())));
         binding.clAddPerson.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(AddPersonFragment.newInstance(null))));
         binding.clRecord.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(RecordFragment.newInstance())));

@@ -75,7 +75,12 @@ public class FaceRegisterViewModel extends BaseViewModel {
 
     private void handlePhoto(Bitmap mBitmap, Camera camera) {
         Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
-            Bitmap bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getHeight(), mBitmap.getHeight(), null, false);
+            Bitmap bitmap;
+            if (mBitmap.getWidth() >= mBitmap.getHeight()) {
+                bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getHeight(), mBitmap.getHeight(), null, false);
+            } else {
+                bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getWidth(), null, false);
+            }
             emitter.onNext(bitmap);
         })
                 .subscribeOn(Schedulers.io())

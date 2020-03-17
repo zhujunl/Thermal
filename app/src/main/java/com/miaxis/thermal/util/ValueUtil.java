@@ -3,6 +3,7 @@ package com.miaxis.thermal.util;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.miaxis.thermal.manager.strategy.Sign;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
 import retrofit2.HttpException;
 
 public class ValueUtil {
+
+    public static final Sign DEFAULT_SIGN = Sign.ZH;
 
     public static final Gson GSON = new Gson();
 
