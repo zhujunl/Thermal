@@ -21,6 +21,7 @@ import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.data.entity.MxRGBImage;
 import com.miaxis.thermal.data.entity.Person;
+import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.manager.CardManager;
@@ -157,13 +158,13 @@ public class AttendanceViewModel extends BaseViewModel {
             if (!lock && faceNum == 0) {
                 hint.set("");
             }
-            if (!lock) {
-                if (temperature == 0f) {
-                    AttendanceViewModel.this.temperature.set("");
-                } else {
-                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-                }
-            }
+//            if (!lock) {
+//                if (temperature == 0f) {
+//                    AttendanceViewModel.this.temperature.set("");
+//                } else {
+//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
+//                }
+//            }
         }
 
         @Override
@@ -191,7 +192,7 @@ public class AttendanceViewModel extends BaseViewModel {
     private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
         hint.set(person.getName() + "-考勤成功");
-        GpioManager.getInstance().openGreenLedInTime();
+        GpioManager.getInstance().openGreenLed();
         if (temperature > 0) {
             this.temperature.set(temperature + "°C");
             TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
@@ -289,14 +290,20 @@ public class AttendanceViewModel extends BaseViewModel {
             if (idCardMessage != null) {
                 //如果已经在人证核验模式下，直接返回
                 if (cardMode) return;
-                Observable.create((ObservableOnSubscribe<byte[]>) emitter -> {
-                    byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
-                    emitter.onNext(feature);
+                Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
+//                    byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
+                    PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
+                    emitter.onNext(cardFaceFeature);
                 })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(feature -> {
-                            onIDCardMessage(idCardMessage, feature);
+                        .subscribe(cardFaceFeature -> {
+                            if (cardFaceFeature.getFaceFeature() != null || cardFaceFeature.getMaskFaceFeature() != null) {
+                                onIDCardMessage(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
+                            } else {
+                                toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
+                                CardManager.getInstance().setNeedReadCard(true);
+                            }
                         }, throwable -> {
                             throwable.printStackTrace();
                             Log.e("asd", "证件照片处理失败");
@@ -309,10 +316,11 @@ public class AttendanceViewModel extends BaseViewModel {
         }
     };
 
-    private void onIDCardMessage(IDCardMessage mIdCardMessage, byte[] feature) {
+    private void onIDCardMessage(IDCardMessage mIdCardMessage, byte[] faceFeature, byte[] maskFaceFeature) {
         TTSManager.getInstance().stop();
         idCardMessage = mIdCardMessage;
-        idCardMessage.setCardFeature(feature);
+        idCardMessage.setCardFeature(faceFeature);
+        idCardMessage.setMaskCardFeature(maskFaceFeature);
         handler.removeMessages(MSG_VERIFY_LOCK);
         lock = true;
         cardMode = true;
@@ -332,8 +340,9 @@ public class AttendanceViewModel extends BaseViewModel {
             return;
         }
         Observable.create((ObservableOnSubscribe<Float>) emitter -> {
-            float score = FaceManager.getInstance().matchFeature(feature, idCardMessage.getCardFeature());
-            emitter.onNext(score);
+            float faceMatchScore = FaceManager.getInstance().matchFeature(feature, idCardMessage.getCardFeature());
+            float maskFaceMatchScore = FaceManager.getInstance().matchFeature(feature, idCardMessage.getMaskCardFeature());
+            emitter.onNext(Math.max(faceMatchScore, maskFaceMatchScore));
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -342,6 +351,7 @@ public class AttendanceViewModel extends BaseViewModel {
                         handler.removeCallbacks(cardVerifyDelayRunnable);
                         countDown.set("");
                         hint.set(idCardMessage.getName() + "-比对成功");
+                        TTSManager.getInstance().playVoiceMessageFlush("比对成功");
                         if (temperature > 0) {
                             this.temperature.set(temperature + "°C");
                         }

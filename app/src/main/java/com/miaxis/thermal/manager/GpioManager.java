@@ -113,33 +113,29 @@ public class GpioManager {
         }
     };
 
-    public void openGreenLedInTime() {
-        if (warning) return;
+    public void openGreenLed() {
         executorService.execute(() -> {
-            Config config = ConfigManager.getInstance().getConfig();
-            if (!config.isFaceCamera()) {
-                int delay = config.getVerifyCold() * 1000;
-                handler.removeCallbacks(closeGreenLedRunnable);
-                if (gpioStrategy != null) {
-                    gpioStrategy.controlWhiteLed(false);
-                    gpioStrategy.controlRedLed(false);
-                    gpioStrategy.controlGreenLed(true);
-                }
-                handler.postDelayed(closeGreenLedRunnable, delay);
+            try {
+                warning = true;
+                gpioStrategy.controlWhiteLed(false);
+                gpioStrategy.controlRedLed(false);
+                gpioStrategy.controlGreenLed(true);
+                Thread.sleep(500);
+                gpioStrategy.controlGreenLed(false);
+                Thread.sleep(500);
+                gpioStrategy.controlGreenLed(true);
+                Thread.sleep(500);
+                gpioStrategy.controlGreenLed(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                warning = false;
             }
         });
     }
 
-    private Runnable closeGreenLedRunnable = () -> {
-        if (warning) return;
-        if (gpioStrategy != null) {
-            gpioStrategy.controlGreenLed(false);
-        }
-    };
-
     public void clearLedThread() {
         handler.removeCallbacks(closeWhiteLedRunnable);
-        handler.removeCallbacks(closeGreenLedRunnable);
     }
 
     public void openRedLed() {

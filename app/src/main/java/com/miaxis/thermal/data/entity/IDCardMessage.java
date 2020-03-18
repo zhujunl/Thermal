@@ -50,6 +50,8 @@ public class IDCardMessage {
     private Bitmap cardBitmap;
     /** 身份证照片人脸特征 **/
     private byte[] cardFeature;
+    /** 身份证照片戴口罩人脸特征 **/
+    private byte[] maskCardFeature;
 
     public IDCardMessage() {
     }
@@ -76,6 +78,7 @@ public class IDCardMessage {
         setVersion(builder.version);
         setCardBitmap(builder.cardBitmap);
         setCardFeature(builder.cardFeature);
+        setMaskCardFeature(builder.maskCardFeature);
     }
 
     public String getCardType() {
@@ -246,6 +249,14 @@ public class IDCardMessage {
         this.cardFeature = cardFeature;
     }
 
+    public byte[] getMaskCardFeature() {
+        return maskCardFeature;
+    }
+
+    public void setMaskCardFeature(byte[] maskCardFeature) {
+        this.maskCardFeature = maskCardFeature;
+    }
+
     public static final class Builder {
         private String cardType;
         private String cardId;
@@ -268,6 +279,7 @@ public class IDCardMessage {
         private String version;
         private Bitmap cardBitmap;
         private byte[] cardFeature;
+        private byte[] maskCardFeature;
 
         public Builder() {
         }
@@ -374,6 +386,11 @@ public class IDCardMessage {
 
         public Builder cardFeature(byte[] val) {
             cardFeature = val;
+            return this;
+        }
+
+        public Builder maskCardFeature(byte[] val) {
+            maskCardFeature = val;
             return this;
         }
 

@@ -2,6 +2,7 @@ package com.miaxis.thermal.view.fragment;
 
 import android.app.DatePickerDialog;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.event.FaceRegisterEvent;
 import com.miaxis.thermal.databinding.FragmentAddPersonBinding;
+import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -94,6 +96,12 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 GlideApp.with(this).load(person.getFacePicturePath()).into(binding.ivHeader);
             }
             binding.btnRegister.setText("修改");
+        } else {
+            if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+                viewModel.initCard.observe(this, initCardObserver);
+                viewModel.initCardResult.observe(this, initCardResultObserver);
+                viewModel.initCardReader();
+            }
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
@@ -184,6 +192,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            viewModel.releaseCardReader();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
@@ -196,6 +207,20 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         GlideApp.with(this).load(event.getBitmap()).into(binding.ivHeader);
         EventBus.getDefault().removeStickyEvent(event);
     }
+
+    private Observer<Boolean> initCardObserver = aBoolean -> {
+        CardManager.getInstance().init(getContext());
+    };
+
+    private Observer<Boolean> initCardResultObserver = result -> {
+        if (result) {
+            binding.etName.setEnabled(false);
+            binding.etNumber.setEnabled(false);
+        } else {
+            binding.etName.setEnabled(true);
+            binding.etNumber.setEnabled(true);
+        }
+    };
 
     public void setPerson(Person person) {
         this.person = person;

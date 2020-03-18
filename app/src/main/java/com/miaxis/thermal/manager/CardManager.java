@@ -14,6 +14,7 @@ import com.zkteco.android.biometric.module.idcard.IDCardReader;
 import com.zkteco.android.biometric.module.idcard.IDCardReaderFactory;
 import com.zkteco.android.biometric.module.idcard.exception.IDCardReaderException;
 import com.zkteco.android.biometric.module.idcard.meta.IDCardInfo;
+import com.zkteco.android.biometric.module.idcard.meta.IDPRPCardInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,6 +66,8 @@ public class CardManager {
     public void release() {
         try {
             if (idCardReader != null) {
+                running = false;
+                needReadCard = false;
                 idCardReader.close(0);
                 IDCardReaderFactory.destroy(idCardReader);
             }
@@ -89,36 +92,21 @@ public class CardManager {
         int width = WLTService.imgWidth;
         int height = WLTService.imgHeight;
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        int row = 0, col = width-1;
-        for (int i = bgrbuf.length-1; i >= 3; i -= 3) {
+        int row = 0, col = width - 1;
+        for (int i = bgrbuf.length - 1; i >= 3; i -= 3) {
             int color = bgrbuf[i] & 0xFF;
-            color += (bgrbuf[i-1] << 8) & 0xFF00;
-            color += ((bgrbuf[i-2]) << 16) & 0xFF0000;
+            color += (bgrbuf[i - 1] << 8) & 0xFF00;
+            color += ((bgrbuf[i - 2]) << 16) & 0xFF0000;
             bmp.setPixel(col--, row, color);
             if (col < 0) {
-                col = width-1;
+                col = width - 1;
                 row++;
             }
         }
-        return bmp;
-//        int width = WLTService.imgWidth;
-//        int height = WLTService.imgHeight;
-//        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-//        int row = 0, col = width-1;
-//        for (int i = bgrbuf.length-1; i >= 3; i -= 3) {
-//            int color = bgrbuf[i] & 0xFF;
-//            color += (bgrbuf[i-1] << 8) & 0xFF00;
-//            color += ((bgrbuf[i-2]) << 16) & 0xFF0000;
-//            bmp.setPixel(col--, row, color);
-//            if (col < 0) {
-//                col = width-1;
-//                row++;
-//            }
-//        }
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bmp.getByteCount());
-//        bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//        byte[] data = outputStream.toByteArray();
-//        return BitmapFactory.decodeByteArray(data, 0, data.length);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bmp.getByteCount());
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] data = outputStream.toByteArray();
+        return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 
     public class ReadCardThread extends Thread {
@@ -129,16 +117,23 @@ public class CardManager {
                 if (idCardReader != null) {
                     if (needReadCard) {
                         try {
-                            Authenticate();
+                            IDCardMessage transform;
+                            authenticate();
                             int retCardType = idCardReader.readCardEx(0, 1);
                             if (retCardType == 1 || retCardType == 2 || retCardType == 3) {
                                 if (retCardType == 1) {
                                     IDCardInfo idCardInfo = idCardReader.getLastIDCardInfo();
-                                    IDCardMessage transform = transform(idCardInfo);
-                                    if (listener != null) {
-                                        needReadCard = false;
-                                        listener.onCardRead(transform);
-                                    }
+                                    transform = transformID(idCardInfo);
+                                } else if (retCardType == 2) {
+                                    IDPRPCardInfo idprpCardInfo = idCardReader.getLastPRPIDCardInfo();
+                                    transform = transformGreen(idprpCardInfo);
+                                } else {
+                                    IDCardInfo idCardInfo = idCardReader.getLastIDCardInfo();
+                                    transform = transformGAT(idCardInfo);
+                                }
+                                if (listener != null) {
+                                    needReadCard = false;
+                                    listener.onCardRead(transform);
                                 }
                             }
                         } catch (Exception e) {
@@ -162,7 +157,7 @@ public class CardManager {
             }
         }
 
-        public boolean Authenticate() {
+        private boolean authenticate() {
             try {
                 idCardReader.findCard(0);
                 idCardReader.selectCard(0);
@@ -173,16 +168,20 @@ public class CardManager {
             }
         }
 
-        private IDCardMessage transform(IDCardInfo idCardInfo) {
+        private Bitmap handleCardPhoto(byte[] data) {
             Bitmap bitmap = null;
-            if (idCardInfo.getPhotolength() > 0) {
+            if (data != null && data.length > 0) {
                 byte[] buf = new byte[WLTService.imgLength];
-                if (1 == WLTService.wlt2Bmp(idCardInfo.getPhoto(), buf)) {
+                if (1 == WLTService.wlt2Bmp(data, buf)) {
                     bitmap = Bgr2Bitmap(buf);
                 }
             }
+            return bitmap;
+        }
+
+        private IDCardMessage transformID(IDCardInfo idCardInfo) {
             return new IDCardMessage.Builder()
-                    .cardId("")
+                    .cardType("")
                     .name(idCardInfo.getName())
                     .birthday(idCardInfo.getBirth())
                     .address(idCardInfo.getAddress())
@@ -196,7 +195,42 @@ public class CardManager {
                     .issueCount("")
                     .chineseName("")
                     .version("")
-                    .cardBitmap(bitmap)
+                    .cardBitmap(handleCardPhoto(idCardInfo.getPhoto()))
+                    .build();
+        }
+
+        private IDCardMessage transformGreen(IDPRPCardInfo idCardInfo) {
+            return new IDCardMessage.Builder()
+                    .cardType("I")
+                    .name(idCardInfo.getEnName())
+                    .birthday(idCardInfo.getBirth())
+                    .cardNumber(idCardInfo.getId())
+                    .issuingAuthority(idCardInfo.getDeptCode())
+                    .validateStart(idCardInfo.getValidityTime())
+                    .validateEnd(idCardInfo.getValidityTime())
+                    .sex(idCardInfo.getSex())
+                    .nation(idCardInfo.getCountry())
+                    .chineseName(idCardInfo.getCnName())
+                    .version(idCardInfo.getLicVer())
+                    .cardBitmap(handleCardPhoto(idCardInfo.getPhoto()))
+                    .build();
+        }
+
+        private IDCardMessage transformGAT(IDCardInfo idCardInfo) {
+            return new IDCardMessage.Builder()
+                    .cardType("J")
+                    .name(idCardInfo.getName())
+                    .birthday(idCardInfo.getBirth())
+                    .address(idCardInfo.getAddress())
+                    .cardNumber(idCardInfo.getId())
+                    .issuingAuthority(idCardInfo.getDepart())
+                    .validateStart(idCardInfo.getValidityTime())
+                    .validateEnd(idCardInfo.getValidityTime())
+                    .sex(idCardInfo.getSex())
+                    .nation(idCardInfo.getNation())
+                    .passNumber(idCardInfo.getPassNum())
+                    .issueCount(String.valueOf(idCardInfo.getVisaTimes()))
+                    .cardBitmap(handleCardPhoto(idCardInfo.getPhoto()))
                     .build();
         }
 

@@ -8,10 +8,13 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
 import com.miaxis.thermal.bridge.SingleLiveEvent;
+import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
+import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.PersonManager;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
@@ -38,6 +41,8 @@ public class AddPersonViewModel extends BaseViewModel {
     public ObservableField<String> faceFeatureHint = new ObservableField<>("点击采集");
 
     public MutableLiveData<Boolean> registerFlag = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> initCardResult = new SingleLiveEvent<>();
 
     private String featureCache;
     private String maskFeatureCache;
@@ -178,5 +183,35 @@ public class AddPersonViewModel extends BaseViewModel {
     public void setMaskFeatureCache(String maskFeatureCache) {
         this.maskFeatureCache = maskFeatureCache;
     }
+
+    public void initCardReader() {
+        CardManager.getInstance().setListener(cardReadListener);
+        initCard.setValue(Boolean.TRUE);
+    }
+
+    public void releaseCardReader() {
+        CardManager.getInstance().release();
+    }
+
+    private CardManager.OnCardReadListener cardReadListener = new CardManager.OnCardReadListener() {
+        @Override
+        public void onDeviceStatus(boolean status) {
+            if (status) {
+                CardManager.getInstance().startReadCard();
+                initCardResult.setValue(Boolean.TRUE);
+            } else {
+                initCardResult.setValue(Boolean.FALSE);
+            }
+        }
+
+        @Override
+        public void onCardRead(IDCardMessage idCardMessage) {
+            if (idCardMessage != null) {
+                name.set(idCardMessage.getName());
+                number.set(idCardMessage.getCardNumber());
+//                CardManager.getInstance().setNeedReadCard(true);
+            }
+        }
+    };
 
 }
