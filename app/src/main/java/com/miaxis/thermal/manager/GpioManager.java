@@ -3,10 +3,13 @@ package com.miaxis.thermal.manager;
 import android.app.Application;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
+import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
+import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhGpioStrategy;
 import com.miaxis.thermal.util.ValueUtil;
@@ -40,6 +43,8 @@ public class GpioManager {
             gpioStrategy = new MR870GpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             gpioStrategy = new ZhGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+            gpioStrategy = new TpsGpioStrategy();
         }
         initGpio(application);
         resetGpio();
@@ -157,6 +162,14 @@ public class GpioManager {
                 warning = false;
             }
         });
+    }
+
+    public void setInfraredLedForXH(boolean status) {
+        if (gpioStrategy instanceof XhGpioStrategy) {
+            XhGpioStrategy xhGpioStrategy = (XhGpioStrategy) gpioStrategy;
+            xhGpioStrategy.setGpio(3, status ? 1 : 0);
+            xhGpioStrategy.setGpio(4, status ? 1 : 0);
+        }
     }
 
 }

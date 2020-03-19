@@ -52,7 +52,7 @@
 
         <Button
             android:id="@+id/btn_retry"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_button_green"
             android:gravity="center"
@@ -69,7 +69,7 @@
 
         <Button
             android:id="@+id/btn_quit"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_button_green"
             android:gravity="center"

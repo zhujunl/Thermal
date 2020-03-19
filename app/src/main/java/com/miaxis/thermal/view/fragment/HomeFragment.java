@@ -60,6 +60,8 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
                 mListener.replaceFragment(AttendanceFragment.newInstance());
             } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
                 mListener.replaceFragment(AttendanceFragment.newInstance());
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+                mListener.replaceFragment(AttendanceFragment.newInstance());
             }
         }));
         binding.clPerson.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(PersonFragment.newInstance())));

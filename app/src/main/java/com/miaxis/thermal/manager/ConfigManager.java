@@ -78,6 +78,11 @@ public class ConfigManager {
             } else {
                 config.setMac(DeviceUtil.getMacFromHardware());
             }
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+                config.setPupilDistance(80);
+            } else {
+                config.setPupilDistance(67);
+            }
             ConfigModel.saveConfig(config);
         }
     }

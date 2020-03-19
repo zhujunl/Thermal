@@ -88,6 +88,12 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
         return 0;
     }
 
+    @Override
+    public boolean faceRectFlip() {
+        Config config = ConfigManager.getInstance().getConfig();
+        return !config.isShowCamera();
+    }
+
     private void resetRetryTime() {
         this.retryTime = 0;
     }
@@ -154,7 +160,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
             //预览画面镜像
-            parameters.set("preview-flip", "flip-h");
+//            parameters.set("preview-flip", "flip-h");
             //对焦模式设置
             List<String> supportedFocusModes = parameters.getSupportedFocusModes();
             if (supportedFocusModes != null && supportedFocusModes.size() > 0) {
@@ -169,9 +175,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
             infraredCamera.setParameters(parameters);
 //            infraredCamera.setDisplayOrientation(90);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
-            XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
-            xhGpioStrategy.setGpio(3, 1);
-            xhGpioStrategy.setGpio(4, 1);
+            GpioManager.getInstance().setInfraredLedForXH(true);
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,6 +191,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
     private void closeInfraredCamera() {
         try {
             if (infraredCamera != null) {
+                GpioManager.getInstance().setInfraredLedForXH(false);
                 XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
                 xhGpioStrategy.setGpio(3, 0);
                 xhGpioStrategy.setGpio(4, 0);

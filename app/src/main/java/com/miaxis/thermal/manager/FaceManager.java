@@ -74,9 +74,9 @@ public class FaceManager {
     private String errorMessage = "";
 
     public interface OnFaceHandleListener {
-        void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature, boolean mask);
+        void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, byte[] feature, boolean mask);
 
-        void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes, float temperature);
+        void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes);
 
         void onFaceIntercept(int code, String message);
     }
@@ -157,7 +157,7 @@ public class FaceManager {
                     zoomHeight);
             if (zoomedRgbData == null) {
                 if (faceHandleListener != null) {
-                    faceHandleListener.onFaceDetect(0, null, 0f);
+                    faceHandleListener.onFaceDetect(0, null);
                 }
                 throw new MyException("数据转码失败");
             }
@@ -165,33 +165,26 @@ public class FaceManager {
             MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
             boolean result = faceDetect(zoomedRgbData, zoomWidth, zoomHeight, faceNum, faceBuffer);
             if (result) {
-                float temperature = TemperatureManager.getInstance().readTemperature();
-//                float temperature = 36.5f;
                 if (faceHandleListener != null) {
-                    faceHandleListener.onFaceDetect(faceNum[0], faceBuffer, temperature);
+                    faceHandleListener.onFaceDetect(faceNum[0], faceBuffer);
                 }
                 GpioManager.getInstance().openWhiteLedInTime();
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(faceBuffer);
                 result = faceQuality(zoomedRgbData, zoomWidth, zoomHeight, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
                 if (result) {
-                    if (temperature > 0f || temperature == -1f) {
-                        Intermediary intermediary = new Intermediary();
-                        intermediary.width = zoomWidth;
-                        intermediary.height = zoomHeight;
-                        intermediary.mxFaceInfoEx = new MXFaceInfoEx(mxFaceInfoEx);
-                        intermediary.data = zoomedRgbData;
-                        intermediary.liveness = livenessData;
-                        intermediary.temperature = temperature;
-                        intermediaryData = intermediary;
-                        nova = true;
-                    } else {
-                        Log.e("asd", "温控返回");
-                    }
+                    Intermediary intermediary = new Intermediary();
+                    intermediary.width = zoomWidth;
+                    intermediary.height = zoomHeight;
+                    intermediary.mxFaceInfoEx = new MXFaceInfoEx(mxFaceInfoEx);
+                    intermediary.data = zoomedRgbData;
+                    intermediary.liveness = livenessData;
+                    intermediaryData = intermediary;
+                    nova = true;
 //                    Log.e("asd", "检测耗时" + (System.currentTimeMillis() - time) + "-----" + mxFaceInfoEx.quality);
                 }
             } else {
                 if (faceHandleListener != null) {
-                    faceHandleListener.onFaceDetect(0, null, 0f);
+                    faceHandleListener.onFaceDetect(0, null);
                 }
             }
         } catch (Exception e) {
@@ -214,67 +207,64 @@ public class FaceManager {
     private void extract(Intermediary intermediary) {
         try {
             if (needNextFeature) {
-                if (intermediary.temperature > 36.0f || intermediary.temperature == -1f) {
-                    if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
-                        if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
-                            boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                            if (result) {
-                                boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
-                                byte[] feature = null;
-                                if (intermediary.liveness == null) {
+                if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
+                    if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
+                        boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                        if (result) {
+                            boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
+                            byte[] feature = null;
+                            if (intermediary.liveness == null) {
+                                if (mask) {
+                                    feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                                } else {
+                                    feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                                }
+                            } else {
+                                Config config = ConfigManager.getInstance().getConfig();
+                                boolean liveness;
+                                if (config.isFaceCamera()) {
+                                    liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
+                                } else {
+                                    liveness = livenessDetect(intermediary.liveness, true, null);
+                                }
+                                if (liveness) {
                                     if (mask) {
                                         feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     } else {
                                         feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     }
                                 } else {
-                                    Config config = ConfigManager.getInstance().getConfig();
-                                    boolean liveness;
-                                    if (config.isFaceCamera()) {
-                                        liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
-                                    } else {
-                                        liveness = livenessDetect(intermediary.liveness, true, null);
-                                    }
-                                    if (liveness) {
-                                        if (mask) {
-                                            feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                                        } else {
-                                            feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                                        }
-                                    } else {
-                                        if (faceHandleListener != null) {
-                                            faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
-                                        }
-                                    }
-                                }
-                                if (feature != null) {
-                                    needNextFeature = false;
                                     if (faceHandleListener != null) {
-                                        faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, zoomWidth, zoomHeight),
-                                                intermediary.mxFaceInfoEx,
-                                                intermediary.temperature,
-                                                feature,
-                                                mask);
+                                        faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
                                     }
                                 }
-                            } else {
-                                //是否戴口罩检测失败，直接丢弃
-                                Log.e("asd", "检测是否戴口罩失败");
+                            }
+                            if (feature != null) {
+                                needNextFeature = false;
+                                if (faceHandleListener != null) {
+                                    faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, zoomWidth, zoomHeight),
+                                            intermediary.mxFaceInfoEx,
+                                            feature,
+                                            mask);
+                                }
                             }
                         } else {
-                            if (faceHandleListener != null) {
-                                faceHandleListener.onFaceIntercept(-2, "瞳距阈值拦截");
-                            }
+                            //是否戴口罩检测失败，直接丢弃
+                            Log.e("asd", "检测是否戴口罩失败");
                         }
                     } else {
                         if (faceHandleListener != null) {
-                            faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
+                            faceHandleListener.onFaceIntercept(-2, "瞳距阈值拦截");
                         }
                     }
                 } else {
                     if (faceHandleListener != null) {
-                        faceHandleListener.onFaceIntercept(-5, "温度阈值拦截");
+                        faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
                     }
+                }
+            } else {
+                if (faceHandleListener != null) {
+                    faceHandleListener.onFaceIntercept(-5, "温度阈值拦截");
                 }
             }
         } catch (Exception e) {
@@ -304,14 +294,14 @@ public class FaceManager {
                 if (result) {
                     MXFaceInfoEx faceInfo = sortMXFaceInfoEx(faceBuffer);
                     result = infraredLivenessDetect(zoomedRgbData, zoomWidth, zoomHeight, 1, faceInfo);
-//                    Log.e("asd", "liveness:" + faceInfo.liveness);
+                    Log.e("asd", "liveness:" + faceInfo.liveness);
                     return result && faceInfo.liveness > ConfigManager.getInstance().getConfig().getLivenessScore();
                 }
             }
             return false;
         } else {
             result = infraredLivenessDetect(data, zoomWidth, zoomHeight, 1, mxFaceInfoEx);
-//            Log.e("asd", "liveness:" + mxFaceInfoEx.liveness);
+            Log.e("asd", "liveness:" + mxFaceInfoEx.liveness);
             return result && mxFaceInfoEx.liveness > ConfigManager.getInstance().getConfig().getLivenessScore();
         }
     }
@@ -364,15 +354,15 @@ public class FaceManager {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
 //                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                    byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                    if (faceFeature != null) {
-                        byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                        if (maskFaceFeature != null) {
-                            return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
-                        }
-                    } else {
-                        message = "提取特征失败";
+                byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                if (faceFeature != null) {
+                    byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                    if (maskFaceFeature != null) {
+                        return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
                     }
+                } else {
+                    message = "提取特征失败";
+                }
 //                } else {
 //                    message = "人脸质量过低";
 //                }
@@ -466,19 +456,18 @@ public class FaceManager {
      * 初始化人脸算法
      *
      * @param context     设备上下文
-     * @param szModelPath 人脸模型文件目录
      * @param licencePath 授权文件路径
      * @return 状态码
      */
-    public int initFaceST(Context context, String szModelPath, String licencePath) {
+    public int initFaceST(Context context, String licencePath) {
         final String sLicence = FileUtil.readLicence(licencePath);
         if (TextUtils.isEmpty(sLicence)) {
             return ERR_LICENCE;
         }
-        int re = initFaceModel(context, szModelPath);
-        if (re == 0) {
-            re = mxFaceAPI.mxInitAlg(context, szModelPath, sLicence);
-        }
+//        int re = initFaceModel(context, szModelPath);
+//        if (re == 0) {
+        int re = mxFaceAPI.mxInitAlg(context, "", sLicence);
+//        }
         initThread();
         return re;
     }
@@ -512,50 +501,50 @@ public class FaceManager {
         };
     }
 
-    /**
-     * 拷贝人脸模型文件
-     *
-     * @param context
-     * @param modelPath
-     * @return
-     */
-    private int initFaceModel(Context context, String modelPath) {
-        String hsLibDirName = "MIAXISModelsV5";
-        String modelFile1 = "MIAXIS_V5.0.0_FaceDetect.model";
-        String modelFile2 = "MIAXIS_V5.0.0_FaceMaskAlign.model";
-        String modelFile3 = "MIAXIS_V5.0.0_FaceMaskDetect.model";
-        String modelFile4 = "MIAXIS_V5.0.0_FaceMaskRecog.model";
-        String modelFile5 = "MIAXIS_V5.0.0_FaceQuality.model";
-        String modelFile6 = "MIAXIS_V5.0.0_FaceRecog.model";
-        String modelFile7 = "MIAXIS_V5.0.0_LivenessDetect.model";
-        File modelDir = new File(modelPath);
-        if (modelDir.exists()) {
-            if (!new File(modelDir + File.separator + modelFile1).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile1, modelDir + File.separator + modelFile1);
-            }
-            if (!new File(modelDir + File.separator + modelFile2).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile2, modelDir + File.separator + modelFile2);
-            }
-            if (!new File(modelDir + File.separator + modelFile3).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile3, modelDir + File.separator + modelFile3);
-            }
-            if (!new File(modelDir + File.separator + modelFile4).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile4, modelDir + File.separator + modelFile4);
-            }
-            if (!new File(modelDir + File.separator + modelFile5).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile5, modelDir + File.separator + modelFile5);
-            }
-            if (!new File(modelDir + File.separator + modelFile6).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile6, modelDir + File.separator + modelFile6);
-            }
-            if (!new File(modelDir + File.separator + modelFile7).exists()) {
-                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile7, modelDir + File.separator + modelFile7);
-            }
-            return 0;
-        } else {
-            return -1;
-        }
-    }
+//    /**
+//     * 拷贝人脸模型文件
+//     *
+//     * @param context
+//     * @param modelPath
+//     * @return
+//     */
+//    private int initFaceModel(Context context, String modelPath) {
+//        String hsLibDirName = "MIAXISModelsV5";
+//        String modelFile1 = "MIAXIS_V5.0.0_FaceDetect.model";
+//        String modelFile2 = "MIAXIS_V5.0.0_FaceMaskAlign.model";
+//        String modelFile3 = "MIAXIS_V5.0.0_FaceMaskDetect.model";
+//        String modelFile4 = "MIAXIS_V5.0.0_FaceMaskRecog.model";
+//        String modelFile5 = "MIAXIS_V5.0.0_FaceQuality.model";
+//        String modelFile6 = "MIAXIS_V5.0.0_FaceRecog.model";
+//        String modelFile7 = "MIAXIS_V5.0.0_LivenessDetect.model";
+//        File modelDir = new File(modelPath);
+//        if (modelDir.exists()) {
+//            if (!new File(modelDir + File.separator + modelFile1).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile1, modelDir + File.separator + modelFile1);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile2).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile2, modelDir + File.separator + modelFile2);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile3).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile3, modelDir + File.separator + modelFile3);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile4).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile4, modelDir + File.separator + modelFile4);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile5).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile5, modelDir + File.separator + modelFile5);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile6).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile6, modelDir + File.separator + modelFile6);
+//            }
+//            if (!new File(modelDir + File.separator + modelFile7).exists()) {
+//                FileUtil.copyAssetsFile(context, hsLibDirName + File.separator + modelFile7, modelDir + File.separator + modelFile7);
+//            }
+//            return 0;
+//        } else {
+//            return -1;
+//        }
+//    }
 
     public static String getFaceInitResultDetail(int result) {
         switch (result) {
@@ -745,13 +734,6 @@ public class FaceManager {
     private boolean faceDetect(byte[] rgbData, int width, int height, int[] faceNum, MXFaceInfoEx[] faceBuffer) {
         synchronized (lock2) {
             int result = mxFaceAPI.mxDetectFace(rgbData, width, height, faceNum, faceBuffer);
-            return result == 0 && faceNum[0] > 0;
-        }
-    }
-
-    private boolean faceTrace(byte[] rgbData, int width, int height, int[] faceNum, MXFaceInfoEx[] faceBuffer) {
-        synchronized (lock2) {
-            int result = mxFaceAPI.mxTrackFace(rgbData, width, height, faceNum, faceBuffer);
             return result == 0 && faceNum[0] > 0;
         }
     }

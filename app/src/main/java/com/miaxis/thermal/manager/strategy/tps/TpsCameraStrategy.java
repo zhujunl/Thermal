@@ -1,4 +1,4 @@
-package com.miaxis.thermal.manager.strategy.zh;
+package com.miaxis.thermal.manager.strategy.tps;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -11,12 +11,11 @@ import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
-import com.miaxis.thermal.manager.GpioManager;
 
 import java.io.IOException;
 import java.util.List;
 
-public class ZhCameraStrategy implements CameraManager.CameraStrategy {
+public class TpsCameraStrategy implements CameraManager.CameraStrategy {
 
     public static final int PRE_WIDTH = 640;
     public static final int PRE_HEIGHT = 480;
@@ -84,15 +83,13 @@ public class ZhCameraStrategy implements CameraManager.CameraStrategy {
 
     @Override
     public int getOrientation() {
-        return 270;
-//        Config config = ConfigManager.getInstance().getConfig();
-//        return config.isFaceCamera() ? 90 : 90;
+        Config config = ConfigManager.getInstance().getConfig();
+        return config.isFaceCamera() ? 270 : 270;
     }
 
     @Override
     public boolean faceRectFlip() {
-        Config config = ConfigManager.getInstance().getConfig();
-        return config.isShowCamera();
+        return true;
     }
 
     private void resetRetryTime() {
@@ -101,7 +98,7 @@ public class ZhCameraStrategy implements CameraManager.CameraStrategy {
 
     private void openVisibleCamera() {
         try {
-            visibleCamera = Camera.open(1);
+            visibleCamera = Camera.open(0);
             Camera.Parameters parameters = visibleCamera.getParameters();
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
@@ -120,7 +117,7 @@ public class ZhCameraStrategy implements CameraManager.CameraStrategy {
                 }
             }
             visibleCamera.setParameters(parameters);
-            visibleCamera.setDisplayOrientation(90);
+            visibleCamera.setDisplayOrientation(270);
             visibleCamera.setPreviewCallback(visiblePreviewCallback);
             visibleCamera.startPreview();
         } catch (Exception e) {
@@ -155,7 +152,7 @@ public class ZhCameraStrategy implements CameraManager.CameraStrategy {
 
     private void openInfraredCamera() {
         try {
-            infraredCamera = Camera.open(0);
+            infraredCamera = Camera.open(1);
             Camera.Parameters parameters = infraredCamera.getParameters();
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);

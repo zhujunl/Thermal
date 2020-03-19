@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870TemperatureStrategy;
+import com.miaxis.thermal.manager.strategy.tps.TpsTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhTemperatureStrategy;
 import com.miaxis.thermal.util.DataUtils;
@@ -54,6 +55,8 @@ public class TemperatureManager {
             temperatureStrategy = new MR870TemperatureStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             temperatureStrategy = new ZhTemperatureStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+            temperatureStrategy = new TpsTemperatureStrategy();
         }
     }
 

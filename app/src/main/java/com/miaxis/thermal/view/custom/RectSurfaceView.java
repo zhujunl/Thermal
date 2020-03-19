@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.data.entity.Config;
 
@@ -70,14 +71,11 @@ public class RectSurfaceView extends SurfaceView {
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         if (faceNum != 0) {
-//            drawFaceRect(faceInfos, canvas, faceNum);
-//            drawFaceMirrorRect(faceInfos, canvas, faceNum);
-            Config config = ConfigManager.getInstance().getConfig();
-//            if (!config.isShowCamera()) {
-//                drawFaceRect(faceInfos, canvas, faceNum);
-//            } else {
+            if (CameraManager.getInstance().faceRectFlip()) {
+                drawFaceRect(faceInfos, canvas, faceNum);
+            } else {
                 drawFaceMirrorRect(faceInfos, canvas, faceNum);
-//            }
+            }
         }
         shRect.unlockCanvasAndPost(canvas);
     }

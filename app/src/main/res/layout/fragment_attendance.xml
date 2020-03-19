@@ -58,6 +58,18 @@
             app:layout_constraintBottom_toBottomOf="@id/iv_title"/>
 
         <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/face_box"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:padding="30dp"
+            app:layout_constraintTop_toBottomOf="@id/iv_title"
+            app:layout_constraintBottom_toTopOf="@id/iv_panel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
             android:id="@+id/iv_panel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

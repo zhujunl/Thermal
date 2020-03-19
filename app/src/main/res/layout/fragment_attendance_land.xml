@@ -56,6 +56,17 @@
         </FrameLayout>
 
         <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/face_box"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="@id/fl_camera_root"
+            app:layout_constraintBottom_toBottomOf="@id/fl_camera_root"
+            app:layout_constraintStart_toStartOf="@id/fl_camera_root"
+            app:layout_constraintEnd_toEndOf="@id/fl_camera_root"/>
+
+        <ImageView
             android:id="@+id/iv_panel"
             android:layout_width="0dp"
             android:layout_height="0dp"

@@ -9,6 +9,5 @@ public class Intermediary {
     public MXFaceInfoEx mxFaceInfoEx;
     public byte[] data;
     public byte[] liveness;
-    public float temperature;
 
 }

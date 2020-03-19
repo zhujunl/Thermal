@@ -46,6 +46,6 @@ public class XhGpioStrategy implements GpioManager.GpioStrategy {
     }
 
     public void setGpio(int gpio, int value) {
-        xhApiManager.XHSetGpioValue(0, 0);
+        xhApiManager.XHSetGpioValue(gpio, value);
     }
 }

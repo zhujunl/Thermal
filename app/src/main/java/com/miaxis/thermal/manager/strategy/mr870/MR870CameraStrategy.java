@@ -88,6 +88,11 @@ public class MR870CameraStrategy implements CameraManager.CameraStrategy {
         return config.isFaceCamera() ? 270 : 90;
     }
 
+    @Override
+    public boolean faceRectFlip() {
+        return false;
+    }
+
     private void resetRetryTime() {
         this.retryTime = 0;
     }

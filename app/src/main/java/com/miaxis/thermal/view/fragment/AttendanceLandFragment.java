@@ -93,6 +93,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        binding.tvCamera.setDrawingCacheEnabled(false);
         CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);

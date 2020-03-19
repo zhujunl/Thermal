@@ -11,26 +11,24 @@ public class MXFaceInfoEx {
 	public int height;   // 人脸高
 
 	//face_point关键点
-	public int keypt_num;						            // 关键点个数                               // 关键点得分
+	public int keypt_num;						            // 关键点个数
 	public int[] keypt_x = new int[MAX_KEY_POINT_NUM];      // 关键点x坐标
 	public int[] keypt_y = new int[MAX_KEY_POINT_NUM];      // 关键点y坐标
 
 	// 人脸属性
 	public int age;       	//年龄
 	public int gender;    	//性别
-	public int expression; //表情
+	public int expression;  //表情
 
 	//人脸质量分
 	public int quality;     // 总分，0~100之间，越大则人脸质量越好.
 
-	//20180925 add by chengs
 	public int eyeDistance; 	// 瞳距
-	public int liveness; 		// 活体
+	public int liveness; 		// 活体，0~100之间
 	public int detected;		// 1: 检测到的人脸,.0：跟踪到的人脸
 	// 注： 跟踪到的仅ID和人脸框数据有效
 	public int trackId;			// 人脸ID（ID<0表示没有进入跟踪）
 
-	//20181120 add by chengs
 	public int idmax;              //获取交并比最大的人脸下标
 	public int reCog;              //判断该人脸是否被识别-识别标识
 	public int reCogId;
@@ -92,7 +90,6 @@ public class MXFaceInfoEx {
 				pMXFaceInfoEx[i].keypt_x[j + 5] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5];
 				pMXFaceInfoEx[i].keypt_y[j + 5] = iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5 + MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			}
-
 			pMXFaceInfoEx[i].age = iFaceInfo[i* MXFaceInfoEx.SIZE + 5 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM];
 			pMXFaceInfoEx[i].gender = iFaceInfo[i* MXFaceInfoEx.SIZE + 6 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM] ;
 			pMXFaceInfoEx[i].expression = iFaceInfo[i* MXFaceInfoEx.SIZE + 7 + 2* MXFaceInfoEx.MAX_KEY_POINT_NUM] ;
@@ -129,7 +126,6 @@ public class MXFaceInfoEx {
 				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5] = pMXFaceInfoEx[i].keypt_x[j+5];
 				iFaceInfo[i * MXFaceInfoEx.SIZE + 5 + j+5 + MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].keypt_y[j+5];
 			}
-
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 5 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].age;
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 6 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].gender;
 			iFaceInfo[i * MXFaceInfoEx.SIZE+ 7 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].expression;
@@ -147,6 +143,42 @@ public class MXFaceInfoEx {
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 19 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].pitch;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 20 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].yaw;
 			iFaceInfo[i * MXFaceInfoEx.SIZE + 21 + 2 * MXFaceInfoEx.MAX_KEY_POINT_NUM] = pMXFaceInfoEx[i].roll;
+		}
+		return 0;
+	}
+
+	public static int Copy(int iFaceNum, MXFaceInfoEx[] pMXFaceInfoEx, MXFaceInfoEx[] pMXFaceInfoExDst) {
+		for (int i = 0; i < iFaceNum; i++) {
+			pMXFaceInfoExDst[i].x     = pMXFaceInfoEx[i].x;
+			pMXFaceInfoExDst[i].y = pMXFaceInfoEx[i].y;
+			pMXFaceInfoExDst[i].width  = pMXFaceInfoEx[i].width;
+			pMXFaceInfoExDst[i].height = pMXFaceInfoEx[i].height;
+			pMXFaceInfoExDst[i].keypt_num = pMXFaceInfoEx[i].keypt_num;
+			for (int j = 0; j < pMXFaceInfoEx[i].keypt_num; j++) {
+				pMXFaceInfoExDst[i].keypt_x[j] = pMXFaceInfoEx[i].keypt_x[j];
+				pMXFaceInfoExDst[i].keypt_y[j] = pMXFaceInfoEx[i].keypt_y[j];
+			}
+			for (int j = 0; j < 2; j++) {
+				pMXFaceInfoExDst[i].keypt_x[j+5] = pMXFaceInfoEx[i].keypt_x[j+5];
+				pMXFaceInfoExDst[i].keypt_y[j+5] = pMXFaceInfoEx[i].keypt_y[j+5];
+			}
+			pMXFaceInfoExDst[i].age = pMXFaceInfoEx[i].age;
+			pMXFaceInfoExDst[i].gender = pMXFaceInfoEx[i].gender;
+			pMXFaceInfoExDst[i].expression = pMXFaceInfoEx[i].expression;
+			pMXFaceInfoExDst[i].quality = pMXFaceInfoEx[i].quality;
+			pMXFaceInfoExDst[i].eyeDistance = pMXFaceInfoEx[i].eyeDistance;
+			pMXFaceInfoExDst[i].liveness = pMXFaceInfoEx[i].liveness;
+			pMXFaceInfoExDst[i].detected = pMXFaceInfoEx[i].detected;
+			pMXFaceInfoExDst[i].trackId = pMXFaceInfoEx[i].trackId;
+			pMXFaceInfoExDst[i].idmax = pMXFaceInfoEx[i].idmax;
+			pMXFaceInfoExDst[i].reCog = pMXFaceInfoEx[i].reCog;
+			pMXFaceInfoExDst[i].reCogId = pMXFaceInfoEx[i].reCogId;
+			pMXFaceInfoExDst[i].reCogScore = pMXFaceInfoEx[i].reCogScore;
+			pMXFaceInfoExDst[i].mask = pMXFaceInfoEx[i].mask;
+			pMXFaceInfoExDst[i].stranger = pMXFaceInfoEx[i].stranger;
+			pMXFaceInfoExDst[i].pitch = pMXFaceInfoEx[i].pitch;
+			pMXFaceInfoExDst[i].yaw = pMXFaceInfoEx[i].yaw;
+			pMXFaceInfoExDst[i].roll = pMXFaceInfoEx[i].roll;
 		}
 		return 0;
 	}

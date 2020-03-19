@@ -28,7 +28,7 @@ public class FileUtil {
     private static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "miaxis";
     public static final String MAIN_PATH = PATH + File.separator + "thermal";
     public static final String LICENCE_PATH = PATH + File.separator + "FaceId_ST" + File.separator + "st_lic.txt";
-    public static final String MODEL_PATH = MAIN_PATH + File.separator + "zzFaceModel";
+//    public static final String MODEL_PATH = MAIN_PATH + File.separator + "zzFaceModel";
     public static final String ADVERTISE = MAIN_PATH + File.separator + "advertise";
     public static final String FACE_IMAGE_PATH = MAIN_PATH + File.separator + "recordImage";
     public static final String FACE_STOREHOUSE_PATH = MAIN_PATH + File.separator + "faceStorehouse";
@@ -42,10 +42,10 @@ public class FileUtil {
         if (!path.exists()) {
             path.mkdirs();
         }
-        path = new File(FileUtil.MODEL_PATH);
-        if (!path.exists()) {
-            path.mkdirs();
-        }
+//        path = new File(FileUtil.MODEL_PATH);
+//        if (!path.exists()) {
+//            path.mkdirs();
+//        }
         path = new File(FileUtil.ADVERTISE);
         if (!path.exists()) {
             path.mkdirs();

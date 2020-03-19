@@ -65,7 +65,7 @@ public class HeartBeatManager {
     }
 
     public void heartBeatLimitBurst() {
-        if (!activeBurstLimit || !updating) {
+        if (!activeBurstLimit && !updating) {
             activeBurstLimit = true;
             getPersonData();
             long cold = ConfigManager.getInstance().getConfig().getFailedQueryCold() * 1000;

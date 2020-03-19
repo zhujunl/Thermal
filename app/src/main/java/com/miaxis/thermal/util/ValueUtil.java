@@ -14,7 +14,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.ZH;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P;
 
     public static final Gson GSON = new Gson();
 
@@ -26,7 +26,7 @@ public class ValueUtil {
     public static final boolean DEFAULT_CAMERA_SHOW = false; //true:近红外，false:可见光
     public static final boolean DEFAULT_CAMERA_FACE = false; //true:近红外，false:可见光
     public static final boolean DEFAULT_LIVENESS = false;
-    public static final int DEFAULT_QUALITY_SCORE = 35;
+    public static final int DEFAULT_QUALITY_SCORE = 25;
     public static final int DEFAULT_REGISTER_QUALITY_SCORE = 70;
     public static final int DEFAULT_MASK_SCORE = 40;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
@@ -35,7 +35,7 @@ public class ValueUtil {
     public static final int DEFAULT_PUPIL_DISTANCE = 80;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
-    public static final int DEFAULT_FAILED_QUERY_COLD = 5;
+    public static final int DEFAULT_FAILED_QUERY_COLD = 10;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 10000;
     public static final int DEFAULT_VERIFY_COLD = 3;
     public static final int DEFAULT_FLASH_TIME = 5;

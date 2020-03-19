@@ -125,7 +125,18 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private FaceManager.OnFaceHandleListener faceHandleListener = new FaceManager.OnFaceHandleListener() {
         @Override
-        public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature,  byte[] feature, boolean mask) {
+        public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx,  byte[] feature, boolean mask) {
+            hint.set("检测到人脸");
+            float temperature = TemperatureManager.getInstance().readTemperature();
+            if (!lock) {
+                if (temperature == 0f) {
+                    AttendanceViewModel.this.temperature.set("");
+                } else {
+                    AttendanceViewModel.this.temperature.set(temperature + "°C");
+                }
+            }
+            Log.e("asd", "温度" + temperature);
+            if (temperature < 36.0f) return;
             if (cardMode) {
                 onCardVerify(mxRGBImage, mxFaceInfoEx, temperature, feature);
             } else {
@@ -153,18 +164,11 @@ public class AttendanceViewModel extends BaseViewModel {
         }
 
         @Override
-        public void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes, float temperature) {
+        public void onFaceDetect(int faceNum, MXFaceInfoEx[] faceInfoExes) {
             faceDraw.postValue(new FaceDraw(faceNum, faceInfoExes));
             if (!lock && faceNum == 0) {
                 hint.set("");
             }
-//            if (!lock) {
-//                if (temperature == 0f) {
-//                    AttendanceViewModel.this.temperature.set("");
-//                } else {
-//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-//                }
-//            }
         }
 
         @Override
@@ -213,7 +217,6 @@ public class AttendanceViewModel extends BaseViewModel {
         this.temperature.set(temperature + "°C");
         TTSManager.getInstance().playVoiceMessageFlush("体温异常");
         showHeader(mxRGBImage, mxFaceInfoEx);
-        HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
     }
 

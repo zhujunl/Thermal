@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870CameraStrategy;
+import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhCameraStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhCameraStrategy;
 import com.miaxis.thermal.util.ValueUtil;
@@ -45,6 +46,8 @@ public class CameraManager {
             cameraStrategy = new MR870CameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             cameraStrategy = new ZhCameraStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+            cameraStrategy = new TpsCameraStrategy();
         }
     }
 
@@ -88,6 +91,13 @@ public class CameraManager {
         return 0;
     }
 
+    public boolean faceRectFlip() {
+        if (cameraStrategy != null) {
+            return cameraStrategy.faceRectFlip();
+        }
+        return false;
+    }
+
     public interface CameraStrategy {
         void openCamera(@NonNull TextureView textureView, OnCameraOpenListener listener);
         void closeCamera();
@@ -95,6 +105,7 @@ public class CameraManager {
         Size getCameraPreviewSize();
         Size getPreviewSize();
         int getOrientation();
+        boolean faceRectFlip();
     }
 
     public interface OnCameraOpenListener {
