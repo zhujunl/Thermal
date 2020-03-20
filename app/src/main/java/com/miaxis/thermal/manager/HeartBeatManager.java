@@ -79,8 +79,8 @@ public class HeartBeatManager {
     }
 
     private void getPersonData() {
-        handler.removeMessages(MSG_TIME_DELAY_BURST);
         if (updating) return;
+        handler.removeMessages(MSG_TIME_DELAY_BURST);
         Observable.create((ObservableOnSubscribe<List<Person>>) emitter -> {
             updating = true;
             List<Person> personList = PersonRepository.getInstance().downloadPerson();
@@ -101,6 +101,7 @@ public class HeartBeatManager {
                     Log.e("asd", "更新人员：" + personList.size() + "个");
                     PersonManager.getInstance().loadPersonDataFromCache();
                     if (personList.size() == ValueUtil.PAGE_SIZE) {
+                        updating = false;
                         getPersonData();
                     } else {
                         prepareForNextHeartBeat();

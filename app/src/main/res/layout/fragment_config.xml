@@ -556,13 +556,28 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸瞳距阈值" />
+                        android:text="人脸瞳距范围" />
 
                     <View style="@style/VerticalLine" />
 
                     <EditText
-                        android:id="@+id/et_pupil_distance"
+                        android:id="@+id/et_pupil_distance_min"
                         style="@style/SettingBody"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:digits="0123456789"
+                        android:hint="1 - 200"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_pupil_distance_max"
+                        style="@style/SettingBody"
+                        android:layout_weight="1"
                         android:background="@color/white"
                         android:digits="0123456789"
                         android:hint="1 - 200"

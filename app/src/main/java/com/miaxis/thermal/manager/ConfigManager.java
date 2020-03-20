@@ -63,7 +63,6 @@ public class ConfigManager {
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .maskVerifyScore(ValueUtil.DEFAULT_MASK_VERIFY_SCORE)
                     .livenessScore(ValueUtil.DEFAULT_LIVENESS_SCORE)
-                    .pupilDistance(ValueUtil.DEFAULT_PUPIL_DISTANCE)
                     .feverScore(ValueUtil.DEFAULT_FEVER_SCORE)
                     .heartBeatInterval(ValueUtil.DEFAULT_HEART_BEAT_INTERVAL)
                     .failedQueryCold(ValueUtil.DEFAULT_FAILED_QUERY_COLD)
@@ -79,9 +78,13 @@ public class ConfigManager {
                 config.setMac(DeviceUtil.getMacFromHardware());
             }
             if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
-                config.setPupilDistance(80);
-            } else {
-                config.setPupilDistance(67);
+                config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL);
+                config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
+            }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                    || ValueUtil.DEFAULT_SIGN == Sign.ZH
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+                config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL);
+                config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL);
             }
             ConfigModel.saveConfig(config);
         }

@@ -56,11 +56,9 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
         binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
                 mListener.replaceFragment(AttendanceLandFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
-                mListener.replaceFragment(AttendanceFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
-                mListener.replaceFragment(AttendanceFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                    || ValueUtil.DEFAULT_SIGN == Sign.ZH
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
                 mListener.replaceFragment(AttendanceFragment.newInstance());
             }
         }));

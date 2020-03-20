@@ -23,7 +23,8 @@ public class Config {
     private float maskVerifyScore;
     private int maskScore;
     private int livenessScore;
-    private int pupilDistance;
+    private int pupilDistanceMin;
+    private int pupilDistanceMax;
     private float feverScore;
     private int heartBeatInterval;
     private int failedQueryCold;
@@ -53,7 +54,8 @@ public class Config {
         setMaskVerifyScore(builder.maskVerifyScore);
         setMaskScore(builder.maskScore);
         setLivenessScore(builder.livenessScore);
-        setPupilDistance(builder.pupilDistance);
+        setPupilDistanceMin(builder.pupilDistanceMin);
+        setPupilDistanceMax(builder.pupilDistanceMax);
         setFeverScore(builder.feverScore);
         setHeartBeatInterval(builder.heartBeatInterval);
         setFailedQueryCold(builder.failedQueryCold);
@@ -192,12 +194,20 @@ public class Config {
         this.livenessScore = livenessScore;
     }
 
-    public int getPupilDistance() {
-        return pupilDistance;
+    public int getPupilDistanceMin() {
+        return pupilDistanceMin;
     }
 
-    public void setPupilDistance(int pupilDistance) {
-        this.pupilDistance = pupilDistance;
+    public void setPupilDistanceMin(int pupilDistanceMin) {
+        this.pupilDistanceMin = pupilDistanceMin;
+    }
+
+    public int getPupilDistanceMax() {
+        return pupilDistanceMax;
+    }
+
+    public void setPupilDistanceMax(int pupilDistanceMax) {
+        this.pupilDistanceMax = pupilDistanceMax;
     }
 
     public float getFeverScore() {
@@ -281,7 +291,8 @@ public class Config {
         private float maskVerifyScore;
         private int maskScore;
         private int livenessScore;
-        private int pupilDistance;
+        private int pupilDistanceMin;
+        private int pupilDistanceMax;
         private float feverScore;
         private int heartBeatInterval;
         private int failedQueryCold;
@@ -374,8 +385,13 @@ public class Config {
             return this;
         }
 
-        public Builder pupilDistance(int val) {
-            pupilDistance = val;
+        public Builder pupilDistanceMin(int val) {
+            pupilDistanceMin = val;
+            return this;
+        }
+
+        public Builder pupilDistanceMax(int val) {
+            pupilDistanceMax = val;
             return this;
         }
 

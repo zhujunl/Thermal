@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -141,18 +142,20 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     };
 
     private Observer<Boolean> feverObserver = fever -> {
-//        if (fever) {
-//            binding.ivPanel.setImageResource(R.drawable.line_board_red);
-//            binding.clRoot.setBackgroundResource(R.drawable.background_land_red);
-//            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
-//            feverCache = true;
-//        } else if (feverCache) {
-//            Log.e("asd", "No fever~~~~~~~~~~~~````");
-//            binding.ivPanel.setImageResource(R.drawable.line_board);
-//            binding.clRoot.setBackgroundResource(R.drawable.background_land);
-//            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
-//            feverCache = false;
-//        }
+        if (fever) {
+            binding.ivPanel.setImageResource(R.drawable.background_vertical_bottom_red);
+            binding.ivTitle.setImageResource(R.drawable.background_vertical_title_red);
+            binding.ivFaceBox.setBackgroundResource(R.drawable.face_box_red);
+            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
+            feverCache = true;
+        } else if (feverCache) {
+            Log.e("asd", "No fever~~~~~~~~~~~~````");
+            binding.ivPanel.setImageResource(R.drawable.background_vertical_bottom);
+            binding.ivTitle.setImageResource(R.drawable.background_vertical_title);
+            binding.ivFaceBox.setBackgroundResource(R.drawable.face_box);
+            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
+            feverCache = false;
+        }
     };
 
     private Observer<Boolean> initCardObserver = aBoolean -> {

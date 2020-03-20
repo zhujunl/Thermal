@@ -207,64 +207,67 @@ public class FaceManager {
     private void extract(Intermediary intermediary) {
         try {
             if (needNextFeature) {
-                if (intermediary.mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
-                    if (calculationPupilDistance(intermediary.mxFaceInfoEx) > ConfigManager.getInstance().getConfig().getPupilDistance()) {
-                        boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                        if (result) {
-                            boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
-                            byte[] feature = null;
-                            if (intermediary.liveness == null) {
-                                if (mask) {
-                                    feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                                } else {
-                                    feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                                }
-                            } else {
-                                Config config = ConfigManager.getInstance().getConfig();
-                                boolean liveness;
-                                if (config.isFaceCamera()) {
-                                    liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
-                                } else {
-                                    liveness = livenessDetect(intermediary.liveness, true, null);
-                                }
-                                if (liveness) {
+                Config config = ConfigManager.getInstance().getConfig();
+                if (intermediary.mxFaceInfoEx.quality > config.getQualityScore()) {
+                    double pupilDistance = calculationPupilDistance(intermediary.mxFaceInfoEx);
+                    if (pupilDistance >= config.getPupilDistanceMin()) {
+                        if (pupilDistance <= config.getPupilDistanceMax()) {
+                            boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                            if (result) {
+                                boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
+                                byte[] feature = null;
+                                if (intermediary.liveness == null) {
                                     if (mask) {
                                         feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     } else {
                                         feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
                                     }
                                 } else {
-                                    if (faceHandleListener != null) {
-                                        faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
+                                    boolean liveness;
+                                    if (config.isFaceCamera()) {
+                                        liveness = livenessDetect(intermediary.data, false, intermediary.mxFaceInfoEx);
+                                    } else {
+                                        liveness = livenessDetect(intermediary.liveness, true, null);
+                                    }
+                                    if (liveness) {
+                                        if (mask) {
+                                            feature = extractMaskFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                                        } else {
+                                            feature = extractFeature(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+                                        }
+                                    } else {
+                                        if (faceHandleListener != null) {
+                                            faceHandleListener.onFaceIntercept(-4, "活体阈值拦截");
+                                        }
                                     }
                                 }
-                            }
-                            if (feature != null) {
-                                needNextFeature = false;
-                                if (faceHandleListener != null) {
-                                    faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, zoomWidth, zoomHeight),
-                                            intermediary.mxFaceInfoEx,
-                                            feature,
-                                            mask);
+                                if (feature != null) {
+                                    needNextFeature = false;
+                                    if (faceHandleListener != null) {
+                                        faceHandleListener.onFeatureExtract(new MxRGBImage(intermediary.data, zoomWidth, zoomHeight),
+                                                intermediary.mxFaceInfoEx,
+                                                feature,
+                                                mask);
+                                    }
                                 }
+                            } else {
+                                //是否戴口罩检测失败，直接丢弃
+                                Log.e("asd", "检测是否戴口罩失败");
                             }
                         } else {
-                            //是否戴口罩检测失败，直接丢弃
-                            Log.e("asd", "检测是否戴口罩失败");
+                            if (faceHandleListener != null) {
+                                faceHandleListener.onFaceIntercept(-6, "最大瞳距阈值拦截");
+                            }
                         }
                     } else {
                         if (faceHandleListener != null) {
-                            faceHandleListener.onFaceIntercept(-2, "瞳距阈值拦截");
+                            faceHandleListener.onFaceIntercept(-2, "最小瞳距阈值拦截");
                         }
                     }
                 } else {
                     if (faceHandleListener != null) {
                         faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
                     }
-                }
-            } else {
-                if (faceHandleListener != null) {
-                    faceHandleListener.onFaceIntercept(-5, "温度阈值拦截");
                 }
             }
         } catch (Exception e) {
@@ -841,7 +844,6 @@ public class FaceManager {
         return maxMXFaceInfoEx;
     }
 
-    //TODO:瞳距计算好像哪里不太对
     private static double calculationPupilDistance(MXFaceInfoEx mxFaceInfoEx) {
         int a = mxFaceInfoEx.keypt_x[1] - mxFaceInfoEx.keypt_x[0];
         int b = mxFaceInfoEx.keypt_y[1] - mxFaceInfoEx.keypt_y[0];

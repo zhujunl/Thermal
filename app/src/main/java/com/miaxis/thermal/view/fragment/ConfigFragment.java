@@ -84,7 +84,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etMaskVerifyScore.setText(String.valueOf(config.getMaskVerifyScore()));
         binding.etMaskScore.setText(String.valueOf(config.getMaskScore()));
         binding.etLivenessScore.setText(String.valueOf(config.getLivenessScore()));
-        binding.etPupilDistance.setText(String.valueOf(config.getPupilDistance()));
+        binding.etPupilDistanceMin.setText(String.valueOf(config.getPupilDistanceMin()));
+        binding.etPupilDistanceMax.setText(String.valueOf(config.getPupilDistanceMax()));
         binding.etFeverScore.setText(String.valueOf(config.getFeverScore()));
         binding.etHeartBeatInterval.setText(String.valueOf(config.getHeartBeatInterval()));
         binding.etFailedQueryCold.setText(String.valueOf(config.getFailedQueryCold()));
@@ -118,68 +119,79 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etRegisterQualityScore.getText().toString())
-                            || Integer.valueOf(binding.etRegisterQualityScore.getText().toString()) < 50
-                            || Integer.valueOf(binding.etRegisterQualityScore.getText().toString()) > 100) {
+                            || Integer.parseInt(binding.etRegisterQualityScore.getText().toString()) < 50
+                            || Integer.parseInt(binding.etRegisterQualityScore.getText().toString()) > 100) {
                         ToastManager.toast("注册质量阈值范围 50 - 100", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etQualityScore.getText().toString())
-                            || Integer.valueOf(binding.etQualityScore.getText().toString()) < 20
-                            || Integer.valueOf(binding.etQualityScore.getText().toString()) > 100) {
+                            || Integer.parseInt(binding.etQualityScore.getText().toString()) < 20
+                            || Integer.parseInt(binding.etQualityScore.getText().toString()) > 100) {
                         ToastManager.toast("质量阈值范围 20 - 100", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etVerifyScore.getText().toString())
-                            || Float.valueOf(binding.etVerifyScore.getText().toString()) < 0.7f
-                            || Float.valueOf(binding.etVerifyScore.getText().toString()) > 1.0f) {
+                            || Float.parseFloat(binding.etVerifyScore.getText().toString()) < 0.7f
+                            || Float.parseFloat(binding.etVerifyScore.getText().toString()) > 1.0f) {
                         ToastManager.toast("人脸比对阈值范围 0.7 - 1.0", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etMaskVerifyScore.getText().toString())
-                            || Float.valueOf(binding.etMaskVerifyScore.getText().toString()) < 0.65f
-                            || Float.valueOf(binding.etMaskVerifyScore.getText().toString()) > 1.0f) {
+                            || Float.parseFloat(binding.etMaskVerifyScore.getText().toString()) < 0.65f
+                            || Float.parseFloat(binding.etMaskVerifyScore.getText().toString()) > 1.0f) {
                         ToastManager.toast("戴口罩人脸比对阈值范围 0.65 - 1.0", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etMaskScore.getText().toString())
-                            || Integer.valueOf(binding.etRegisterQualityScore.getText().toString()) < 20
-                            || Integer.valueOf(binding.etMaskScore.getText().toString()) > 100) {
+                            || Integer.parseInt(binding.etRegisterQualityScore.getText().toString()) < 20
+                            || Integer.parseInt(binding.etMaskScore.getText().toString()) > 100) {
                         ToastManager.toast("口罩检测阈值范围 20 - 100", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etHeartBeatInterval.getText().toString())
-                            || Integer.valueOf(binding.etHeartBeatInterval.getText().toString()) < 60
-                            || Integer.valueOf(binding.etHeartBeatInterval.getText().toString()) > 6000) {
+                            || Integer.parseInt(binding.etHeartBeatInterval.getText().toString()) < 60
+                            || Integer.parseInt(binding.etHeartBeatInterval.getText().toString()) > 6000) {
                         ToastManager.toast("心跳间隔时间 60 - 6000 秒", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etFailedQueryCold.getText().toString())
-                            || Integer.valueOf(binding.etFailedQueryCold.getText().toString()) < 5
-                            || Integer.valueOf(binding.etFailedQueryCold.getText().toString()) > 120) {
+                            || Integer.parseInt(binding.etFailedQueryCold.getText().toString()) < 5
+                            || Integer.parseInt(binding.etFailedQueryCold.getText().toString()) > 120) {
                         ToastManager.toast("失败重查冷却 5 - 120 秒", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etVerifyCold.getText().toString())
-                            || Integer.valueOf(binding.etVerifyCold.getText().toString()) < 1
-                            || Integer.valueOf(binding.etVerifyCold.getText().toString()) > 5) {
+                            || Integer.parseInt(binding.etVerifyCold.getText().toString()) < 1
+                            || Integer.parseInt(binding.etVerifyCold.getText().toString()) > 5) {
                         ToastManager.toast("成功验证冷却 2 - 5 秒", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etRecordClearThreshold.getText().toString())
-                            || Integer.valueOf(binding.etRecordClearThreshold.getText().toString()) < 2000
-                            || Integer.valueOf(binding.etRecordClearThreshold.getText().toString()) > 20000) {
+                            || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) < 2000
+                            || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) > 20000) {
                         ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;
                     }
-                    if (TextUtils.isEmpty(binding.etPupilDistance.getText().toString())
-                            || Integer.valueOf(binding.etPupilDistance.getText().toString()) < 1
-                            || Integer.valueOf(binding.etPupilDistance.getText().toString()) > 200) {
-                        ToastManager.toast("瞳距阈值范围 1 - 200", ToastManager.INFO);
+                    if (TextUtils.isEmpty(binding.etPupilDistanceMin.getText().toString())
+                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) < 1
+                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) > 200) {
+                        ToastManager.toast("瞳距最小值阈值范围 1 - 200", ToastManager.INFO);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(binding.etPupilDistanceMax.getText().toString())
+                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) < 1
+                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) > 200) {
+                        ToastManager.toast("瞳距最大值阈值范围 1 - 200", ToastManager.INFO);
+                        return;
+                    }
+                    if (Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) >=
+                            Integer.parseInt(binding.etPupilDistanceMax.getText().toString())) {
+                        ToastManager.toast("瞳距最小值不应小于瞳距最大值", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etLivenessScore.getText().toString())
-                            || Integer.valueOf(binding.etLivenessScore.getText().toString()) < 60
-                            || Integer.valueOf(binding.etLivenessScore.getText().toString()) > 99) {
+                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) < 60
+                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) > 99) {
                         ToastManager.toast("活检阈值范围 60 - 99", ToastManager.INFO);
                         return;
                     }
@@ -197,19 +209,20 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setShowCamera(binding.rbInfraredShow.isChecked());
                     config.setFaceCamera(binding.rbInfraredFace.isChecked());
                     config.setLiveness(binding.rbLivenessOpen.isChecked());
-                    config.setRegisterQualityScore(Integer.valueOf(binding.etRegisterQualityScore.getText().toString()));
-                    config.setQualityScore(Integer.valueOf(binding.etQualityScore.getText().toString()));
-                    config.setVerifyScore(Float.valueOf(binding.etVerifyScore.getText().toString()));
-                    config.setMaskVerifyScore(Float.valueOf(binding.etMaskVerifyScore.getText().toString()));
-                    config.setMaskScore(Integer.valueOf(binding.etMaskScore.getText().toString()));
-                    config.setLivenessScore(Integer.valueOf(binding.etLivenessScore.getText().toString()));
-                    config.setPupilDistance(Integer.valueOf(binding.etPupilDistance.getText().toString()));
-                    config.setFeverScore(Float.valueOf(binding.etFeverScore.getText().toString()));
-                    config.setHeartBeatInterval(Integer.valueOf(binding.etHeartBeatInterval.getText().toString()));
-                    config.setFailedQueryCold(Integer.valueOf(binding.etFailedQueryCold.getText().toString()));
-                    config.setRecordClearThreshold(Integer.valueOf(binding.etRecordClearThreshold.getText().toString()));
-                    config.setVerifyCold(Integer.valueOf(binding.etVerifyCold.getText().toString()));
-                    config.setFlashTime(Integer.valueOf(binding.etFlashTime.getText().toString()));
+                    config.setRegisterQualityScore(Integer.parseInt(binding.etRegisterQualityScore.getText().toString()));
+                    config.setQualityScore(Integer.parseInt(binding.etQualityScore.getText().toString()));
+                    config.setVerifyScore(Float.parseFloat(binding.etVerifyScore.getText().toString()));
+                    config.setMaskVerifyScore(Float.parseFloat(binding.etMaskVerifyScore.getText().toString()));
+                    config.setMaskScore(Integer.parseInt(binding.etMaskScore.getText().toString()));
+                    config.setLivenessScore(Integer.parseInt(binding.etLivenessScore.getText().toString()));
+                    config.setPupilDistanceMin(Integer.parseInt(binding.etPupilDistanceMin.getText().toString()));
+                    config.setPupilDistanceMax(Integer.parseInt(binding.etPupilDistanceMax.getText().toString()));
+                    config.setFeverScore(Float.parseFloat(binding.etFeverScore.getText().toString()));
+                    config.setHeartBeatInterval(Integer.parseInt(binding.etHeartBeatInterval.getText().toString()));
+                    config.setFailedQueryCold(Integer.parseInt(binding.etFailedQueryCold.getText().toString()));
+                    config.setRecordClearThreshold(Integer.parseInt(binding.etRecordClearThreshold.getText().toString()));
+                    config.setVerifyCold(Integer.parseInt(binding.etVerifyCold.getText().toString()));
+                    config.setFlashTime(Integer.parseInt(binding.etFlashTime.getText().toString()));
                     config.setDevicePassword(binding.etDevicePassword.getText().toString());
                     viewModel.saveConfig(config);
                 }

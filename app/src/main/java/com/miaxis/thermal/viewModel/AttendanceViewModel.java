@@ -126,17 +126,21 @@ public class AttendanceViewModel extends BaseViewModel {
     private FaceManager.OnFaceHandleListener faceHandleListener = new FaceManager.OnFaceHandleListener() {
         @Override
         public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx,  byte[] feature, boolean mask) {
-            hint.set("检测到人脸");
+            hint.set("测量温度中");
             float temperature = TemperatureManager.getInstance().readTemperature();
-            if (!lock) {
-                if (temperature == 0f) {
-                    AttendanceViewModel.this.temperature.set("");
-                } else {
-                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-                }
-            }
+//            if (!lock) {
+//                if (temperature == 0f) {
+//                    AttendanceViewModel.this.temperature.set("");
+//                } else {
+//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
+//                }
+//            }
             Log.e("asd", "温度" + temperature);
-            if (temperature < 36.0f) return;
+            if (temperature < 36.0f) {
+                hint.set("");
+                FaceManager.getInstance().setNeedNextFeature(true);
+                return;
+            }
             if (cardMode) {
                 onCardVerify(mxRGBImage, mxFaceInfoEx, temperature, feature);
             } else {
@@ -182,11 +186,11 @@ public class AttendanceViewModel extends BaseViewModel {
                     case -2:
                         hint.set("请靠近屏幕");
                         break;
+                    case -6:
+                        hint.set("请远离屏幕");
+                        break;
                     case -4:
                         hint.set("活体检测失败");
-                        break;
-                    case -5:
-                        hint.set("检测到人脸");
                         break;
                 }
             }
@@ -227,7 +231,7 @@ public class AttendanceViewModel extends BaseViewModel {
     }
 
     private void personMatchFailed() {
-        hint.set("检测到人脸");
+        hint.set("未找到人员");
         FaceManager.getInstance().setNeedNextFeature(true);
         HeartBeatManager.getInstance().heartBeatLimitBurst();
     }

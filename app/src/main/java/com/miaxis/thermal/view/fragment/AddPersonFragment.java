@@ -107,11 +107,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
                 mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
-                mListener.replaceFragment(FaceRegisterFragment.newInstance());
-            }  else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
-                mListener.replaceFragment(FaceRegisterFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+            }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                    || ValueUtil.DEFAULT_SIGN == Sign.ZH
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
                 mListener.replaceFragment(FaceRegisterFragment.newInstance());
             }
         }));

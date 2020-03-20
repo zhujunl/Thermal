@@ -3,6 +3,7 @@ package com.miaxis.thermal.manager;
 import android.app.Application;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 
 import com.miaxis.thermal.data.entity.Config;
@@ -82,16 +83,48 @@ public class GpioManager {
      * ================================================================
      **/
 
+    private static final int WHITE_LED = 0;
+    private static final int GREEN_LED = 1;
+    private static final int RED_LED = 2;
+    private static final int CLOSE_WHITE_LED = 3;
+    private static final int CLOSE_GREEN_LED = 4;
+    private static final int CLOSE_RED_LED = 5;
+
     private static ExecutorService executorService = Executors.newFixedThreadPool(5);
     private HandlerThread handlerThread;
     private Handler handler;
 
-    private volatile boolean warning = false;
+    private volatile Boolean warning = false;
 
     public void initThread() {
         handlerThread = new HandlerThread("FLASH_LED_THREAD");
         handlerThread.start();
-        handler = new Handler(handlerThread.getLooper());
+        handler = new Handler(handlerThread.getLooper()) {
+            public void handleMessage(Message msg) {
+                if (gpioStrategy == null) return;
+                switch (msg.what) {
+                    case WHITE_LED:
+                        if (warning) return;
+                        gpioStrategy.controlWhiteLed(true);
+                        break;
+                    case GREEN_LED:
+                        gpioStrategy.controlGreenLed(true);
+                        break;
+                    case RED_LED:
+                        gpioStrategy.controlRedLed(true);
+                        break;
+                    case CLOSE_WHITE_LED:
+                        gpioStrategy.controlWhiteLed(false);
+                        break;
+                    case CLOSE_GREEN_LED:
+                        gpioStrategy.controlGreenLed(false);
+                        break;
+                    case CLOSE_RED_LED:
+                        gpioStrategy.controlRedLed(false);
+                        break;
+                }
+            }
+        };
     }
 
     public void openWhiteLedInTime() {
@@ -101,11 +134,7 @@ public class GpioManager {
             if (!config.isFaceCamera()) {
                 int delay = config.getFlashTime() * 1000;
                 handler.removeCallbacks(closeWhiteLedRunnable);
-                if (gpioStrategy != null) {
-                    gpioStrategy.controlGreenLed(false);
-                    gpioStrategy.controlRedLed(false);
-                    gpioStrategy.controlWhiteLed(true);
-                }
+                handler.sendMessage(handler.obtainMessage(WHITE_LED));
                 handler.postDelayed(closeWhiteLedRunnable, delay);
             }
         });
@@ -114,23 +143,28 @@ public class GpioManager {
     private Runnable closeWhiteLedRunnable = () -> {
         if (warning) return;
         if (gpioStrategy != null) {
-            gpioStrategy.controlWhiteLed(false);
+            handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
         }
     };
 
+    public void clearLedThread() {
+        handler.removeCallbacks(closeWhiteLedRunnable);
+    }
+
     public void openGreenLed() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P || ValueUtil.DEFAULT_SIGN == Sign.MR870) return;
+        warning = true;
         executorService.execute(() -> {
             try {
-                warning = true;
-                gpioStrategy.controlWhiteLed(false);
-                gpioStrategy.controlRedLed(false);
-                gpioStrategy.controlGreenLed(true);
+                handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
+                handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
+                handler.sendMessage(handler.obtainMessage(GREEN_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlGreenLed(false);
+                handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlGreenLed(true);
+                handler.sendMessage(handler.obtainMessage(GREEN_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlGreenLed(false);
+                handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -139,23 +173,20 @@ public class GpioManager {
         });
     }
 
-    public void clearLedThread() {
-        handler.removeCallbacks(closeWhiteLedRunnable);
-    }
-
     public void openRedLed() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P || ValueUtil.DEFAULT_SIGN == Sign.MR870) return;
+        warning = true;
         executorService.execute(() -> {
             try {
-                warning = true;
-                gpioStrategy.controlWhiteLed(false);
-                gpioStrategy.controlGreenLed(false);
-                gpioStrategy.controlRedLed(true);
+                handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
+                handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
+                handler.sendMessage(handler.obtainMessage(RED_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlRedLed(false);
+                handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlRedLed(true);
+                handler.sendMessage(handler.obtainMessage(RED_LED));
                 Thread.sleep(500);
-                gpioStrategy.controlRedLed(false);
+                handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
