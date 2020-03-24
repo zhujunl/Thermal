@@ -592,6 +592,48 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="休眠检测间隔" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_dormancy_interval"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="12345"
+                        android:hint="1 - 5秒"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="休眠延迟时间" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_dormancy_time"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="1234567890"
+                        android:hint="10 - 600秒"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="发热报警阈值" />
 
                     <View style="@style/VerticalLine" />
@@ -601,7 +643,7 @@
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789."
-                        android:hint=""
+                        android:hint="37.2"
                         android:inputType="number"
                         android:maxLength="4"
                         android:singleLine="true"

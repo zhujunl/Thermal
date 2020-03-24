@@ -22,7 +22,6 @@ import org.zz.api.MXFaceInfoEx;
 import org.zz.jni.mxImageTool;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 
 public class FaceManager {
 
@@ -75,7 +74,7 @@ public class FaceManager {
     private String errorMessage = "";
 
     private volatile boolean dormancy = false;
-    private int faceCold = 0;
+    private long lastVerifyTime = 0;
 
     public interface OnFaceHandleListener {
         void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, byte[] feature, boolean mask);
@@ -99,6 +98,7 @@ public class FaceManager {
         Size previewSize = CameraManager.getInstance().getPreviewSize();
         zoomWidth = previewSize.getWidth();
         zoomHeight = previewSize.getHeight();
+        lastVerifyTime = System.currentTimeMillis();
         asyncDetectHandler.sendEmptyMessage(0);
         asyncExtractHandler.sendEmptyMessage(0);
     }
@@ -135,11 +135,11 @@ public class FaceManager {
     private void previewDataLoop() {
         try {
             if (this.lastVisiblePreviewData != null || this.lastInfraredPreviewData != null) {
+                Config config = ConfigManager.getInstance().getConfig();
                 if (dormancy) {
                     Log.e("asd", "休眠中");
-                    Thread.sleep(2000);
+                    Thread.sleep(config.getDormancyInterval() * 1000);
                 }
-                Config config = ConfigManager.getInstance().getConfig();
                 if (config.isLiveness()) {
                     if (config.isFaceCamera() && lastInfraredPreviewData != null) {
                         verify(lastInfraredPreviewData, lastInfraredPreviewData);
@@ -162,7 +162,6 @@ public class FaceManager {
     }
 
     private void verify(byte[] detectData, byte[] livenessData) throws Exception {
-//        long time = System.currentTimeMillis();
         WatchDogManager.getInstance().feedFaceDog();
         Size cameraPreviewSize = CameraManager.getInstance().getCameraPreviewSize();
         if (cameraPreviewSize == null) {
@@ -184,7 +183,7 @@ public class FaceManager {
         MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
         boolean result = faceDetect(zoomedRgbData, zoomWidth, zoomHeight, faceNum, faceBuffer);
         if (result) {
-            faceCold = 0;
+            lastVerifyTime = System.currentTimeMillis();
             dormancy = false;
             if (dormancyListener != null) {
                 dormancyListener.onDormancy(false);
@@ -210,15 +209,11 @@ public class FaceManager {
             if (faceHandleListener != null) {
                 faceHandleListener.onFaceDetect(0, null);
             }
-            faceCold++;
-            if (faceCold >= 150) {
+            long timeDifference = System.currentTimeMillis() - lastVerifyTime;
+            if (timeDifference >= ConfigManager.getInstance().getConfig().getDormancyTime() * 1000) {
                 dormancy = true;
                 if (dormancyListener != null) {
                     dormancyListener.onDormancy(true);
-                }
-                if (faceCold > 100000) {
-                    faceCold = 10000;
-                    //防止累加和爆炸
                 }
             }
         }

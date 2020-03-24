@@ -63,6 +63,8 @@ public class ConfigManager {
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .maskVerifyScore(ValueUtil.DEFAULT_MASK_VERIFY_SCORE)
                     .livenessScore(ValueUtil.DEFAULT_LIVENESS_SCORE)
+                    .dormancyInterval(ValueUtil.DEFAULT_DORMANCY_INTERVAL)
+                    .dormancyTime(ValueUtil.DEFAULT_DORMANCY_TIME)
                     .feverScore(ValueUtil.DEFAULT_FEVER_SCORE)
                     .heartBeatInterval(ValueUtil.DEFAULT_HEART_BEAT_INTERVAL)
                     .failedQueryCold(ValueUtil.DEFAULT_FAILED_QUERY_COLD)

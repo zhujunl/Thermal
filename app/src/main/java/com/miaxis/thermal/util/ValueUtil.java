@@ -36,6 +36,8 @@ public class ValueUtil {
     public static final int DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL = 100;
     public static final int DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL = 50;
     public static final int DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL = 70;
+    public static final int DEFAULT_DORMANCY_INTERVAL = 2;
+    public static final int DEFAULT_DORMANCY_TIME = 5;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 10;

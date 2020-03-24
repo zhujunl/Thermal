@@ -25,6 +25,8 @@ public class Config {
     private int livenessScore;
     private int pupilDistanceMin;
     private int pupilDistanceMax;
+    private int dormancyInterval;
+    private int dormancyTime;
     private float feverScore;
     private int heartBeatInterval;
     private int failedQueryCold;
@@ -56,6 +58,8 @@ public class Config {
         setLivenessScore(builder.livenessScore);
         setPupilDistanceMin(builder.pupilDistanceMin);
         setPupilDistanceMax(builder.pupilDistanceMax);
+        setDormancyInterval(builder.dormancyInterval);
+        setDormancyTime(builder.dormancyTime);
         setFeverScore(builder.feverScore);
         setHeartBeatInterval(builder.heartBeatInterval);
         setFailedQueryCold(builder.failedQueryCold);
@@ -210,6 +214,22 @@ public class Config {
         this.pupilDistanceMax = pupilDistanceMax;
     }
 
+    public int getDormancyInterval() {
+        return dormancyInterval;
+    }
+
+    public void setDormancyInterval(int dormancyInterval) {
+        this.dormancyInterval = dormancyInterval;
+    }
+
+    public int getDormancyTime() {
+        return dormancyTime;
+    }
+
+    public void setDormancyTime(int dormancyTime) {
+        this.dormancyTime = dormancyTime;
+    }
+
     public float getFeverScore() {
         return feverScore;
     }
@@ -293,6 +313,8 @@ public class Config {
         private int livenessScore;
         private int pupilDistanceMin;
         private int pupilDistanceMax;
+        private int dormancyInterval;
+        private int dormancyTime;
         private float feverScore;
         private int heartBeatInterval;
         private int failedQueryCold;
@@ -392,6 +414,16 @@ public class Config {
 
         public Builder pupilDistanceMax(int val) {
             pupilDistanceMax = val;
+            return this;
+        }
+
+        public Builder dormancyInterval(int val) {
+            dormancyInterval = val;
+            return this;
+        }
+
+        public Builder dormancyTime(int val) {
+            dormancyTime = val;
             return this;
         }
 

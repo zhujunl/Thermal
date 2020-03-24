@@ -86,6 +86,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etLivenessScore.setText(String.valueOf(config.getLivenessScore()));
         binding.etPupilDistanceMin.setText(String.valueOf(config.getPupilDistanceMin()));
         binding.etPupilDistanceMax.setText(String.valueOf(config.getPupilDistanceMax()));
+        binding.etDormancyInterval.setText(String.valueOf(config.getDormancyInterval()));
+        binding.etDormancyTime.setText(String.valueOf(config.getDormancyTime()));
         binding.etFeverScore.setText(String.valueOf(config.getFeverScore()));
         binding.etHeartBeatInterval.setText(String.valueOf(config.getHeartBeatInterval()));
         binding.etFailedQueryCold.setText(String.valueOf(config.getFailedQueryCold()));
@@ -148,6 +150,41 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("口罩检测阈值范围 20 - 100", ToastManager.INFO);
                         return;
                     }
+                    if (TextUtils.isEmpty(binding.etLivenessScore.getText().toString())
+                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) < 60
+                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) > 99) {
+                        ToastManager.toast("活检阈值范围 60 - 99", ToastManager.INFO);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(binding.etPupilDistanceMin.getText().toString())
+                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) < 1
+                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) > 200) {
+                        ToastManager.toast("瞳距最小值阈值范围 1 - 200", ToastManager.INFO);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(binding.etPupilDistanceMax.getText().toString())
+                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) < 1
+                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) > 200) {
+                        ToastManager.toast("瞳距最大值阈值范围 1 - 200", ToastManager.INFO);
+                        return;
+                    }
+                    if (Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) >=
+                            Integer.parseInt(binding.etPupilDistanceMax.getText().toString())) {
+                        ToastManager.toast("瞳距最小值不应小于瞳距最大值", ToastManager.INFO);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(binding.etDormancyInterval.getText().toString())
+                            || Integer.parseInt(binding.etDormancyInterval.getText().toString()) < 1
+                            || Integer.parseInt(binding.etDormancyInterval.getText().toString()) > 5) {
+                        ToastManager.toast("休眠检测间隔范围 1 - 5 秒", ToastManager.INFO);
+                        return;
+                    }
+                    if (TextUtils.isEmpty(binding.etDormancyTime.getText().toString())
+                            || Integer.parseInt(binding.etDormancyTime.getText().toString()) < 10
+                            || Integer.parseInt(binding.etDormancyTime.getText().toString()) > 600) {
+                        ToastManager.toast("休眠延迟时间范围 10 - 600 秒", ToastManager.INFO);
+                        return;
+                    }
                     if (TextUtils.isEmpty(binding.etHeartBeatInterval.getText().toString())
                             || Integer.parseInt(binding.etHeartBeatInterval.getText().toString()) < 60
                             || Integer.parseInt(binding.etHeartBeatInterval.getText().toString()) > 6000) {
@@ -172,29 +209,6 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;
                     }
-                    if (TextUtils.isEmpty(binding.etPupilDistanceMin.getText().toString())
-                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) < 1
-                            || Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) > 200) {
-                        ToastManager.toast("瞳距最小值阈值范围 1 - 200", ToastManager.INFO);
-                        return;
-                    }
-                    if (TextUtils.isEmpty(binding.etPupilDistanceMax.getText().toString())
-                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) < 1
-                            || Integer.parseInt(binding.etPupilDistanceMax.getText().toString()) > 200) {
-                        ToastManager.toast("瞳距最大值阈值范围 1 - 200", ToastManager.INFO);
-                        return;
-                    }
-                    if (Integer.parseInt(binding.etPupilDistanceMin.getText().toString()) >=
-                            Integer.parseInt(binding.etPupilDistanceMax.getText().toString())) {
-                        ToastManager.toast("瞳距最小值不应小于瞳距最大值", ToastManager.INFO);
-                        return;
-                    }
-                    if (TextUtils.isEmpty(binding.etLivenessScore.getText().toString())
-                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) < 60
-                            || Integer.parseInt(binding.etLivenessScore.getText().toString()) > 99) {
-                        ToastManager.toast("活检阈值范围 60 - 99", ToastManager.INFO);
-                        return;
-                    }
                     if (binding.rbMix.isChecked()) {
                         config.setServerMode("0");
                     } else if (binding.rbServer.isChecked()) {
@@ -217,6 +231,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setLivenessScore(Integer.parseInt(binding.etLivenessScore.getText().toString()));
                     config.setPupilDistanceMin(Integer.parseInt(binding.etPupilDistanceMin.getText().toString()));
                     config.setPupilDistanceMax(Integer.parseInt(binding.etPupilDistanceMax.getText().toString()));
+                    config.setDormancyInterval(Integer.parseInt(binding.etDormancyInterval.getText().toString()));
+                    config.setDormancyTime(Integer.parseInt(binding.etDormancyTime.getText().toString()));
                     config.setFeverScore(Float.parseFloat(binding.etFeverScore.getText().toString()));
                     config.setHeartBeatInterval(Integer.parseInt(binding.etHeartBeatInterval.getText().toString()));
                     config.setFailedQueryCold(Integer.parseInt(binding.etFailedQueryCold.getText().toString()));
