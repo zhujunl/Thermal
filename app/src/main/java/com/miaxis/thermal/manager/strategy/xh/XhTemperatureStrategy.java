@@ -33,7 +33,6 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
             FileDescriptor fileDescriptor = serialPort.open("/dev/ttyS1", 115200, 0);
             inputStream = new FileInputStream(fileDescriptor);
             outputStream = new FileOutputStream(fileDescriptor);
-            Log.e("asd", "开启串口");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +40,6 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
 
     @Override
     public void close() {
-        Log.e("asd", "关闭串口");
         try {
             if (inputStream != null) {
                 inputStream.close();
@@ -70,7 +68,6 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
             if (size > 0) {
 //                Log.e("asd", "接收时间：" + System.currentTimeMillis());
                 float temperature = (readData[2] + 256 * readData[3]) / 100f;
-                Log.e("sad", "温度" + temperature);
                 //四舍五入
                 temperature = (float) Math.round(temperature * 10) / 10;
                 return temperature;

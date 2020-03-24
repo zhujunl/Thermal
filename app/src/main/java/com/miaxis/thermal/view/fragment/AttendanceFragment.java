@@ -43,6 +43,7 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     private static DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
     private boolean feverCache = false;
+    private boolean dormancyCache = false;
 
     public static AttendanceFragment newInstance() {
         return new AttendanceFragment();
@@ -72,6 +73,7 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         viewModel.faceDraw.observe(this, faceDrawObserver);
         viewModel.updateHeader.observe(this, headerObserver);
         viewModel.fever.observe(this, feverObserver);
+        viewModel.faceDormancy.observe(this, dormancyObserver);
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             viewModel.initCard.observe(this, initCardObserver);
         }
@@ -156,6 +158,16 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
             feverCache = false;
         }
+    };
+
+    private Observer<Boolean> dormancyObserver = dormancy -> {
+        if (dormancyCache == dormancy) return;
+        if (dormancy) {
+            binding.ivFaceSign.setVisibility(View.VISIBLE);
+        } else {
+            binding.ivFaceSign.setVisibility(View.INVISIBLE);
+        }
+        dormancyCache = dormancy;
     };
 
     private Observer<Boolean> initCardObserver = aBoolean -> {

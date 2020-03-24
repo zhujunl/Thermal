@@ -101,6 +101,7 @@ public class HeartBeatManager {
                     Log.e("asd", "更新人员：" + personList.size() + "个");
                     PersonManager.getInstance().loadPersonDataFromCache();
                     if (personList.size() == ValueUtil.PAGE_SIZE) {
+                        handler.removeMessages(MSG_TIME_DELAY_BURST);
                         updating = false;
                         getPersonData();
                     } else {

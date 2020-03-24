@@ -55,7 +55,6 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private static final int MSG_VERIFY_LOCK = 0x50;
 
-    public ObservableField<String> dateStr = new ObservableField<>();
     public ObservableField<String> date = new ObservableField<>();
     public ObservableField<String> time = new ObservableField<>();
     public ObservableField<String> week = new ObservableField<>();
@@ -64,8 +63,10 @@ public class AttendanceViewModel extends BaseViewModel {
     public ObservableField<String> temperature = new ObservableField<>();
     public ObservableField<String> countDown = new ObservableField<>();
     public MutableLiveData<FaceDraw> faceDraw = new MutableLiveData<>();
+
     public MutableLiveData<Boolean> updateHeader = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> faceDormancy = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
@@ -104,6 +105,7 @@ public class AttendanceViewModel extends BaseViewModel {
         TemperatureManager.getInstance().open();
         PersonManager.getInstance().loadPersonDataFromCache();
         FaceManager.getInstance().setFaceHandleListener(faceHandleListener);
+        FaceManager.getInstance().setDormancyListener(dormancyListener);
         FaceManager.getInstance().startLoop();
         WatchDogManager.getInstance().startFaceFeedDog();
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
@@ -116,6 +118,7 @@ public class AttendanceViewModel extends BaseViewModel {
         WatchDogManager.getInstance().stopFaceFeedDog();
         TemperatureManager.getInstance().close();
         FaceManager.getInstance().setFaceHandleListener(null);
+        FaceManager.getInstance().setDormancyListener(null);
         FaceManager.getInstance().stopLoop();
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             CardManager.getInstance().release();
@@ -278,6 +281,10 @@ public class AttendanceViewModel extends BaseViewModel {
                     Log.e("asd", "照片裁剪失败");
                 });
     }
+
+    private FaceManager.OnDormancyListener dormancyListener = dormancy -> {
+        faceDormancy.postValue(dormancy);
+    };
 
     private CardManager.OnCardReadListener cardReadListener = new CardManager.OnCardReadListener() {
         @Override

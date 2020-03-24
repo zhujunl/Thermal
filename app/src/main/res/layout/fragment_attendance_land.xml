@@ -160,6 +160,19 @@
                 app:layout_constraintStart_toEndOf="@id/tv_date"/>
 
             <ImageView
+                android:id="@+id/iv_face_sign"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_face_white"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:padding="5dp"
+                android:visibility="invisible"
+                app:layout_constraintTop_toTopOf="@id/tv_week"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_week"/>
+
+            <ImageView
                 android:id="@+id/iv_header_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

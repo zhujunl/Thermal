@@ -42,7 +42,11 @@ public class PersonAdapter extends BaseViewModelAdapter<Person, ItemPersonBindin
         holder.getBinding().tvFeatureStatus.setText(TextUtils.isEmpty(item.getFaceFeature()) ? "出错" : "就绪");
         holder.getBinding().tvRemarks.setText(TextUtils.isEmpty(item.getFaceFeature()) ? item.getRemarks() : "");
         holder.getBinding().tvType.setText(ValueUtil.getPersonTypeName(item.getType()));
-        GlideApp.with(context).load(item.getFacePicturePath()).into(holder.getBinding().ivHeader);
+        if (TextUtils.isEmpty(item.getFacePicturePath())) {
+            GlideApp.with(context).load(R.drawable.default_header).into(holder.getBinding().ivHeader);
+        } else {
+            GlideApp.with(context).load(item.getFacePicturePath()).into(holder.getBinding().ivHeader);
+        }
         holder.getBinding().ivEdit.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(holder.getBinding().ivEdit, holder.getLayoutPosition());

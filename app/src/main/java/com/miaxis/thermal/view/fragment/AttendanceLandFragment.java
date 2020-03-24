@@ -40,6 +40,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     private static DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
     private boolean feverCache = false;
+    private boolean dormancyCache = false;
 
     public  static AttendanceLandFragment newInstance() {
         return new AttendanceLandFragment();
@@ -69,6 +70,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.faceDraw.observe(this, faceDrawObserver);
         viewModel.updateHeader.observe(this, headerObserver);
         viewModel.fever.observe(this, feverObserver);
+        viewModel.faceDormancy.observe(this, dormancyObserver);
     }
 
     @Override
@@ -150,6 +152,16 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             binding.ivFaceBox.setImageResource(R.drawable.face_box);
             feverCache = false;
         }
+    };
+
+    private Observer<Boolean> dormancyObserver = dormancy -> {
+        if (dormancyCache == dormancy) return;
+        if (dormancy) {
+            binding.ivFaceSign.setVisibility(View.VISIBLE);
+        } else {
+            binding.ivFaceSign.setVisibility(View.INVISIBLE);
+        }
+        dormancyCache = dormancy;
     };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

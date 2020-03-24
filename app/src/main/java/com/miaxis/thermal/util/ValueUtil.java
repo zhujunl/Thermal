@@ -34,8 +34,8 @@ public class ValueUtil {
     public static final int DEFAULT_LIVENESS_SCORE = 80;
     public static final int DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL = 80;
     public static final int DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL = 100;
-    public static final int DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL = 60;
-    public static final int DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL = 80;
+    public static final int DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL = 50;
+    public static final int DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL = 70;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 10;

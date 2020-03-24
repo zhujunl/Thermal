@@ -164,6 +164,7 @@ public class PersonManager {
                 FileUtil.saveBitmap(bitmap, filePath);
                 person.setFacePicturePath(filePath);
             } else {
+                person.setFacePicturePath("");
                 person.setRemarks("图片下载失败");
             }
             person.setUpdateTime(new Date());
