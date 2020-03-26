@@ -13,8 +13,8 @@ import java.util.List;
 
 public class PersonModel {
 
-    public static List<Person> loadAll() {
-        return AppDatabase.getInstance().personDao().loadAll();
+    public static List<Person> loadUsability() {
+        return AppDatabase.getInstance().personDao().loadUsability();
     }
 
     public static List<Person> loadPersonByPage(int pageNum, int pageSize) {
@@ -52,6 +52,10 @@ public class PersonModel {
     public static List<Person> searchPerson(PersonSearch personSearch) {
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder("select * from Person");
+        if (!TextUtils.isEmpty(personSearch.getName())) {
+            sql.append(" where Person.name = ?");
+            args.add(personSearch.getName());
+        }
         if (!TextUtils.isEmpty(personSearch.getIdentifyNumber())) {
             sql.append(" where Person.identifyNumber = ?");
             args.add(personSearch.getIdentifyNumber());
@@ -60,9 +64,24 @@ public class PersonModel {
             sql.append(" where Person.phone = ?");
             args.add(personSearch.getPhone());
         }
-        if (personSearch.isUpload() != null) {
+        if (personSearch.getUpload() != null) {
             sql.append(" where Person.upload = ?");
-            args.add(personSearch.isUpload() ? "1" : "0");
+            args.add(personSearch.getUpload() ? "1" : "0");
+        }
+        if (personSearch.getFace() != null) {
+            if (personSearch.getFace()) {
+                sql.append(" where Person.faceFeature is not null");
+            } else {
+                sql.append(" where Person.faceFeature is null");
+            }
+        }
+        if (personSearch.getStatus() != null) {
+            sql.append(" where Person.status = ?");
+            args.add(personSearch.getStatus());
+        }
+        if (personSearch.getType() != null) {
+            sql.append(" where Person.type = ?");
+            args.add(personSearch.getType());
         }
         sql.append(" order by Person.updateTime desc limit ? offset ? * (? - 1)");
         args.add(personSearch.getPageSize());
@@ -96,6 +115,7 @@ public class PersonModel {
                             .timeStamp(cursor.getLong(cursor.getColumnIndex("timeStamp")))
                             .remarks(cursor.getString(cursor.getColumnIndex("remarks")))
                             .upload(cursor.getInt(cursor.getColumnIndex("upload")) == 1)
+                            .status(cursor.getString(cursor.getColumnIndex("status")))
                             .build();
                     personList.add(build);
                 }

@@ -34,6 +34,7 @@ public interface ThermalNet {
                                       @Part("invalidTime") String invalidTime,
                                       @Part("faceFeature") String faceFeature,
                                       @Part("maskFaceFeature") String maskFaceFeature,
+                                      @Part("status") String status,
                                       @Part MultipartBody.Part faceFile);
     @Multipart
     @POST

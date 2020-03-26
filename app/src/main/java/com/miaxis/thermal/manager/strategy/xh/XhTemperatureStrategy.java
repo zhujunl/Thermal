@@ -55,7 +55,14 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
     }
 
     @Override
-    public float readTemperature() {
+    public void readTemperature(TemperatureManager.TemperatureListener listener) {
+        if (listener != null) {
+            listener.onTemperature(readTemperatureFromSearch());
+            listener.onHeatMap(null);
+        }
+    }
+
+    public float readTemperatureFromSearch() {
         if (inputStream == null || outputStream == null) {
             return 0f;
         }

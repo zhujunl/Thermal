@@ -8,7 +8,9 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.entity.RecordSearch;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.util.DateUtil;
+import com.miaxis.thermal.util.ValueUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -48,6 +50,10 @@ public class RecordModel {
     public static List<Record> searchRecord(RecordSearch recordSearch) {
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder("select * from Record");
+        if (!TextUtils.isEmpty(recordSearch.getName())) {
+            sql.append(" where Record.name = ?");
+            args.add(recordSearch.getName());
+        }
         if (!TextUtils.isEmpty(recordSearch.getIdentifyNumber())) {
             sql.append(" where Record.identifyNumber = ?");
             args.add(recordSearch.getIdentifyNumber());
@@ -56,9 +62,9 @@ public class RecordModel {
             sql.append(" where Record.phone = ?");
             args.add(recordSearch.getPhone());
         }
-        if (recordSearch.isUpload() != null) {
+        if (recordSearch.getUpload() != null) {
             sql.append(" where Record.upload = ?");
-            args.add(recordSearch.isUpload() ? "1" : "0");
+            args.add(recordSearch.getUpload() ? "1" : "0");
         }
         if (!TextUtils.isEmpty(recordSearch.getStartTime())) {
             try {
@@ -82,9 +88,12 @@ public class RecordModel {
                 e.printStackTrace();
             }
         }
-        if (recordSearch.getMinTemperature() != null) {
-            sql.append(" where Record.temperature >= ?");
-            args.add(recordSearch.getMinTemperature());
+        if (recordSearch.getFever() != null) {
+            if (recordSearch.getFever()) {
+                sql.append(" where Record.temperature >= " + ConfigManager.getInstance().getConfig().getFeverScore());
+            } else {
+                sql.append(" where Record.temperature < " + ConfigManager.getInstance().getConfig().getFeverScore());
+            }
         }
         sql.append(" order by Record.id desc limit ? offset ? * (? - 1)");
         args.add(recordSearch.getPageSize());

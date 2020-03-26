@@ -32,6 +32,7 @@ public class ThermalApi extends BaseAPI {
                                                     String invalidTime,
                                                     String faceFeature,
                                                     String maskFaceFeature,
+                                                    String status,
                                                     File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part fileBody = MultipartBody.Part.createFormData("faceFile", file.getName(), requestBody);
@@ -45,6 +46,7 @@ public class ThermalApi extends BaseAPI {
                 invalidTime,
                 faceFeature,
                 maskFaceFeature,
+                status,
                 fileBody);
     }
 

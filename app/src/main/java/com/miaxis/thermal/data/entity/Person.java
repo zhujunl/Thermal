@@ -25,8 +25,6 @@ public class Person {
     private long timeStamp;
     private String remarks;
     private boolean upload;
-
-    @Ignore
     private String status;
 
     public Person() {

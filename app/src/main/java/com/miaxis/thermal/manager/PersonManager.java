@@ -113,7 +113,7 @@ public class PersonManager {
 
     public synchronized void loadPersonDataFromCache() {
         Observable.create((ObservableOnSubscribe<List<Person>>) emitter -> {
-            List<Person> personList = PersonRepository.getInstance().loadAll();
+            List<Person> personList = PersonRepository.getInstance().loadUsability();
             if (personList != null) {
                 emitter.onNext(personList);
             } else {
@@ -132,18 +132,6 @@ public class PersonManager {
 
     public void handlePersonHeartBeat(Person person) {
         try {
-            if (TextUtils.equals(person.getStatus(), "2")) {
-                Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
-                if (findPerson != null) {
-                    PersonRepository.getInstance().deletePerson(findPerson);
-                }
-                return;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        try {
             Bitmap bitmap = null;
             try {
                 bitmap = downloadPicture(person.getFacePicturePath());
@@ -156,7 +144,7 @@ public class PersonManager {
                     person.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
                     person.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
                 } else {
-                    person.setRemarks("图片处理失败：" + photoFaceFeature.getMessage());
+                    person.setRemarks("图片处理失败，" + photoFaceFeature.getMessage());
                 }
             }
             if (bitmap != null) {
@@ -168,6 +156,9 @@ public class PersonManager {
                 person.setRemarks("图片下载失败");
             }
             person.setUpdateTime(new Date());
+            if (TextUtils.isEmpty(person.getStatus())) {
+                person.setStatus("1");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

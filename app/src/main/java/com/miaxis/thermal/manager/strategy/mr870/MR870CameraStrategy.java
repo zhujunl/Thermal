@@ -90,7 +90,7 @@ public class MR870CameraStrategy implements CameraManager.CameraStrategy {
 
     @Override
     public boolean faceRectFlip() {
-        return false;
+        return true;
     }
 
     private void resetRetryTime() {

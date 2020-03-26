@@ -33,7 +33,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     protected void initData() {
-        GpioManager.getInstance().setStatusBar(false);
     }
 
     @Override
@@ -69,6 +68,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         replaceFragment(fragment);
         WatchDogManager.getInstance().startANRWatchDog();
         new Thread(() -> {
+//            GpioManager.getInstance().setStatusBar(false);
             HeartBeatManager.getInstance().startHeartBeat();
             PersonManager.getInstance().init();
             RecordManager.getInstance().init();

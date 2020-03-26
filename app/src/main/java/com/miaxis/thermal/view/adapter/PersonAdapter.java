@@ -38,18 +38,37 @@ public class PersonAdapter extends BaseViewModelAdapter<Person, ItemPersonBindin
     public void onBindViewHolder(@NonNull PersonAdapter.MyViewHolder holder, int position) {
         Person item = dataList.get(position);
         holder.getBinding().setItem(item);
-        holder.getBinding().tvStatus.setText(item.isUpload() ? "已同步" : "未同步");
-        holder.getBinding().tvFeatureStatus.setText(TextUtils.isEmpty(item.getFaceFeature()) ? "出错" : "就绪");
-        holder.getBinding().tvRemarks.setText(TextUtils.isEmpty(item.getFaceFeature()) ? item.getRemarks() : "");
+        holder.getBinding().tvUploadStatus.setText(item.isUpload() ? "已同步" : "未同步");
+        holder.getBinding().tvStatus.setText(TextUtils.equals(item.getStatus(), "1") ? "在库中" : "已删除");
+        holder.getBinding().tvRemarks.setText(TextUtils.isEmpty(item.getFaceFeature()) ? "人脸无法使用，原因：" + item.getRemarks() : "");
         holder.getBinding().tvType.setText(ValueUtil.getPersonTypeName(item.getType()));
         if (TextUtils.isEmpty(item.getFacePicturePath())) {
             GlideApp.with(context).load(R.drawable.default_header).into(holder.getBinding().ivHeader);
         } else {
             GlideApp.with(context).load(item.getFacePicturePath()).into(holder.getBinding().ivHeader);
         }
+        if (TextUtils.equals(item.getStatus(), "1")) {
+            holder.getBinding().ivEdit.setVisibility(View.VISIBLE);
+            holder.getBinding().ivDelete.setVisibility(View.VISIBLE);
+            holder.getBinding().ivRecover.setVisibility(View.INVISIBLE);
+        } else {
+            holder.getBinding().ivEdit.setVisibility(View.INVISIBLE);
+            holder.getBinding().ivDelete.setVisibility(View.INVISIBLE);
+            holder.getBinding().ivRecover.setVisibility(View.VISIBLE);
+        }
         holder.getBinding().ivEdit.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(holder.getBinding().ivEdit, holder.getLayoutPosition());
+            }
+        });
+        holder.getBinding().ivDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(holder.getBinding().ivDelete, holder.getLayoutPosition());
+            }
+        });
+        holder.getBinding().ivRecover.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(holder.getBinding().ivRecover, holder.getLayoutPosition());
             }
         });
     }

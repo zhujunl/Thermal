@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="face_status">
+        <item>全部</item>
+        <item>就绪</item>
+        <item>出错</item>
+    </string-array>
+
+    <string-array name="upload_status">
+        <item>全部</item>
+        <item>已上传</item>
+        <item>未上传</item>
+    </string-array>
+
+    <string-array name="person_status">
+        <item>全部</item>
+        <item>在库中</item>
+        <item>已删除</item>
+    </string-array>
+
+    <string-array name="person_type">
+        <item>全部</item>
+        <item>员工</item>
+        <item>访客</item>
+    </string-array>
+
+    <string-array name="fever_status">
+        <item>全部</item>
+        <item>正常</item>
+        <item>发热</item>
+    </string-array>
+
+</resources>

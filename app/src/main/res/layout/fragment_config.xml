@@ -655,6 +655,56 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="热力图显示" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_heat_map_show"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="显示" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_heat_map_dismiss"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="不显示" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="心跳间隔" />
 
                     <View style="@style/VerticalLine" />

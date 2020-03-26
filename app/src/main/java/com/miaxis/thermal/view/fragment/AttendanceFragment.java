@@ -118,8 +118,10 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     };
 
     private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
-        int rootHeight = binding.flCameraRoot.getHeight();
-        int rootWidth = rootHeight * previewSize.height / previewSize.width;
+//        int rootHeight = binding.flCameraRoot.getHeight();
+//        int rootWidth = rootHeight * previewSize.height / previewSize.width;
+        int rootWidth = binding.flCameraRoot.getWidth();
+        int rootHeight = rootWidth * previewSize.width / previewSize.height;
         resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
         resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
         binding.rsvRect.setRootSize(rootWidth, rootHeight);
@@ -147,14 +149,14 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         if (fever) {
             binding.ivPanel.setImageResource(R.drawable.background_vertical_bottom_red);
             binding.ivTitle.setImageResource(R.drawable.background_vertical_title_red);
-            binding.ivFaceBox.setBackgroundResource(R.drawable.face_box_red);
+            binding.ivFaceBox.setImageResource(R.drawable.face_box_red);
             binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
             feverCache = true;
         } else if (feverCache) {
             Log.e("asd", "No fever~~~~~~~~~~~~````");
             binding.ivPanel.setImageResource(R.drawable.background_vertical_bottom);
             binding.ivTitle.setImageResource(R.drawable.background_vertical_title);
-            binding.ivFaceBox.setBackgroundResource(R.drawable.face_box);
+            binding.ivFaceBox.setImageResource(R.drawable.face_box);
             binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
             feverCache = false;
         }

@@ -105,7 +105,8 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
-            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                 mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
             }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH

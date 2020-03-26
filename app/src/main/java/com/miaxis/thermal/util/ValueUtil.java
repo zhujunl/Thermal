@@ -14,7 +14,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH;
+    public static final Sign DEFAULT_SIGN = Sign.MR870;
 
     public static final Gson GSON = new Gson();
 
@@ -37,8 +37,9 @@ public class ValueUtil {
     public static final int DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL = 50;
     public static final int DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL = 70;
     public static final int DEFAULT_DORMANCY_INTERVAL = 2;
-    public static final int DEFAULT_DORMANCY_TIME = 5;
+    public static final int DEFAULT_DORMANCY_TIME = 10;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
+    public static final boolean DEFAULT_HEAT_MAP = false;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 10;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 10000;

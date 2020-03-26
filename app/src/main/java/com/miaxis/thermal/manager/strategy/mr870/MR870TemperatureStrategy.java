@@ -15,7 +15,10 @@ public class MR870TemperatureStrategy implements TemperatureManager.TemperatureS
     }
 
     @Override
-    public float readTemperature() {
-        return -1f;
+    public void readTemperature(TemperatureManager.TemperatureListener listener) {
+        if (listener != null) {
+            listener.onTemperature(-1f);
+            listener.onHeatMap(null);
+        }
     }
 }

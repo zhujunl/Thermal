@@ -66,6 +66,7 @@ public class ConfigManager {
                     .dormancyInterval(ValueUtil.DEFAULT_DORMANCY_INTERVAL)
                     .dormancyTime(ValueUtil.DEFAULT_DORMANCY_TIME)
                     .feverScore(ValueUtil.DEFAULT_FEVER_SCORE)
+                    .heatMap(ValueUtil.DEFAULT_HEAT_MAP)
                     .heartBeatInterval(ValueUtil.DEFAULT_HEART_BEAT_INTERVAL)
                     .failedQueryCold(ValueUtil.DEFAULT_FAILED_QUERY_COLD)
                     .recordClearThreshold(ValueUtil.DEFAULT_RECORD_CLEAR_THRESHOLD)
@@ -79,7 +80,8 @@ public class ConfigManager {
             } else {
                 config.setMac(DeviceUtil.getMacFromHardware());
             }
-            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
             }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870

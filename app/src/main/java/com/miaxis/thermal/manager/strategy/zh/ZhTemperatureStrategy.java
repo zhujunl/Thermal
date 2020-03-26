@@ -21,10 +21,13 @@ public class ZhTemperatureStrategy implements TemperatureManager.TemperatureStra
     }
 
     @Override
-    public float readTemperature() {
-        int[] array = new int[] {0};
-        device.jni_Get_IDNum(array);
-        return rectifyDeviation(array[0]);
+    public void readTemperature(TemperatureManager.TemperatureListener listener) {
+        if (listener != null) {
+            int[] array = new int[] {0};
+            device.jni_Get_IDNum(array);
+            listener.onTemperature(rectifyDeviation(array[0]));
+            listener.onHeatMap(null);
+        }
     }
 
     private float rectifyDeviation(float value) {

@@ -1,5 +1,6 @@
 package com.miaxis.thermal.manager;
 
+import android.graphics.Bitmap;
 import android.serialport.api.SerialPort;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,6 +9,7 @@ import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870TemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhTemperatureStrategy;
+import com.miaxis.thermal.manager.strategy.xhn.XhnTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhTemperatureStrategy;
 import com.miaxis.thermal.util.DataUtils;
 import com.miaxis.thermal.util.ValueUtil;
@@ -45,7 +47,7 @@ public class TemperatureManager {
     public interface TemperatureStrategy {
         void open();
         void close();
-        float readTemperature();
+        void readTemperature(TemperatureListener listener);
     }
 
     public void init() {
@@ -57,6 +59,8 @@ public class TemperatureManager {
             temperatureStrategy = new ZhTemperatureStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
             temperatureStrategy = new TpsTemperatureStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            temperatureStrategy = new XhnTemperatureStrategy();
         }
     }
 
@@ -72,11 +76,15 @@ public class TemperatureManager {
         }
     }
 
-    public float readTemperature() {
+    public void readTemperature(TemperatureListener listener) {
         if (temperatureStrategy != null) {
-            return temperatureStrategy.readTemperature();
+            temperatureStrategy.readTemperature(listener);
         }
-        return 0f;
+    }
+
+    public interface TemperatureListener {
+        void onTemperature(float temperature);
+        void onHeatMap(Bitmap bitmap);
     }
 
 }

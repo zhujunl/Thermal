@@ -28,6 +28,7 @@ public class Config {
     private int dormancyInterval;
     private int dormancyTime;
     private float feverScore;
+    private boolean heatMap;
     private int heartBeatInterval;
     private int failedQueryCold;
     private int recordClearThreshold;
@@ -61,6 +62,7 @@ public class Config {
         setDormancyInterval(builder.dormancyInterval);
         setDormancyTime(builder.dormancyTime);
         setFeverScore(builder.feverScore);
+        setHeatMap(builder.heatMap);
         setHeartBeatInterval(builder.heartBeatInterval);
         setFailedQueryCold(builder.failedQueryCold);
         setRecordClearThreshold(builder.recordClearThreshold);
@@ -238,6 +240,14 @@ public class Config {
         this.feverScore = feverScore;
     }
 
+    public boolean isHeatMap() {
+        return heatMap;
+    }
+
+    public void setHeatMap(boolean heatMap) {
+        this.heatMap = heatMap;
+    }
+
     public int getHeartBeatInterval() {
         return heartBeatInterval;
     }
@@ -316,6 +326,7 @@ public class Config {
         private int dormancyInterval;
         private int dormancyTime;
         private float feverScore;
+        private boolean heatMap;
         private int heartBeatInterval;
         private int failedQueryCold;
         private int recordClearThreshold;
@@ -429,6 +440,11 @@ public class Config {
 
         public Builder feverScore(float val) {
             feverScore = val;
+            return this;
+        }
+
+        public Builder heatMap(boolean val) {
+            heatMap = val;
             return this;
         }
 

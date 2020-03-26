@@ -89,6 +89,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etDormancyInterval.setText(String.valueOf(config.getDormancyInterval()));
         binding.etDormancyTime.setText(String.valueOf(config.getDormancyTime()));
         binding.etFeverScore.setText(String.valueOf(config.getFeverScore()));
+        binding.rbHeatMapShow.setChecked(config.isHeatMap());
+        binding.rbHeatMapDismiss.setChecked(!config.isHeatMap());
         binding.etHeartBeatInterval.setText(String.valueOf(config.getHeartBeatInterval()));
         binding.etFailedQueryCold.setText(String.valueOf(config.getFailedQueryCold()));
         binding.etRecordClearThreshold.setText(String.valueOf(config.getRecordClearThreshold()));
@@ -234,6 +236,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setDormancyInterval(Integer.parseInt(binding.etDormancyInterval.getText().toString()));
                     config.setDormancyTime(Integer.parseInt(binding.etDormancyTime.getText().toString()));
                     config.setFeverScore(Float.parseFloat(binding.etFeverScore.getText().toString()));
+                    config.setHeatMap(binding.rbHeatMapShow.isChecked());
                     config.setHeartBeatInterval(Integer.parseInt(binding.etHeartBeatInterval.getText().toString()));
                     config.setFailedQueryCold(Integer.parseInt(binding.etFailedQueryCold.getText().toString()));
                     config.setRecordClearThreshold(Integer.parseInt(binding.etRecordClearThreshold.getText().toString()));

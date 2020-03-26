@@ -86,6 +86,7 @@ public class AddPersonViewModel extends BaseViewModel {
                     .type(type.get() ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR)
                     .upload(false)
                     .updateTime(new Date())
+                    .status("1")
                     .build();
             emitter.onNext(person);
         })

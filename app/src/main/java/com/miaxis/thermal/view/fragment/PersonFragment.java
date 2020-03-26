@@ -13,12 +13,20 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.entity.Person;
+import com.miaxis.thermal.data.entity.PersonSearch;
 import com.miaxis.thermal.databinding.FragmentPersonBinding;
+import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.adapter.PersonAdapter;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.PersonViewModel;
 import com.miaxis.thermal.viewModel.RecordViewModel;
@@ -29,6 +37,8 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
 
     private PersonAdapter adapter;
     private LinearLayoutManager layoutManager;
+
+    private boolean search = false;
     private int currentPage = 1;
     private int localCount = 0;
 
@@ -63,9 +73,26 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     @Override
     protected void initView() {
         initRecycleView();
+        initSearchView();
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.srlPerson.setOnRefreshListener(this::refresh);
+        binding.ivSearch.setOnClickListener(v -> {
+            if (binding.clSearch.getVisibility() == View.VISIBLE) {
+                binding.clSearch.setVisibility(View.GONE);
+            } else {
+                binding.clSearch.setVisibility(View.VISIBLE);
+            }
+        });
+        binding.btnSearch.setOnClickListener(new OnLimitClickHelper(view -> {
+            search = true;
+            refresh();
+        }));
+        binding.btnReset.setOnClickListener(new OnLimitClickHelper(view -> {
+            search = false;
+            refresh();
+        }));
         viewModel.refreshing.observe(this, refreshingObserver);
+        viewModel.updating.observe(this, updatingObserver);
         viewModel.personListLiveData.observe(this, personListObserver);
         refresh();
     }
@@ -91,8 +118,79 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
         ((SimpleItemAnimator) binding.rvPerson.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
+    private void initSearchView() {
+//        String[] faceStatus = getContext().getResources().getStringArray(R.array.face_status);
+//        ArrayAdapter<String> faceStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, faceStatus);
+//        binding.spFaceStatus.setAdapter(faceStatusAdapter);
+//        binding.spFaceStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                viewModel.filterFaceStatus.set(position == 0 ? null : (position == 1 ? Boolean.TRUE : Boolean.FALSE));
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
+//        String[] uploadStatus = getContext().getResources().getStringArray(R.array.upload_status);
+//        ArrayAdapter<String> uploadStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, uploadStatus);
+//        binding.spUploadStatus.setAdapter(uploadStatusAdapter);
+//        binding.spUploadStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                viewModel.filterUploadStatus.set(position == 0 ? null : (position == 1 ? Boolean.TRUE : Boolean.FALSE));
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
+//        String[] personStatus = getContext().getResources().getStringArray(R.array.person_status);
+//        ArrayAdapter<String> personStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, personStatus);
+//        binding.spPersonStatus.setAdapter(personStatusAdapter);
+//        binding.spPersonStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                viewModel.filterPersonStatus.set(position == 0 ? null : (position == 1 ? "1" : "2"));
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
+//        String[] personType = getContext().getResources().getStringArray(R.array.person_type);
+//        ArrayAdapter<String> personTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, personType);
+//        binding.spPersonType.setAdapter(personTypeAdapter);
+//        binding.spPersonType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                viewModel.filterPersonType.set(position == 0 ? null : (position == 1 ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR));
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
+    }
+
     private PersonAdapter.OnItemClickListener adapterListener = (view, position) -> {
-        mListener.replaceFragment(AddPersonFragment.newInstance(adapter.getData(position)));
+        switch (view.getId()) {
+            case R.id.iv_edit:
+                mListener.replaceFragment(AddPersonFragment.newInstance(adapter.getData(position)));
+                break;
+            case R.id.iv_delete:
+                new MaterialDialog.Builder(getContext())
+                        .title("确认删除？")
+                        .positiveText("确认")
+                        .onPositive((dialog, which) -> {
+                            viewModel.changePersonStatus(adapter.getData(position), false);
+                        })
+                        .negativeText("取消")
+                        .show();
+                break;
+            case R.id.iv_recover:
+                new MaterialDialog.Builder(getContext())
+                        .title("确认启用？")
+                        .positiveText("确认")
+                        .onPositive((dialog, which) -> {
+                            viewModel.changePersonStatus(adapter.getData(position), true);
+                        })
+                        .negativeText("取消")
+                        .show();
+                break;
+        }
     };
 
     private Observer<List<Person>> personListObserver = personList -> {
@@ -115,6 +213,12 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     };
 
     private Observer<Boolean> refreshingObserver = flag -> binding.srlPerson.setRefreshing(flag);
+
+    private Observer<Boolean> updatingObserver = flag -> {
+        if (flag) {
+            refresh();
+        }
+    };
 
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         private boolean loadingMore = true;
@@ -141,11 +245,34 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
 
     private void refresh() {
         localCount = 0;
-        viewModel.loadPersonByPage(currentPage = 1);
+        currentPage = 1;
+        viewModel.loadPersonByPage(makePersonSearch());
     }
 
     private void loadMore() {
-        viewModel.loadPersonByPage(++currentPage);
+        currentPage++;
+        viewModel.loadPersonByPage(makePersonSearch());
+    }
+
+    private PersonSearch makePersonSearch() {
+        if (search) {
+            return new PersonSearch.Builder()
+                    .pageNum(currentPage)
+                    .pageSize(ValueUtil.PAGE_SIZE)
+                    .build();
+        } else {
+            return new PersonSearch.Builder()
+                    .pageNum(currentPage)
+                    .pageSize(ValueUtil.PAGE_SIZE)
+                    .identifyNumber(binding.etNumber.getText().toString())
+                    .phone(binding.etPhone.getText().toString())
+                    .name(binding.etName.getText().toString())
+                    .upload(binding.spUploadStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? Boolean.TRUE : Boolean.FALSE))
+                    .face(binding.spFaceStatus.getSelectedItemPosition() == 0 ? null : (binding.spFaceStatus.getSelectedItemPosition() == 1 ? Boolean.TRUE : Boolean.FALSE))
+                    .status(binding.spPersonStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? "1" : "2"))
+                    .type(binding.spPersonType.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR))
+                    .build();
+        }
     }
 
 }

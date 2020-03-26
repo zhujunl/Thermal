@@ -16,8 +16,8 @@ public interface PersonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Person person);
 
-    @Query("select * from Person where Person.faceFeature is not null")
-    List<Person> loadAll();
+    @Query("select * from Person where Person.faceFeature is not null and Person.status == '1'")
+    List<Person> loadUsability();
 
     @Query("select * from Person order by Person.updateTime desc limit :pageSize offset :pageSize * (:pageNum - 1)")
     List<Person> loadPersonByPage(int pageNum, int pageSize);

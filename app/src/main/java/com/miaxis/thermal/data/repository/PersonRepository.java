@@ -82,6 +82,7 @@ public class PersonRepository {
                 DateUtil.DATE_FORMAT.format(person.getInvalidTime()),
                 person.getFaceFeature(),
                 person.getMaskFaceFeature(),
+                person.getStatus(),
                 faceFile)
                 .execute();
         try {
@@ -105,8 +106,8 @@ public class PersonRepository {
         PersonModel.savePerson(person);
     }
 
-    public List<Person> loadAll() {
-        return PersonModel.loadAll();
+    public List<Person> loadUsability() {
+        return PersonModel.loadUsability();
     }
 
     public List<Person> loadPersonByPage(int pageNum, int pageSize) {

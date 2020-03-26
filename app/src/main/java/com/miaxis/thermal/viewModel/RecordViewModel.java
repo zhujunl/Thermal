@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.Record;
+import com.miaxis.thermal.data.entity.RecordSearch;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.RecordRepository;
 import com.miaxis.thermal.manager.ToastManager;
@@ -39,9 +40,10 @@ public class RecordViewModel extends BaseViewModel {
         }
     }
 
-    public void loadRecordByPage(int pageNum) {
+    public void loadRecordByPage(RecordSearch recordSearch) {
         Disposable disposable = Observable.create((ObservableOnSubscribe<List<Record>>) emitter -> {
-            List<Record> recordList = RecordRepository.getInstance().loadRecordByPage(pageNum, 30);
+            List<Record> recordList = RecordRepository.getInstance().searchRecord(recordSearch);
+//            List<Record> recordList = RecordRepository.getInstance().loadRecordByPage(pageNum, 30);
             if (recordList != null) {
                 emitter.onNext(recordList);
             } else {
@@ -52,7 +54,7 @@ public class RecordViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(recordList -> {
                     refreshing.setValue(Boolean.FALSE);
-                    if (pageNum == 1) {
+                    if (recordSearch.getPageNum() == 1) {
                         recordListLiveData.setValue(recordList);
                     } else {
                         List<Record> LocalOrderList = getRecordList();

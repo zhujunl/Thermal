@@ -12,6 +12,7 @@ import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
+import com.miaxis.thermal.manager.strategy.xhn.XhnGpioStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhGpioStrategy;
 import com.miaxis.thermal.util.ValueUtil;
 
@@ -46,6 +47,8 @@ public class GpioManager {
             gpioStrategy = new ZhGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
             gpioStrategy = new TpsGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            gpioStrategy = new XhnGpioStrategy();
         }
         initGpio(application);
         resetGpio();
@@ -149,6 +152,10 @@ public class GpioManager {
 
     public void clearLedThread() {
         handler.removeCallbacks(closeWhiteLedRunnable);
+        handler.removeMessages(WHITE_LED);
+        handler.removeMessages(GREEN_LED);
+        handler.removeMessages(RED_LED);
+        handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
     }
 
     public void openGreenLed() {
@@ -200,6 +207,29 @@ public class GpioManager {
             XhGpioStrategy xhGpioStrategy = (XhGpioStrategy) gpioStrategy;
             xhGpioStrategy.setGpio(3, status ? 1 : 0);
             xhGpioStrategy.setGpio(4, status ? 1 : 0);
+        }
+    }
+
+    public void setInfraredLedForXHN(boolean status) {
+        if (gpioStrategy instanceof XhnGpioStrategy) {
+            XhnGpioStrategy xhnGpioStrategy = (XhnGpioStrategy) gpioStrategy;
+            xhnGpioStrategy.setGpio(3, status ? 1 : 0);
+            xhnGpioStrategy.setGpio(4, status ? 1 : 0);
+        }
+    }
+
+    public void openDoorForMR870() {
+        if (gpioStrategy instanceof MR870GpioStrategy) {
+            MR870GpioStrategy mr870GpioStrategy = (MR870GpioStrategy) gpioStrategy;
+            executorService.execute(() -> {
+                try {
+                    mr870GpioStrategy.controlDoor(true);
+                    Thread.sleep(500);
+                    mr870GpioStrategy.controlDoor(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 

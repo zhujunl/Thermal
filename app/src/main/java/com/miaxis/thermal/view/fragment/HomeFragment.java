@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +56,8 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     @Override
     protected void initView() {
         binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
-            if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                 mListener.replaceFragment(AttendanceLandFragment.newInstance());
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
@@ -68,6 +71,18 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
         binding.clConfig.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(ConfigFragment.newInstance())));
         binding.ccCombo.setListener(() -> mListener.exitApp());
         binding.ccCombo.setNeedPassword(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                binding.clAttendance.performClick();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 1000);
     }
 
     @Override

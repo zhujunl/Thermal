@@ -19,7 +19,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class}, version = 2)
+@Database(entities = {Config.class, Person.class, Record.class}, version = 3)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -53,13 +53,9 @@ public abstract class AppDatabase extends RoomDatabase {
                 .build();
     }
 
-    private static Migration MIGRATION_1_2 = new Migration(1, 2) {
+    private static Migration MIGRATION_2_3 = new Migration(1, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-//          旧表添加新的字段
-//          database.execSQL("ALTER TABLE User " + " ADD COLUMN book_id TEXT");
-//          创建新的数据表
-//          database.execSQL("CREATE TABLE IF NOT EXISTS `book` (`book_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT)");
         }
     };
 

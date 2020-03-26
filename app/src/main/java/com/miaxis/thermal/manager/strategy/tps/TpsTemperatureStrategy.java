@@ -24,22 +24,26 @@ public class TpsTemperatureStrategy implements TemperatureManager.TemperatureStr
     }
 
     @Override
-    public float readTemperature() {
-        TemperatureData temperatureData = temperatureUtil.getDataAndBitmap(50,
-                1,
-                false,
-                new HotImageCallback.Stub() {
-                    @Override
-                    public void onTemperatureFail(String e) {
-                        Log.e("asd", "onTemperatureFail " + e);
-                    }
+    public void readTemperature(TemperatureManager.TemperatureListener listener) {
+        if (listener != null) {
+            TemperatureData temperatureData = temperatureUtil.getDataAndBitmap(50,
+                    1,
+                    false,
+                    new HotImageCallback.Stub() {
+                        @Override
+                        public void onTemperatureFail(String e) {
+                            Log.e("asd", "onTemperatureFail " + e);
+                            listener.onHeatMap(null);
+                        }
 
 
-                    @Override
-                    public void getTemperatureBimapData(final TemperatureBitmapData data) {
-                    }
-                });
-        return temperatureData != null ? temperatureData.getTemperature() : 0f;
+                        @Override
+                        public void getTemperatureBimapData(final TemperatureBitmapData data) {
+                            listener.onHeatMap(data.getBitmap());
+                        }
+                    });
+            listener.onTemperature(temperatureData != null ? temperatureData.getTemperature() : 0f);
+        }
     }
 
 }
