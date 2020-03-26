@@ -74,6 +74,7 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         viewModel.updateHeader.observe(this, headerObserver);
         viewModel.fever.observe(this, feverObserver);
         viewModel.faceDormancy.observe(this, dormancyObserver);
+        viewModel.heatMapUpdate.observe(this, heatMapObserver);
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             viewModel.initCard.observe(this, initCardObserver);
         }
@@ -118,10 +119,15 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     };
 
     private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
-//        int rootHeight = binding.flCameraRoot.getHeight();
-//        int rootWidth = rootHeight * previewSize.height / previewSize.width;
-        int rootWidth = binding.flCameraRoot.getWidth();
-        int rootHeight = rootWidth * previewSize.width / previewSize.height;
+        int rootWidth;
+        int rootHeight;
+        if (binding.flCameraRoot.getHeight() / binding.flCameraRoot.getWidth() < previewSize.height /previewSize.width) {
+            rootHeight = binding.flCameraRoot.getHeight();
+            rootWidth = rootHeight * previewSize.height / previewSize.width;
+        } else {
+            rootWidth = binding.flCameraRoot.getWidth();
+            rootHeight = rootWidth * previewSize.width / previewSize.height;
+        }
         resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
         resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
         binding.rsvRect.setRootSize(rootWidth, rootHeight);
@@ -170,6 +176,14 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             binding.ivFaceSign.setVisibility(View.INVISIBLE);
         }
         dormancyCache = dormancy;
+    };
+
+    private Observer<Boolean> heatMapObserver = update -> {
+        if (viewModel.heatMapCache != null) {
+            GlideApp.with(this).load(viewModel.heatMapCache).into(binding.ivHeatMap);
+        } else {
+            GlideApp.with(this).clear(binding.ivHeatMap);
+        }
     };
 
     private Observer<Boolean> initCardObserver = aBoolean -> {

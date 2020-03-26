@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         HeartBeatManager.getInstance().stopHeartBeat();
         WatchDogManager.getInstance().stopANRWatchDog();
         AppDatabase.getInstance().close();
+        System.exit(0);
     }
 
     @Override

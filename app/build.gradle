@@ -37,6 +37,11 @@ android {
         disable 'CheckResult'
         disable 'GoogleAppIndexingWarning'
     }
+    repositories{
+        flatDir{
+            dirs 'src/main/libs'
+        }
+    }
 }
 
 dependencies {
@@ -86,6 +91,9 @@ dependencies {
     //AutoSize
     implementation 'me.jessyan:autosize:1.1.2'
     implementation project(path: ':serialport')
+    implementation project(path: ':opencv')
+    implementation(name: 'fsdktemp', ext: 'aar')
+    implementation(name: 'fsdk', ext: 'aar')
     implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')
     implementation files('src/main/libs/AMap_Search_V6.5.0_20180930.jar')
     implementation files('src/main/libs/XHApi.jar')
@@ -93,4 +101,6 @@ dependencies {
     implementation files('src/main/libs/zkandroididcardreader.jar')
     implementation files('src/main/libs/PosUtil_201901024.jar')
     implementation files('src/main/libs/telpo_temperature_v1.0.5.jar')
+    implementation files('src/main/libs/license.jar')
+    implementation files('src/main/libs/online_liantian_3-1-6-5-655_0312.jar')
 }

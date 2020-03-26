@@ -76,13 +76,6 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     @Override
     public void onResume() {
         super.onResume();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            try {
-                binding.clAttendance.performClick();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 1000);
     }
 
     @Override

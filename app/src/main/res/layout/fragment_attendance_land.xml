@@ -68,6 +68,16 @@
             app:layout_constraintEnd_toEndOf="@id/fl_camera_root"/>
 
         <ImageView
+            android:id="@+id/iv_heat_map"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/fl_camera_root"
+            app:layout_constraintWidth_percent="0.3"/>
+
+        <ImageView
             android:id="@+id/iv_panel"
             android:layout_width="0dp"
             android:layout_height="0dp"

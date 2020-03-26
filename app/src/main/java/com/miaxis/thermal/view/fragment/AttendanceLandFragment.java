@@ -71,6 +71,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.updateHeader.observe(this, headerObserver);
         viewModel.fever.observe(this, feverObserver);
         viewModel.faceDormancy.observe(this, dormancyObserver);
+        viewModel.heatMapUpdate.observe(this, heatMapObserver);
     }
 
     @Override
@@ -162,6 +163,14 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             binding.ivFaceSign.setVisibility(View.INVISIBLE);
         }
         dormancyCache = dormancy;
+    };
+
+    private Observer<Boolean> heatMapObserver = update -> {
+        if (viewModel.heatMapCache != null) {
+            GlideApp.with(this).load(viewModel.heatMapCache).into(binding.ivHeatMap);
+        } else {
+            GlideApp.with(this).clear(binding.ivHeatMap);
+        }
     };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

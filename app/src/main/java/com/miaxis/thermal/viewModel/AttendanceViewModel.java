@@ -68,10 +68,11 @@ public class AttendanceViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> faceDormancy = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> heatMapUpdate = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
-    private Bitmap heatMapCache;
+    public Bitmap heatMapCache;
 
     private Handler handler;
 
@@ -155,7 +156,12 @@ public class AttendanceViewModel extends BaseViewModel {
 
                 @Override
                 public void onHeatMap(Bitmap bitmap) {
-
+                    if (ConfigManager.getInstance().getConfig().isHeatMap()) {
+                        if (bitmap != null) {
+                            heatMapCache = bitmap;
+                            heatMapUpdate.postValue(Boolean.TRUE);
+                        }
+                    }
                 }
             });
         }
@@ -281,6 +287,8 @@ public class AttendanceViewModel extends BaseViewModel {
         updateHeader.setValue(Boolean.TRUE);
         idCardMessage = null;
         fever.setValue(Boolean.FALSE);
+        heatMapCache = null;
+        heatMapUpdate.setValue(Boolean.TRUE);
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);
