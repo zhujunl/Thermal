@@ -1,7 +1,9 @@
 package com.miaxis.thermal.manager.strategy.xhn;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.serialport.api.SerialPort;
+import android.util.Log;
 
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.manager.TemperatureManager;
@@ -25,7 +27,7 @@ import java.util.List;
 public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStrategy {
 
     private Fsdk sdk;
-    private float temperature = -1f;
+    private float temperature = -2f;
     private Bitmap heatMap = null;
 
     private boolean init = false;
@@ -37,7 +39,7 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
             sdk.setDelay(100);
             long re = sdk.Init();
             if (re != 0) {
-                ToastManager.toast("温控设备初始化失败", ToastManager.ERROR);
+                Log.e("asd", "温控设备初始化失败");
                 return;
             }
             sdk.setCallback(new FsdkTempCallback() {
@@ -68,7 +70,19 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
                 e.printStackTrace();
             }
             listener.onTemperature(temperature);
-            listener.onHeatMap(heatMap);
+            if (heatMap != null) {
+                synchronized (heatMap) {
+                    Matrix matrix = new Matrix();
+                    matrix.setScale(-1, -1);//垂直翻转
+                    int w = heatMap.getWidth();
+                    int h = heatMap.getHeight();
+                    //生成的翻转后的bitmap
+                    Bitmap reversePic = Bitmap.createBitmap(heatMap, 0, 0, w, h, matrix, true);
+                    listener.onHeatMap(reversePic);
+                }
+            } else {
+                listener.onHeatMap(null);
+            }
         }
     }
 }

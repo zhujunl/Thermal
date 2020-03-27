@@ -96,7 +96,11 @@ public class RecordRepository {
     }
 
     public List<Record> searchRecord(RecordSearch recordSearch) {
-        return RecordModel.searchRecord(recordSearch);
+        return RecordModel.searchRecord(recordSearch, false);
+    }
+
+    public int searchRecordCount(RecordSearch recordSearch) {
+        return RecordModel.searchRecordCount(recordSearch);
     }
 
     public void deleteRecordList(List<Record> recordList) {

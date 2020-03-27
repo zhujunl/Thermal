@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.databinding.ItemRecordBinding;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.view.base.BaseViewHolder;
 import com.miaxis.thermal.view.base.BaseViewModelAdapter;
 
@@ -37,6 +38,9 @@ public class RecordAdapter extends BaseViewModelAdapter<Record, ItemRecordBindin
         holder.getBinding().setItem(item);
         holder.getBinding().tvRecordUpload.setText(item.isUpload() ? "已上传" : "未上传");
         holder.getBinding().tvRecordUpload.setTextColor(item.isUpload()
+                ? context.getResources().getColor(R.color.darkgreen)
+                : context.getResources().getColor(R.color.darkred));
+        holder.getBinding().tvRecordTemperature.setTextColor(item.getTemperature() < ConfigManager.getInstance().getConfig().getFeverScore()
                 ? context.getResources().getColor(R.color.darkgreen)
                 : context.getResources().getColor(R.color.darkred));
         holder.getBinding().llItem.setOnClickListener(v -> {

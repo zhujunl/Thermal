@@ -142,6 +142,9 @@ public class AttendanceViewModel extends BaseViewModel {
 //                    AttendanceViewModel.this.temperature.set(temperature + "°C");
 //                }
 //            }
+                    if (temperature == -2f) {
+                        toast.postValue(ToastManager.getToastBody("读温错误", ToastManager.INFO));
+                    }
                     if (temperature == -1f) {
                         hint.set("检测到人脸");
                     }
@@ -156,12 +159,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
                 @Override
                 public void onHeatMap(Bitmap bitmap) {
-                    if (ConfigManager.getInstance().getConfig().isHeatMap()) {
-                        if (bitmap != null) {
-                            heatMapCache = bitmap;
-                            heatMapUpdate.postValue(Boolean.TRUE);
-                        }
-                    }
+                    heatMapCache = bitmap;
                 }
             });
         }
@@ -229,6 +227,9 @@ public class AttendanceViewModel extends BaseViewModel {
         GpioManager.getInstance().openGreenLed();
         if (temperature > 0) {
             this.temperature.set(temperature + "°C");
+            if (ConfigManager.getInstance().getConfig().isHeatMap()) {
+                heatMapUpdate.postValue(Boolean.TRUE);
+            }
             TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
         } else if (temperature == -1f) {
             this.temperature.set("");

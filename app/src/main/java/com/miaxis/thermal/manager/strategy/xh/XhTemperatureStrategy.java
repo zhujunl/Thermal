@@ -2,6 +2,7 @@ package com.miaxis.thermal.manager.strategy.xh;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.serialport.api.SerialPort;
 import android.util.Log;
 
@@ -71,7 +72,7 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
 
     public float readTemperatureFromSearch() {
         if (inputStream == null || outputStream == null) {
-            return 0f;
+            return -2f;
         }
         byte[] readData = new byte[10];
         try {
@@ -93,7 +94,7 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
     public void readTemperatureFromFrame(TemperatureManager.TemperatureListener listener) {
         float temperature = readTemperatureFromSearch();
         if (inputStream == null || outputStream == null) {
-            listener.onTemperature(0f);
+            listener.onTemperature(-2f);
             listener.onHeatMap(null);
             return;
         }
@@ -120,23 +121,35 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
             for (int i = 1; i <= 768; i++) {
                 int index = i * 2 + 7;
                 float tem = (float) (readData[index] * 256 + readData[index - 1]) / 100;
-                temperatureList.add(tem);
+//                temperatureList.add(rectifyDeviation(tem * 10));
+                temperatureList.add(tem + 3.5f);
             }
-            Bitmap bmp = Bitmap.createBitmap(32, 24, Bitmap.Config.RGB_565);
-            for (int i = 0; i < 32; i++) {
-                for (int j = 0; j < 24; j++) {
-                    bmp.setPixel(i, j, getHeatMapColor(temperatureList.get(i * 32 + j)));
+            Bitmap bmp = Bitmap.createBitmap(32, 24, Bitmap.Config.ARGB_8888);
+            for (int i = 0; i < 24; i++) {
+                for (int j = 0; j < 32; j++) {
+                    bmp.setPixel(j, i, getHeatMapColor(temperatureList.get(i * 32 + j)));
                 }
             }
 //            float max = 0f;
+//            StringBuilder stringBuilder = new StringBuilder();
 //            for (Float temperature : temperatureList) {
+//                if (temperature > 30) {
+//                    stringBuilder.append("," + temperature);
+//                }
 //                if (temperature > max) {
 //                    max = temperature;
 //                }
 //            }
+//            Log.e("asd", stringBuilder.toString());
+            Matrix matrix = new Matrix();
+            matrix.setScale(-1, -1);//垂直翻转
+            int w = bmp.getWidth();
+            int h = bmp.getHeight();
+            //生成的翻转后的bitmap
+            Bitmap reversePic = Bitmap.createBitmap(bmp, 0, 0, w, h, matrix, true);
             listener.onTemperature(temperature);
-            listener.onHeatMap(bmp);
-        } catch (IOException e) {
+            listener.onHeatMap(reversePic);
+        } catch (Exception e) {
             e.printStackTrace();
             listener.onTemperature(0f);
             listener.onHeatMap(null);
@@ -163,7 +176,7 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
         } else if (temperature < 28) {
             return Color.parseColor("#0026FF");
         } else if (temperature < 29) {
-            return Color.parseColor("#001AFF");
+            return Color.parseColor("#FF7D00");
         } else if (temperature < 30) {
             return Color.parseColor("#FF8C00");
         } else if (temperature < 31) {
@@ -192,7 +205,7 @@ public class XhTemperatureStrategy implements TemperatureManager.TemperatureStra
     }
 
     private float rectifyDeviation(float value) {
-        if (value < 300) value += 38;
+        if (value < 300) value += 30;
         else {
             if (value < 310 && value >= 300) value += 30;
             if (value < 320 && value >= 310) value += 20;

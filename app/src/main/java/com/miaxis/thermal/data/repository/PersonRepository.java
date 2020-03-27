@@ -130,6 +130,10 @@ public class PersonRepository {
         return PersonModel.searchPerson(personSearch);
     }
 
+    public int searchPersonCount(PersonSearch personSearch) {
+        return PersonModel.searchPersonCount(personSearch);
+    }
+
     public void clearOverduePerson() {
         List<Person> overduePerson = PersonModel.findOverduePerson();
         for (Person person : overduePerson) {

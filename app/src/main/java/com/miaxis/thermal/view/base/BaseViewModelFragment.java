@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,21 +49,21 @@ public abstract class BaseViewModelFragment<V extends ViewDataBinding, VM extend
         viewModelId = initVariableId();
         binding.setLifecycleOwner(this);
         binding.setVariable(viewModelId, viewModel);
-        viewModel.waitMessage.observe(this, s -> {
+        viewModel.waitMessage.observe(getViewLifecycleOwner(), s -> {
             if (TextUtils.isEmpty(s)) {
                 mListener.dismissWaitDialog();
             } else {
                 mListener.showWaitDialog(s);
             }
         });
-        viewModel.resultMessage.observe(this, s -> {
+        viewModel.resultMessage.observe(getViewLifecycleOwner(), s -> {
             if (TextUtils.isEmpty(s)) {
                 mListener.dismissResultDialog();
             } else {
                 mListener.showResultDialog(s);
             }
         });
-        viewModel.toast.observe(this, toastBody -> ToastManager.toast(toastBody.getMessage(), toastBody.getMode()));
+        viewModel.toast.observe(getViewLifecycleOwner(), toastBody -> ToastManager.toast(toastBody.getMessage(), toastBody.getMode()));
         view.setOnTouchListener((v, motionEvent) -> getActivity().onTouchEvent(motionEvent));
         initData();
         initView();
@@ -96,6 +97,17 @@ public abstract class BaseViewModelFragment<V extends ViewDataBinding, VM extend
 
     protected ViewModelProvider.AndroidViewModelFactory getViewModelProviderFactory() {
         return ViewModelProvider.AndroidViewModelFactory.getInstance(App.getInstance());
+    }
+
+    public void hideInputMethod() {
+        try {
+            if (getActivity().getCurrentFocus() != null && getActivity().getCurrentFocus().getWindowToken() != null){
+                InputMethodManager manager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

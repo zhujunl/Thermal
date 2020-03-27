@@ -82,10 +82,19 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
             }
         });
         binding.btnSearch.setOnClickListener(new OnLimitClickHelper(view -> {
+            hideInputMethod();
             search = true;
             refresh();
         }));
         binding.btnReset.setOnClickListener(new OnLimitClickHelper(view -> {
+            binding.etName.setText("");
+            binding.etNumber.setText("");
+            binding.etPhone.setText("");
+            binding.tvStartTime.setText("请选择开始日期");
+            binding.tvEndTime.setText("请选择结束日期");
+            binding.spFeverStatus.setSelection(0);
+            binding.spUploadStatus.setSelection(0);
+            hideInputMethod();
             search = false;
             refresh();
         }));
@@ -161,7 +170,7 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
             }
             localCount = recordList.size();
         }
-        viewModel.updateRecordCount();
+        viewModel.updateRecordCount(search, search ? makeRecordSearchView() : null);
     };
 
     private Observer<Boolean> refreshingObserver = flag -> binding.srlRecord.setRefreshing(flag);
@@ -201,15 +210,15 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
     }
 
     private RecordSearch makeRecordSearchView() {
-        if (search) {
+        if (!search) {
             return new RecordSearch.Builder()
                     .pageNum(currentPage)
-                    .pageSize(ValueUtil.PAGE_SIZE)
+                    .pageSize(30)
                     .build();
         } else {
             return new RecordSearch.Builder()
                     .pageNum(currentPage)
-                    .pageSize(ValueUtil.PAGE_SIZE)
+                    .pageSize(30)
                     .identifyNumber(binding.etNumber.getText().toString())
                     .phone(binding.etPhone.getText().toString())
                     .name(binding.etName.getText().toString())

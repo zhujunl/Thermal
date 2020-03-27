@@ -84,10 +84,19 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
             }
         });
         binding.btnSearch.setOnClickListener(new OnLimitClickHelper(view -> {
+            hideInputMethod();
             search = true;
             refresh();
         }));
         binding.btnReset.setOnClickListener(new OnLimitClickHelper(view -> {
+            binding.etName.setText("");
+            binding.etNumber.setText("");
+            binding.etPhone.setText("");
+            binding.spFaceStatus.setSelection(0);
+            binding.spUploadStatus.setSelection(0);
+            binding.spPersonStatus.setSelection(0);
+            binding.spPersonType.setSelection(0);
+            hideInputMethod();
             search = false;
             refresh();
         }));
@@ -209,7 +218,7 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
             }
             localCount = personList.size();
         }
-        viewModel.updatePersonCount();
+        viewModel.updatePersonCount(search, search ? makePersonSearch() : null);
     };
 
     private Observer<Boolean> refreshingObserver = flag -> binding.srlPerson.setRefreshing(flag);
@@ -255,7 +264,7 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     }
 
     private PersonSearch makePersonSearch() {
-        if (search) {
+        if (!search) {
             return new PersonSearch.Builder()
                     .pageNum(currentPage)
                     .pageSize(ValueUtil.PAGE_SIZE)

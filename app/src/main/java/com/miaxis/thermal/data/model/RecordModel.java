@@ -47,19 +47,81 @@ public class RecordModel {
         return AppDatabase.getInstance().recordDao().searchRecordInTime(startTime.getTime(), endTime.getTime());
     }
 
-    public static List<Record> searchRecord(RecordSearch recordSearch) {
+    public static List<Record> searchRecord(RecordSearch recordSearch, boolean count) {
         List<Object> args = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("select * from Record");
+        String sqlStr = makeRecordSearchSql(recordSearch, args, false);
+        Cursor cursor = null;
+        try {
+            cursor = AppDatabase.getInstance().query(sqlStr, args.toArray());
+            if (cursor.getCount() > 0) {
+                List<Record> recordList = new ArrayList<>(cursor.getCount());
+                while (cursor.moveToNext()) {
+                    Date date = new Date();
+                    date.setTime(cursor.getLong(cursor.getColumnIndex("verifyTime")));
+                    Record build = new Record.Builder()
+                            .id(cursor.getLong(cursor.getColumnIndex("id")))
+                            .personId(cursor.getLong(cursor.getColumnIndex("personId")))
+                            .identifyNumber(cursor.getString(cursor.getColumnIndex("identifyNumber")))
+                            .phone(cursor.getString(cursor.getColumnIndex("phone")))
+                            .name(cursor.getString(cursor.getColumnIndex("name")))
+                            .type(cursor.getString(cursor.getColumnIndex("type")))
+                            .verifyTime(date)
+                            .verifyPicturePath(cursor.getString(cursor.getColumnIndex("verifyPicturePath")))
+                            .score(cursor.getFloat(cursor.getColumnIndex("score")))
+                            .upload(cursor.getInt(cursor.getColumnIndex("upload")) == 1)
+                            .temperature(cursor.getFloat(cursor.getColumnIndex("temperature")))
+                            .build();
+                    recordList.add(build);
+                }
+                return recordList;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public static int searchRecordCount(RecordSearch recordSearch) {
+        List<Object> args = new ArrayList<>();
+        String sqlStr = makeRecordSearchSql(recordSearch, args, true);
+        Cursor cursor = null;
+        try {
+            cursor = AppDatabase.getInstance().query(sqlStr, args.toArray());
+            if (cursor.getCount() > 0) {
+                cursor.moveToNext();
+                return (int) cursor.getLong(cursor.getColumnIndex("num"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return 0;
+    }
+
+    private static String makeRecordSearchSql(RecordSearch recordSearch, List<Object> args, boolean count) {
+        StringBuilder sql;
+        if (count) {
+            sql = new StringBuilder("select count(Record.id) as num from Record");
+        } else {
+            sql = new StringBuilder("select * from Record");
+        }
         if (!TextUtils.isEmpty(recordSearch.getName())) {
-            sql.append(" where Record.name = ?");
+            sql.append(" where Record.name like ?");
             args.add(recordSearch.getName());
         }
         if (!TextUtils.isEmpty(recordSearch.getIdentifyNumber())) {
-            sql.append(" where Record.identifyNumber = ?");
+            sql.append(" where Record.identifyNumber like ?");
             args.add(recordSearch.getIdentifyNumber());
         }
         if (!TextUtils.isEmpty(recordSearch.getPhone())) {
-            sql.append(" where Record.phone = ?");
+            sql.append(" where Record.phone like ?");
             args.add(recordSearch.getPhone());
         }
         if (recordSearch.getUpload() != null) {
@@ -95,44 +157,13 @@ public class RecordModel {
                 sql.append(" where Record.temperature < " + ConfigManager.getInstance().getConfig().getFeverScore());
             }
         }
-        sql.append(" order by Record.id desc limit ? offset ? * (? - 1)");
-        args.add(recordSearch.getPageSize());
-        args.add(recordSearch.getPageSize());
-        args.add(recordSearch.getPageNum());
-        String sqlStr = sql.toString();
-        Cursor cursor = null;
-        try {
-            cursor = AppDatabase.getInstance().query(sqlStr, args.toArray());
-            if (cursor.getCount() > 0) {
-                List<Record> recordList = new ArrayList<>(cursor.getCount());
-                while (cursor.moveToNext()) {
-                    Date date = new Date();
-                    date.setTime(cursor.getLong(cursor.getColumnIndex("verifyTime")));
-                    Record build = new Record.Builder()
-                            .id(cursor.getLong(cursor.getColumnIndex("id")))
-                            .personId(cursor.getLong(cursor.getColumnIndex("personId")))
-                            .identifyNumber(cursor.getString(cursor.getColumnIndex("identifyNumber")))
-                            .phone(cursor.getString(cursor.getColumnIndex("phone")))
-                            .name(cursor.getString(cursor.getColumnIndex("name")))
-                            .type(cursor.getString(cursor.getColumnIndex("type")))
-                            .verifyTime(date)
-                            .verifyPicturePath(cursor.getString(cursor.getColumnIndex("verifyPicturePath")))
-                            .score(cursor.getFloat(cursor.getColumnIndex("score")))
-                            .upload(cursor.getInt(cursor.getColumnIndex("upload")) == 1)
-                            .temperature(cursor.getFloat(cursor.getColumnIndex("temperature")))
-                            .build();
-                    recordList.add(build);
-                }
-                return recordList;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        if (!count) {
+            sql.append(" order by Record.id desc limit ? offset ? * (? - 1)");
+            args.add(recordSearch.getPageSize());
+            args.add(recordSearch.getPageSize());
+            args.add(recordSearch.getPageNum());
         }
-        return new ArrayList<>();
+        return sql.toString();
     }
 
 }

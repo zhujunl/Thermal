@@ -51,43 +51,7 @@ public class PersonModel {
 
     public static List<Person> searchPerson(PersonSearch personSearch) {
         List<Object> args = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("select * from Person");
-        if (!TextUtils.isEmpty(personSearch.getName())) {
-            sql.append(" where Person.name = ?");
-            args.add(personSearch.getName());
-        }
-        if (!TextUtils.isEmpty(personSearch.getIdentifyNumber())) {
-            sql.append(" where Person.identifyNumber = ?");
-            args.add(personSearch.getIdentifyNumber());
-        }
-        if (!TextUtils.isEmpty(personSearch.getPhone())) {
-            sql.append(" where Person.phone = ?");
-            args.add(personSearch.getPhone());
-        }
-        if (personSearch.getUpload() != null) {
-            sql.append(" where Person.upload = ?");
-            args.add(personSearch.getUpload() ? "1" : "0");
-        }
-        if (personSearch.getFace() != null) {
-            if (personSearch.getFace()) {
-                sql.append(" where Person.faceFeature is not null");
-            } else {
-                sql.append(" where Person.faceFeature is null");
-            }
-        }
-        if (personSearch.getStatus() != null) {
-            sql.append(" where Person.status = ?");
-            args.add(personSearch.getStatus());
-        }
-        if (personSearch.getType() != null) {
-            sql.append(" where Person.type = ?");
-            args.add(personSearch.getType());
-        }
-        sql.append(" order by Person.updateTime desc limit ? offset ? * (? - 1)");
-        args.add(personSearch.getPageSize());
-        args.add(personSearch.getPageSize());
-        args.add(personSearch.getPageNum());
-        String sqlStr = sql.toString();
+        String sqlStr = makePersonSearchSql(personSearch, args, false);
         Cursor cursor = null;
         try {
             cursor = AppDatabase.getInstance().query(sqlStr, args.toArray());
@@ -129,6 +93,73 @@ public class PersonModel {
             }
         }
         return new ArrayList<>();
+    }
+
+    public static int searchPersonCount(PersonSearch personSearch) {
+        List<Object> args = new ArrayList<>();
+        String sqlStr = makePersonSearchSql(personSearch, args, true);
+        Cursor cursor = null;
+        try {
+            cursor = AppDatabase.getInstance().query(sqlStr, args.toArray());
+            if (cursor.getCount() > 0) {
+                cursor.moveToNext();
+                return (int) cursor.getLong(cursor.getColumnIndex("num"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return 0;
+    }
+
+    private static String makePersonSearchSql(PersonSearch personSearch, List<Object> args, boolean count) {
+        StringBuilder sql;
+        if (count) {
+            sql = new StringBuilder("select count(Person.id) as num from Person");
+        } else {
+            sql = new StringBuilder("select * from Person");
+        }
+        if (!TextUtils.isEmpty(personSearch.getName())) {
+            sql.append(" where Person.name like ?");
+            args.add(personSearch.getName());
+        }
+        if (!TextUtils.isEmpty(personSearch.getIdentifyNumber())) {
+            sql.append(" where Person.identifyNumber like ?");
+            args.add(personSearch.getIdentifyNumber());
+        }
+        if (!TextUtils.isEmpty(personSearch.getPhone())) {
+            sql.append(" where Person.phone like ?");
+            args.add(personSearch.getPhone());
+        }
+        if (personSearch.getUpload() != null) {
+            sql.append(" where Person.upload = ?");
+            args.add(personSearch.getUpload() ? "1" : "0");
+        }
+        if (personSearch.getFace() != null) {
+            if (personSearch.getFace()) {
+                sql.append(" where Person.faceFeature is not null");
+            } else {
+                sql.append(" where Person.faceFeature is null");
+            }
+        }
+        if (personSearch.getStatus() != null) {
+            sql.append(" where Person.status = ?");
+            args.add(personSearch.getStatus());
+        }
+        if (personSearch.getType() != null) {
+            sql.append(" where Person.type = ?");
+            args.add(personSearch.getType());
+        }
+        if (!count) {
+            sql.append(" order by Person.updateTime desc limit ? offset ? * (? - 1)");
+            args.add(personSearch.getPageSize());
+            args.add(personSearch.getPageSize());
+            args.add(personSearch.getPageNum());
+        }
+        return sql.toString();
     }
 
 }

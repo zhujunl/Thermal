@@ -46,21 +46,21 @@ public abstract class BaseViewModelDialogFragment<V extends ViewDataBinding, VM 
         viewModelId = initVariableId();
         binding.setLifecycleOwner(this);
         binding.setVariable(viewModelId, viewModel);
-        viewModel.waitMessage.observe(this, s -> {
+        viewModel.waitMessage.observe(getViewLifecycleOwner(), s -> {
             if (TextUtils.isEmpty(s)) {
                 mListener.dismissWaitDialog();
             } else {
                 mListener.showWaitDialog(s);
             }
         });
-        viewModel.resultMessage.observe(this, s -> {
+        viewModel.resultMessage.observe(getViewLifecycleOwner(), s -> {
             if (TextUtils.isEmpty(s)) {
                 mListener.dismissResultDialog();
             } else {
                 mListener.showResultDialog(s);
             }
         });
-        viewModel.toast.observe(this, toastBody -> ToastManager.toast(toastBody.getMessage(), toastBody.getMode()));
+        viewModel.toast.observe(getViewLifecycleOwner(), toastBody -> ToastManager.toast(toastBody.getMessage(), toastBody.getMode()));
         initData();
         initView();
     }

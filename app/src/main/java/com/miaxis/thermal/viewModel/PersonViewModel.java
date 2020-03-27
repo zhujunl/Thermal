@@ -76,9 +76,14 @@ public class PersonViewModel extends BaseViewModel {
                 });
     }
 
-    public void updatePersonCount() {
+    public void updatePersonCount(boolean search, PersonSearch personSearch) {
         Disposable disposable = Observable.create((ObservableOnSubscribe<Integer>) emitter -> {
-            int count = PersonRepository.getInstance().loadPersonCount();
+            int count;
+            if (search) {
+                count = PersonRepository.getInstance().searchPersonCount(personSearch);
+            } else {
+                count = PersonRepository.getInstance().loadPersonCount();
+            }
             emitter.onNext(count);
         })
                 .subscribeOn(Schedulers.io())

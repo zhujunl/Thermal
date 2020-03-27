@@ -197,6 +197,7 @@
                 android:layout_height="@dimen/custom_input_area_height"
                 android:textSize="16sp"
                 android:text="请选择开始日期"
+                android:gravity="center|start"
                 app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintStart_toEndOf="@id/tv_start_time_hint"
                 app:layout_constraintTop_toTopOf="@id/tv_start_time_hint"/>
@@ -220,6 +221,7 @@
                 android:layout_height="@dimen/custom_input_area_height"
                 android:textSize="16sp"
                 android:text="请选择结束日期"
+                android:gravity="center|start"
                 app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintStart_toEndOf="@id/tv_end_time_hint"
                 app:layout_constraintTop_toTopOf="@id/tv_end_time_hint"/>

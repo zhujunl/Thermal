@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.1"
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -90,6 +90,8 @@ dependencies {
     implementation 'org.java-websocket:Java-WebSocket:1.4.0'
     //AutoSize
     implementation 'me.jessyan:autosize:1.1.2'
+    //SerialPort for xhn temperature
+    implementation 'com.github.licheedev.Android-SerialPort-API:serialport:1.0.1'
     implementation project(path: ':serialport')
     implementation project(path: ':opencv')
     implementation(name: 'fsdktemp', ext: 'aar')

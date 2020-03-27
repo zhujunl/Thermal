@@ -70,9 +70,14 @@ public class RecordViewModel extends BaseViewModel {
                 });
     }
 
-    public void updateRecordCount() {
+    public void updateRecordCount(boolean search, RecordSearch recordSearch) {
         Disposable disposable = Observable.create((ObservableOnSubscribe<Integer>) emitter -> {
-            int count = RecordRepository.getInstance().loadRecordCount();
+            int count;
+            if (search) {
+                count = RecordRepository.getInstance().searchRecordCount(recordSearch);
+            } else {
+                count = RecordRepository.getInstance().loadRecordCount();
+            }
             emitter.onNext(count);
         })
                 .subscribeOn(Schedulers.io())
