@@ -130,6 +130,14 @@ public class GpioManager {
         };
     }
 
+    public void openWhiteLed() {
+        handler.sendMessage(handler.obtainMessage(WHITE_LED));
+    }
+
+    public void closeWhiteLed() {
+        handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
+    }
+
     public void openWhiteLedInTime() {
         if (warning) return;
         executorService.execute(() -> {

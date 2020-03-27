@@ -46,6 +46,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
         if (camera != null) {
             camera.stopPreview();
             Bitmap bitmap = textureView.getBitmap();
+            bitmap = Bitmap.createBitmap( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), textureView.getTransform(null), true );
             handlePhoto(bitmap, camera);
         } else {
             toast.setValue(ToastManager.getToastBody("摄像头未正常启动，请退出后重试", ToastManager.ERROR));

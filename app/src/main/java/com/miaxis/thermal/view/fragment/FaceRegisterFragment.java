@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.databinding.FragmentFaceRegisterBinding;
 import com.miaxis.thermal.manager.CameraManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.custom.RoundBorderView;
@@ -62,6 +63,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
         binding.ivRetry.setOnClickListener(new OnLimitClickHelper(view -> viewModel.retry()));
         binding.ivConfirm.setOnClickListener(new OnLimitClickHelper(v -> viewModel.confirm()));
         viewModel.confirmFlag.observe(this, confirm -> mListener.backToStack(null));
+        GpioManager.getInstance().openWhiteLed();
     }
 
     @Override
@@ -73,6 +75,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
     public void onDestroyView() {
         super.onDestroyView();
         CameraManager.getInstance().closeCamera();
+        GpioManager.getInstance().closeWhiteLed();
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener globalListener = new ViewTreeObserver.OnGlobalLayoutListener() {
