@@ -70,7 +70,8 @@
         <activity
             android:name=".view.activity.MainActivity"
             android:launchMode="singleInstance"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="fontScale|keyboard|keyboardHidden|locale|orientation|screenLayout|uiMode|screenSize|navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

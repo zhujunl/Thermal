@@ -2,27 +2,16 @@ package com.miaxis.thermal.manager.strategy.xhn;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.serialport.api.SerialPort;
 import android.util.Log;
 
 import com.miaxis.thermal.app.App;
+import com.miaxis.thermal.data.entity.Calibration;
+import com.miaxis.thermal.manager.CalibrationManager;
 import com.miaxis.thermal.manager.TemperatureManager;
-import com.miaxis.thermal.manager.ToastManager;
-import com.miaxis.thermal.util.DataUtils;
 import com.vcard.vcardtempsdk.Fsdk;
 import com.vcard.vcardtempsdk.FsdkTempCallback;
 
-import org.zz.api.MXFaceInfoEx;
-
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStrategy {
 
@@ -32,11 +21,16 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
 
     private boolean init = false;
 
+    TemperatureManager.TemperatureListener xhnListener;
+
     @Override
     public void open() {
         if (!init) {
+            Calibration calibration = CalibrationManager.getInstance().getCalibration();
             sdk = new Fsdk(App.getInstance().getApplicationContext());
             sdk.setDelay(100);
+            sdk.setE(calibration.getXhnEmissivity());
+            sdk.setM(calibration.getXhnModel());
             long re = sdk.Init();
             if (re != 0) {
                 Log.e("asd", "温控设备初始化失败");
@@ -45,12 +39,19 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
             sdk.setCallback(new FsdkTempCallback() {
                 @Override
                 public void Temp(float t) {
+                    t = new BigDecimal(t).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
                     temperature = (float) Math.round(t * 10) / 10;
+                    if (xhnListener != null) {
+                        xhnListener.onTemperature(temperature);
+                    }
                 }
 
                 @Override
                 public void HeatBitmap(Bitmap bit) {
                     heatMap = bit;
+                    if (xhnListener != null) {
+                        xhnListener.onHeatMap(heatMap);
+                    }
                 }
             });
             init = true;
@@ -85,4 +86,9 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
             }
         }
     }
+
+    public void setXhnListener(TemperatureManager.TemperatureListener xhnListener) {
+        this.xhnListener = xhnListener;
+    }
+
 }

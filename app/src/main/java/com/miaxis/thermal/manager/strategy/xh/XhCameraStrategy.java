@@ -38,7 +38,6 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
         resetRetryTime();
         Config config = ConfigManager.getInstance().getConfig();
         if (config.isShowCamera()) { //true:近红外，false:可见光
-            textureViewFlip(textureView);
             openInfraredCamera();
             showingCamera = infraredCamera;
             if (listener != null) {
@@ -49,6 +48,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
                 openVisibleCamera();
             }
         } else {
+            textureViewFlip(textureView);
             openVisibleCamera();
             showingCamera = visibleCamera;
             if (listener != null) {
@@ -111,7 +111,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
 
     private void openVisibleCamera() {
         try {
-            visibleCamera = Camera.open(1);
+            visibleCamera = Camera.open(0);
             Camera.Parameters parameters = visibleCamera.getParameters();
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
@@ -163,7 +163,7 @@ public class XhCameraStrategy implements CameraManager.CameraStrategy {
 
     private void openInfraredCamera() {
         try {
-            infraredCamera = Camera.open(0);
+            infraredCamera = Camera.open(1);
             Camera.Parameters parameters = infraredCamera.getParameters();
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);

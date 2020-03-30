@@ -16,11 +16,13 @@ import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.databinding.FragmentConfigBinding;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.ToastManager;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.fragment.xhn.XhnCalibrationFragment;
 import com.miaxis.thermal.viewModel.ConfigViewModel;
 
 public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding, ConfigViewModel> {
@@ -98,6 +100,13 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etFlashTime.setText(String.valueOf(config.getFlashTime()));
         binding.etDevicePassword.setText(config.getDevicePassword());
         binding.ivBack.setOnClickListener(v -> mListener.backToStack(null));
+        binding.tvCalibration.setOnClickListener(new OnLimitClickHelper(view -> {
+            if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                mListener.replaceFragment(XhnCalibrationFragment.newInstance());
+            } else {
+                ToastManager.toast("该版本未开放校准功能", ToastManager.INFO);
+            }
+        }));
     }
 
     @Override
@@ -116,7 +125,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.ivSave.setOnClickListener(v -> {
             try {
-                Config config = viewModel.config.get();
+                Config config = ConfigManager.getInstance().getConfig();
                 if (config != null) {
                     if (TextUtils.isEmpty(binding.etHost.getText().toString())) {
                         ToastManager.toast("请输入平台地址", ToastManager.INFO);

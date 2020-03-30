@@ -10,8 +10,6 @@ import com.miaxis.thermal.manager.ToastManager;
 
 public class ConfigViewModel extends BaseViewModel {
 
-    public ObservableField<Config> config = new ObservableField<>(ConfigManager.getInstance().getConfig());
-
     public MutableLiveData<Boolean> clearTimeStampResult = new SingleLiveEvent<>();
 
     public ConfigViewModel() {

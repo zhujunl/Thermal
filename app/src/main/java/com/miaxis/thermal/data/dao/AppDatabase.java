@@ -12,6 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.miaxis.thermal.data.dao.converter.DateConverter;
 import com.miaxis.thermal.data.dao.converter.StringListConverter;
+import com.miaxis.thermal.data.entity.Calibration;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.Record;
@@ -19,7 +20,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class}, version = 3)
+@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 4)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -50,12 +51,14 @@ public abstract class AppDatabase extends RoomDatabase {
                     }
                 })
                 .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_3_4)
                 .build();
     }
 
-    private static Migration MIGRATION_2_3 = new Migration(1, 3) {
+    private static Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("create table Calibration (id INTEGER primary key, xhnEmissivity INTEGER not null, xhnModel INTEGER not null)");
         }
     };
 
@@ -64,5 +67,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract PersonDao personDao();
 
     public abstract RecordDao recordDao();
+
+    public abstract CalibrationDao calibrationDao();
 
 }

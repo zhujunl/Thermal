@@ -1,6 +1,7 @@
 package com.miaxis.thermal.view.base;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,6 +50,11 @@ public abstract class BaseActivity<V extends ViewDataBinding> extends AppCompatA
         if (hasFocus) {
             hideNavigationBar();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     public void hideNavigationBar() {

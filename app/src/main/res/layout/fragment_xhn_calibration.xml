@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.thermal.viewModel.xhn.XhnCalibrationViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.fragment.xhn.XhnCalibrationFragment">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="温度传感器校准"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:src="@drawable/ic_navigate_before_grey"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_check"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/custom_toolbar_height"
+            android:src="@drawable/ic_check_green"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/v_line"/>
+
+        <View
+            android:id="@+id/v_line"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/main_color"
+            app:layout_constraintTop_toBottomOf="@id/iv_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/ll_parameter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/v_line">
+
+            <LinearLayout style="@style/SettingItem">
+
+                <TextView
+                    style="@style/SettingName"
+                    android:text="辐射率" />
+
+                <View style="@style/VerticalLine" />
+
+                <EditText
+                    android:id="@+id/et_emissivity"
+                    style="@style/SettingBody"
+                    android:background="@color/white"
+                    android:digits="0123456789"
+                    android:hint="850 - 1000"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColor="@color/dark" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <TextView
+                    style="@style/SettingName"
+                    android:text="温度模型" />
+
+                <View style="@style/VerticalLine" />
+
+                <EditText
+                    android:id="@+id/et_model"
+                    style="@style/SettingBody"
+                    android:background="@color/white"
+                    android:digits="123"
+                    android:hint="1,2,3"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:singleLine="true"
+                    android:textColor="@color/dark" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_heat_map"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:scaleType="center"
+            android:layout_margin="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_parameter"
+            app:layout_constraintHeight_percent="0.175"/>
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="@{viewModel.temperature}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_heat_map"
+            app:layout_constraintHeight_percent="0.075"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

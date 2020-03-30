@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.github.anrwatchdog.ANRWatchDog;
 import com.miaxis.thermal.app.App;
@@ -28,8 +29,13 @@ public class WatchDogManager {
      * ================================ 静态内部类单例写法 ================================
      **/
 
+    private Context context;
     private WatchDog faceDog;
     private ANRWatchDog anrWatchDog;
+
+    public void init(Context context) {
+        this.context = context;
+    }
 
     public void startFaceFeedDog() {
         if (faceDog != null) {
@@ -92,9 +98,10 @@ public class WatchDogManager {
         Log.e("asd", "开始进行应用重启，事故原因：" + message);
         new Thread(() -> {
             Looper.prepare();
-            ToastManager.toast(message, ToastManager.ERROR);
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             Looper.loop();
         }).start();
+        Thread.sleep(1000);
         restartApp();
     }
 

@@ -82,6 +82,10 @@ public class TemperatureManager {
         }
     }
 
+    public TemperatureStrategy getTemperatureStrategy() {
+        return temperatureStrategy;
+    }
+
     public interface TemperatureListener {
         void onTemperature(float temperature);
         void onHeatMap(Bitmap bitmap);

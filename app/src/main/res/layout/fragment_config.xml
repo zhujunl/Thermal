@@ -634,20 +634,17 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="发热报警阈值" />
+                        android:text="测温设备校准" />
 
                     <View style="@style/VerticalLine" />
 
-                    <EditText
-                        android:id="@+id/et_fever_score"
+                    <TextView
+                        android:id="@+id/tv_calibration"
                         style="@style/SettingBody"
-                        android:background="@color/white"
-                        android:digits="0123456789."
-                        android:hint="37.2"
-                        android:inputType="number"
-                        android:maxLength="4"
+                        android:background="@color/whitesmoke"
                         android:singleLine="true"
-                        android:textColor="@color/dark" />
+                        android:text="前往校准"
+                        android:textColor="@color/colorPrimary" />
 
                 </LinearLayout>
 
@@ -698,6 +695,27 @@
                             android:layout_weight="0.5" />
 
                     </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="发热报警阈值" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_fever_score"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="0123456789."
+                        android:hint="37.2"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
 
                 </LinearLayout>
 
