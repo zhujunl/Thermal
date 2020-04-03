@@ -1,5 +1,6 @@
 package com.miaxis.thermal.viewModel;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,7 +43,7 @@ public class AddPersonViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> registerFlag = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
-    public MutableLiveData<Boolean> initCardResult = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> cardStatus = new SingleLiveEvent<>();
 
     private String featureCache;
     private String maskFeatureCache;
@@ -185,33 +186,20 @@ public class AddPersonViewModel extends BaseViewModel {
         this.maskFeatureCache = maskFeatureCache;
     }
 
-    public void initCardReader() {
-        CardManager.getInstance().setListener(cardReadListener);
-        initCard.setValue(Boolean.TRUE);
-    }
-
-    public void releaseCardReader() {
-        CardManager.getInstance().release();
-    }
-
-    private CardManager.OnCardReadListener cardReadListener = new CardManager.OnCardReadListener() {
-        @Override
-        public void onDeviceStatus(boolean status) {
-            if (status) {
-                CardManager.getInstance().startReadCard();
-                initCardResult.setValue(Boolean.TRUE);
-            } else {
-                initCardResult.setValue(Boolean.FALSE);
-            }
-        }
-
-        @Override
-        public void onCardRead(IDCardMessage idCardMessage) {
-            if (idCardMessage != null) {
-                name.set(idCardMessage.getName());
-                number.set(idCardMessage.getCardNumber());
+    private CardManager.OnCardReadListener cardListener = idCardMessage -> {
+        if (idCardMessage != null) {
+            name.set(idCardMessage.getName());
+            number.set(idCardMessage.getCardNumber());
 //                CardManager.getInstance().setNeedReadCard(true);
-            }
+        }
+    };
+
+    public CardManager.OnCardStatusListener statusListener = result -> {
+        if (result) {
+            cardStatus.postValue(Boolean.TRUE);
+            CardManager.getInstance().startReadCard(cardListener);
+        } else {
+            cardStatus.postValue(Boolean.FALSE);
         }
     };
 

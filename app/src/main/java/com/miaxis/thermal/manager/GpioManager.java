@@ -9,6 +9,7 @@ import android.util.Log;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
+import com.miaxis.thermal.manager.strategy.mr890.MR890GpioStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
@@ -49,6 +50,8 @@ public class GpioManager {
             gpioStrategy = new TpsGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
             gpioStrategy = new XhnGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            gpioStrategy = new MR890GpioStrategy();
         }
         initGpio(application);
         resetGpio();
@@ -167,7 +170,11 @@ public class GpioManager {
     }
 
     public void openGreenLed() {
-        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P || ValueUtil.DEFAULT_SIGN == Sign.MR870) return;
+        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return;
+        }
         warning = true;
         executorService.execute(() -> {
             try {
@@ -189,7 +196,11 @@ public class GpioManager {
     }
 
     public void openRedLed() {
-        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P || ValueUtil.DEFAULT_SIGN == Sign.MR870) return;
+        if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return;
+        }
         warning = true;
         executorService.execute(() -> {
             try {

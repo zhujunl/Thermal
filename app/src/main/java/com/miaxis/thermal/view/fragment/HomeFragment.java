@@ -57,7 +57,8 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     protected void initView() {
         binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 mListener.replaceFragment(AttendanceLandFragment.newInstance());
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH

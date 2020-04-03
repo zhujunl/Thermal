@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.manager.CalibrationManager;
 import com.miaxis.thermal.manager.CameraManager;
+import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.CrashExceptionManager;
 import com.miaxis.thermal.manager.FaceManager;
@@ -46,6 +47,7 @@ public class App extends Application {
             TTSManager.getInstance().init(getApplicationContext());
             CameraManager.getInstance().init();
             TemperatureManager.getInstance().init();
+            CardManager.getInstance().init();
             GpioManager.getInstance().init(this);
             int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.LICENCE_PATH);
             listener.onInit(result == FaceManager.INIT_SUCCESS, FaceManager.getFaceInitResultDetail(result));

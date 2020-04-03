@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.text.TextUtils;
 
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.event.FaceRegisterEvent;
@@ -97,18 +98,20 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             }
             binding.btnRegister.setText("修改");
         } else {
-            if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 viewModel.initCard.observe(this, initCardObserver);
-                viewModel.initCardResult.observe(this, initCardResultObserver);
-                viewModel.initCardReader();
+                viewModel.cardStatus.observe(this, cardStatusObserver);
+                viewModel.initCard.setValue(Boolean.TRUE);
             }
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
-            }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
                     || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
                 mListener.replaceFragment(FaceRegisterFragment.newInstance());
@@ -193,8 +196,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
-            viewModel.releaseCardReader();
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            CardManager.getInstance().release();
         }
     }
 
@@ -210,10 +214,10 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     }
 
     private Observer<Boolean> initCardObserver = aBoolean -> {
-        CardManager.getInstance().init(getContext());
+        new Thread(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener)).start();
     };
 
-    private Observer<Boolean> initCardResultObserver = result -> {
+    private Observer<Boolean> cardStatusObserver = result -> {
         if (result) {
             binding.etName.setEnabled(false);
             binding.etNumber.setEnabled(false);

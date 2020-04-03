@@ -75,13 +75,15 @@ public class ConfigManager {
                     .devicePassword(ValueUtil.DEFAULT_DEVICE_PASSWORD)
                     .timeStamp(ValueUtil.DEFAULT_TIME_STAMP)
                     .build();
-            if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+            if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 config.setMac(DeviceUtil.getDeviceId(App.getInstance()));
             } else {
                 config.setMac(DeviceUtil.getMacFromHardware());
             }
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
             }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870

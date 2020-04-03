@@ -75,8 +75,10 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         viewModel.fever.observe(this, feverObserver);
         viewModel.faceDormancy.observe(this, dormancyObserver);
         viewModel.heatMapUpdate.observe(this, heatMapObserver);
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             viewModel.initCard.observe(this, initCardObserver);
+            viewModel.cardStatus.observe(this, cardStatusObserver);
         }
     }
 
@@ -106,6 +108,10 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            CardManager.getInstance().release();
+        }
         GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
     }
@@ -187,7 +193,11 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     };
 
     private Observer<Boolean> initCardObserver = aBoolean -> {
-        CardManager.getInstance().init(getContext());
+        new Thread(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener)).start();
+    };
+
+    private Observer<Boolean> cardStatusObserver = status -> {
+
     };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

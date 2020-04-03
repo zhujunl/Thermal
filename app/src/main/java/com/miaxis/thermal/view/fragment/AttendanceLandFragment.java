@@ -23,9 +23,12 @@ import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.databinding.FragmentAttendanceLandBinding;
 import com.miaxis.thermal.manager.AmapManager;
 import com.miaxis.thermal.manager.CameraManager;
+import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.GpioManager;
+import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
+import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
 
@@ -72,6 +75,11 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.fever.observe(this, feverObserver);
         viewModel.faceDormancy.observe(this, dormancyObserver);
         viewModel.heatMapUpdate.observe(this, heatMapObserver);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            viewModel.initCard.observe(this, initCardObserver);
+            viewModel.cardStatus.observe(this, cardStatusObserver);
+        }
     }
 
     @Override
@@ -100,6 +108,10 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            CardManager.getInstance().release();
+        }
         GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
     }
@@ -171,6 +183,14 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         } else {
             GlideApp.with(this).clear(binding.ivHeatMap);
         }
+    };
+
+    private Observer<Boolean> initCardObserver = aBoolean -> {
+        new Thread(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener)).start();
+    };
+
+    private Observer<Boolean> cardStatusObserver = status -> {
+
     };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

@@ -105,4 +105,5 @@ dependencies {
     implementation files('src/main/libs/telpo_temperature_v1.0.5.jar')
     implementation files('src/main/libs/license.jar')
     implementation files('src/main/libs/online_liantian_3-1-6-5-655_0312.jar')
+    implementation files('src/main/libs/IDCardComDriver.jar')
 }

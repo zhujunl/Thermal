@@ -14,7 +14,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH;
+    public static final Sign DEFAULT_SIGN = Sign.MR890;
 
     public static final Gson GSON = new Gson();
 

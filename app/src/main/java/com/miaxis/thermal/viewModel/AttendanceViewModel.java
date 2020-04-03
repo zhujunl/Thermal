@@ -67,8 +67,9 @@ public class AttendanceViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> updateHeader = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> faceDormancy = new SingleLiveEvent<>();
-    public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> heatMapUpdate = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> cardStatus = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -110,8 +111,8 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setDormancyListener(dormancyListener);
         FaceManager.getInstance().startLoop();
         WatchDogManager.getInstance().startFaceFeedDog();
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
-            CardManager.getInstance().setListener(cardReadListener);
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             initCard.setValue(Boolean.TRUE);
         }
     }
@@ -122,9 +123,6 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setFaceHandleListener(null);
         FaceManager.getInstance().setDormancyListener(null);
         FaceManager.getInstance().stopLoop();
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
-            CardManager.getInstance().release();
-        }
         handler.removeMessages(MSG_VERIFY_LOCK);
     }
 
@@ -275,6 +273,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void detectCold() {
         lock = true;
+        CardManager.getInstance().needNextRead(false);
         handler.removeMessages(MSG_VERIFY_LOCK);
         Message message = handler.obtainMessage(MSG_VERIFY_LOCK);
         handler.sendMessageDelayed(message, ConfigManager.getInstance().getConfig().getVerifyCold() * 1000);
@@ -293,7 +292,7 @@ public class AttendanceViewModel extends BaseViewModel {
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);
-        CardManager.getInstance().setNeedReadCard(true);
+        CardManager.getInstance().needNextRead(true);
     }
 
     private void showHeader(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx) {
@@ -322,47 +321,44 @@ public class AttendanceViewModel extends BaseViewModel {
         faceDormancy.postValue(dormancy);
     };
 
-    private CardManager.OnCardReadListener cardReadListener = new CardManager.OnCardReadListener() {
-        @Override
-        public void onDeviceStatus(boolean status) {
-            if (status) {
-                CardManager.getInstance().startReadCard();
-            } else {
-                CardManager.getInstance().release();
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    initCard.setValue(Boolean.TRUE);
-                }, 5 * 1000);
-            }
-        }
-
-        @Override
-        public void onCardRead(IDCardMessage idCardMessage) {
-            if (idCardMessage != null) {
-                //如果已经在人证核验模式下，直接返回
-                if (cardMode) return;
-                Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
+    private CardManager.OnCardReadListener cardListener = idCardMessage -> {
+        if (idCardMessage != null) {
+            if (lock) return;
+            //如果已经在人证核验模式下，直接返回
+            if (cardMode) return;
+            Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
 //                    byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
-                    PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
-                    emitter.onNext(cardFaceFeature);
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(cardFaceFeature -> {
-                            if (cardFaceFeature.getFaceFeature() != null || cardFaceFeature.getMaskFaceFeature() != null) {
-                                onIDCardMessage(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
-                            } else {
-                                toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
-                                CardManager.getInstance().setNeedReadCard(true);
-                            }
-                        }, throwable -> {
-                            throwable.printStackTrace();
-                            Log.e("asd", "证件照片处理失败");
+                PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
+                emitter.onNext(cardFaceFeature);
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(cardFaceFeature -> {
+                        if (cardFaceFeature.getFaceFeature() != null || cardFaceFeature.getMaskFaceFeature() != null) {
+                            onIDCardMessage(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
+                        } else {
                             toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
-                            CardManager.getInstance().setNeedReadCard(true);
-                        });
-            } else {
+                            CardManager.getInstance().needNextRead(true);
+                        }
+                    }, throwable -> {
+                        throwable.printStackTrace();
+                        Log.e("asd", "证件照片处理失败");
+                        toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
+                        CardManager.getInstance().needNextRead(true);
+                    });
+        }
+    };
 
-            }
+    public CardManager.OnCardStatusListener statusListener = result -> {
+        if (result) {
+            cardStatus.postValue(Boolean.TRUE);
+            CardManager.getInstance().startReadCard(cardListener);
+        } else {
+            cardStatus.postValue(Boolean.FALSE);
+            CardManager.getInstance().release();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                initCard.setValue(Boolean.TRUE);
+            }, 10 * 1000);
         }
     };
 
