@@ -4,6 +4,10 @@ import android.app.Application;
 import android.serialport.api.SerialPort;
 
 import com.miaxis.thermal.manager.GpioManager;
+import com.nexgo.oaf.apiv3.APIProxy;
+import com.nexgo.oaf.apiv3.DeviceEngine;
+import com.nexgo.oaf.apiv3.device.led.LEDDriver;
+import com.nexgo.oaf.apiv3.device.led.LightModeEnum;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -13,17 +17,14 @@ import java.io.OutputStream;
 
 public class MR890GpioStrategy implements GpioManager.GpioStrategy {
 
-    private SerialPort serialPort;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private DeviceEngine deviceEngine;
+    private LEDDriver ledDriver;
 
     @Override
     public void init(Application application) {
         try {
-            serialPort = new SerialPort();
-            FileDescriptor fileDescriptor = serialPort.open("/dev/ttyS3", 9600, 0);
-            inputStream = new FileInputStream(fileDescriptor);
-            outputStream = new FileOutputStream(fileDescriptor);
+            deviceEngine = APIProxy.getDeviceEngine(application);
+            ledDriver = deviceEngine.getLEDDriver();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,7 +37,11 @@ public class MR890GpioStrategy implements GpioManager.GpioStrategy {
 
     @Override
     public void controlWhiteLed(boolean status) {
-
+        try {
+            ledDriver.setLed(LightModeEnum.YELLOW, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -56,11 +61,7 @@ public class MR890GpioStrategy implements GpioManager.GpioStrategy {
 
     public void controlDoor(boolean bOpen) {
         try {
-            if (bOpen) {
-                outputStream.write((byte) 0x01);//01开门
-            } else {
-                outputStream.write((byte) 0xf1);//f1关门
-            }
+            ledDriver.setLed(LightModeEnum.BLUE, bOpen);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -32,31 +32,32 @@ public class MR870CameraStrategy implements CameraManager.CameraStrategy {
     private int retryTime = 0;
 
     @Override
-    public void openCamera(@NonNull TextureView textureView, CameraManager.OnCameraOpenListener listener) {
-        resetRetryTime();
-        Config config = ConfigManager.getInstance().getConfig();
-        if (config.isShowCamera()) { //true:近红外，false:可见光
-            openInfraredCamera();
-            showingCamera = infraredCamera;
-            if (listener != null) {
-                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize());
-            }
-            if (!config.isFaceCamera()) {
-                resetRetryTime();
-                openVisibleCamera();
-            }
-        } else {
-            openVisibleCamera();
-            showingCamera = visibleCamera;
-            if (listener != null) {
-                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize());
-            }
-            if (config.isFaceCamera() || config.isLiveness()) {
-                resetRetryTime();
+    public void openCamera(@NonNull TextureView textureView, @NonNull CameraManager.OnCameraOpenListener listener) {
+        try {
+            resetRetryTime();
+            Config config = ConfigManager.getInstance().getConfig();
+            if (config.isShowCamera()) { //true:近红外，false:可见光
                 openInfraredCamera();
+                showingCamera = infraredCamera;
+                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize(), "");
+                if (!config.isFaceCamera()) {
+                    resetRetryTime();
+                    openVisibleCamera();
+                }
+            } else {
+                openVisibleCamera();
+                showingCamera = visibleCamera;
+                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize(), "");
+                if (config.isFaceCamera() || config.isLiveness()) {
+                    resetRetryTime();
+                    openInfraredCamera();
+                }
             }
+            textureView.setSurfaceTextureListener(textureListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            listener.onCameraOpen(null, "");
         }
-        textureView.setSurfaceTextureListener(textureListener);
     }
 
     @Override

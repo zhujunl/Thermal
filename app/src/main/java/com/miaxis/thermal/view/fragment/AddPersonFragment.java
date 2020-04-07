@@ -108,12 +108,12 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                 mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 mListener.replaceFragment(FaceRegisterFragment.newInstance());
             }
         }));

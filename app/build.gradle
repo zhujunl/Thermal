@@ -96,6 +96,7 @@ dependencies {
     implementation project(path: ':opencv')
     implementation(name: 'fsdktemp', ext: 'aar')
     implementation(name: 'fsdk', ext: 'aar')
+    implementation(name: 'nexgo-smartpos-sdk-v2.3.3_20191226', ext: 'aar')
     implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')
     implementation files('src/main/libs/AMap_Search_V6.5.0_20180930.jar')
     implementation files('src/main/libs/XHApi.jar')
@@ -106,4 +107,5 @@ dependencies {
     implementation files('src/main/libs/license.jar')
     implementation files('src/main/libs/online_liantian_3-1-6-5-655_0312.jar')
     implementation files('src/main/libs/IDCardComDriver.jar')
+    implementation files('src/main/libs/nexgo-smartpos-sdk-v2.3.3_20191226-sources.jar')
 }

@@ -15,6 +15,7 @@ import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.databinding.FragmentConfigBinding;
 import com.miaxis.thermal.manager.ConfigManager;
+import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DeviceUtil;
@@ -54,6 +55,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
     protected void initData() {
         viewModel.clearTimeStampResult.observe(this, clearTimeStamp);
         Config config = ConfigManager.getInstance().getConfig();
+        binding.tvFaceVersion.setText(FaceManager.getInstance().faceVersion());
         binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
         if (TextUtils.equals(config.getServerMode(), "0")) {
             binding.rbMix.setChecked(true);

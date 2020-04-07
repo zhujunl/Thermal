@@ -20,7 +20,6 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class MR890CameraStrategy implements CameraManager.CameraStrategy {
-
     public static final int PRE_WIDTH = 640;
     public static final int PRE_HEIGHT = 480;
     public static final int PIC_WIDTH = 640;
@@ -35,32 +34,32 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
     private int retryTime = 0;
 
     @Override
-    public void openCamera(@NonNull TextureView textureView, CameraManager.OnCameraOpenListener listener) {
-        resetRetryTime();
-        Config config = ConfigManager.getInstance().getConfig();
-        if (config.isShowCamera()) { //true:近红外，false:可见光
-            openInfraredCamera();
-            showingCamera = infraredCamera;
-            if (listener != null) {
-                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize());
-            }
-            if (!config.isFaceCamera()) {
-                resetRetryTime();
-                openVisibleCamera();
-            }
-        } else {
-//            textureViewFlip(textureView);
-            openVisibleCamera();
-            showingCamera = visibleCamera;
-            if (listener != null) {
-                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize());
-            }
-            if (config.isFaceCamera() || config.isLiveness()) {
-                resetRetryTime();
+    public void openCamera(@NonNull TextureView textureView, @NonNull CameraManager.OnCameraOpenListener listener) {
+        try {
+            resetRetryTime();
+            Config config = ConfigManager.getInstance().getConfig();
+            if (config.isShowCamera()) { //true:近红外，false:可见光
                 openInfraredCamera();
+                showingCamera = infraredCamera;
+                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize(), "");
+                if (!config.isFaceCamera()) {
+                    resetRetryTime();
+                    openVisibleCamera();
+                }
+            } else {
+                openVisibleCamera();
+                showingCamera = visibleCamera;
+                listener.onCameraOpen(showingCamera.getParameters().getPreviewSize(), "");
+                if (config.isFaceCamera() || config.isLiveness()) {
+                    resetRetryTime();
+                    openInfraredCamera();
+                }
             }
+            textureView.setSurfaceTextureListener(textureListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            listener.onCameraOpen(null, "");
         }
-        textureView.setSurfaceTextureListener(textureListener);
     }
 
     @Override
@@ -83,27 +82,18 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
 
     @Override
     public Size getPreviewSize() {
-        return new Size(PRE_WIDTH, PRE_HEIGHT);
+        return new Size(PRE_HEIGHT, PRE_WIDTH);
     }
 
     @Override
     public int getOrientation() {
-        return 0;
+        Config config = ConfigManager.getInstance().getConfig();
+        return config.isFaceCamera() ? 270 : 90;
     }
 
     @Override
     public boolean faceRectFlip() {
-//        Config config = ConfigManager.getInstance().getConfig();
-//        return !config.isShowCamera();
         return true;
-    }
-
-    private void textureViewFlip(TextureView textureView) {
-        Matrix matrix = textureView.getTransform(new Matrix());
-        matrix.setScale(-1, 1);
-        int width = textureView.getWidth();
-        matrix.postTranslate(width, 0);
-        textureView.setTransform(matrix);
     }
 
     private void resetRetryTime() {
@@ -129,7 +119,7 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
                 }
             }
             visibleCamera.setParameters(parameters);
-//            visibleCamera.setDisplayOrientation(90);
+            visibleCamera.setDisplayOrientation(90);
             visibleCamera.setPreviewCallback(visiblePreviewCallback);
             visibleCamera.startPreview();
         } catch (Exception e) {
@@ -181,9 +171,8 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
                 }
             }
             infraredCamera.setParameters(parameters);
-//            infraredCamera.setDisplayOrientation(90);
+            infraredCamera.setDisplayOrientation(90);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
-            GpioManager.getInstance().setInfraredLedForXH(true);
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,10 +188,6 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
     private void closeInfraredCamera() {
         try {
             if (infraredCamera != null) {
-                GpioManager.getInstance().setInfraredLedForXH(false);
-                XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
-                xhGpioStrategy.setGpio(3, 0);
-                xhGpioStrategy.setGpio(4, 0);
                 infraredCamera.setPreviewCallback(null);
                 infraredCamera.stopPreview();
                 infraredCamera.release();

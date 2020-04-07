@@ -124,14 +124,18 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         }
     };
 
-    private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
-        int rootHeight = binding.flCameraRoot.getHeight();
-        int rootWidth = binding.flCameraRoot.getWidth();
-        resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
-        resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
-        binding.rsvRect.setRootSize(rootWidth, rootHeight);
-        binding.rsvRect.setZoomRate((float) rootWidth / CameraManager.getInstance().getPreviewSize().getWidth());
-        viewModel.startFaceDetect();
+    private CameraManager.OnCameraOpenListener cameraListener = (previewSize, message) -> {
+        if (previewSize == null) {
+            mListener.showResultDialog("摄像机多次打开失败：\n" + message);
+        } else {
+            int rootHeight = binding.flCameraRoot.getHeight();
+            int rootWidth = binding.flCameraRoot.getWidth();
+            resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
+            resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
+            binding.rsvRect.setRootSize(rootWidth, rootHeight);
+            binding.rsvRect.setZoomRate((float) rootWidth / CameraManager.getInstance().getPreviewSize().getWidth());
+            viewModel.startFaceDetect();
+        }
     };
 
     private Observer<FaceDraw> faceDrawObserver = faceDraw -> {

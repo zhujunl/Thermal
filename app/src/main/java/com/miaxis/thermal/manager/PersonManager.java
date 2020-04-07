@@ -138,19 +138,19 @@ public class PersonManager {
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
-            if ((TextUtils.isEmpty(person.getFaceFeature()) || TextUtils.isEmpty(person.getMaskFaceFeature())) && bitmap != null) {
+            if (bitmap != null) {
+                String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                FileUtil.saveBitmap(bitmap, filePath);
+                person.setFacePicturePath(filePath);
                 PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                 if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
                     person.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
                     person.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
                 } else {
+                    person.setFaceFeature(null);
+                    person.setMaskFaceFeature(null);
                     person.setRemarks("图片处理失败，" + photoFaceFeature.getMessage());
                 }
-            }
-            if (bitmap != null) {
-                String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-                FileUtil.saveBitmap(bitmap, filePath);
-                person.setFacePicturePath(filePath);
             } else {
                 person.setFacePicturePath("");
                 person.setRemarks("图片下载失败");

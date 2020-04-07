@@ -105,7 +105,7 @@ public class CameraManager {
     }
 
     public interface CameraStrategy {
-        void openCamera(@NonNull TextureView textureView, OnCameraOpenListener listener);
+        void openCamera(@NonNull TextureView textureView, @NonNull OnCameraOpenListener listener);
         void closeCamera();
         Camera getShowingCamera();
         Size getCameraPreviewSize();
@@ -115,7 +115,7 @@ public class CameraManager {
     }
 
     public interface OnCameraOpenListener {
-        void onCameraOpen(Camera.Size previewSize);
+        void onCameraOpen(Camera.Size previewSize, String message);
     }
 
 }

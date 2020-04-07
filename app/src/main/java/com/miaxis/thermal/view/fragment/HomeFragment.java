@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.databinding.FragmentHomeBinding;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.ValueUtil;
@@ -57,12 +58,12 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     protected void initView() {
         binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                 mListener.replaceFragment(AttendanceLandFragment.newInstance());
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 mListener.replaceFragment(AttendanceFragment.newInstance());
             }
         }));
@@ -77,6 +78,9 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     @Override
     public void onResume() {
         super.onResume();
+        if (App.getInstance().isFirstIn()) {
+            binding.clAttendance.performClick();
+        }
     }
 
     @Override

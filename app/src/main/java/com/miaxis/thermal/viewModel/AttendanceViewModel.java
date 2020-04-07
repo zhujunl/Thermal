@@ -236,8 +236,9 @@ public class AttendanceViewModel extends BaseViewModel {
         showHeader(mxRGBImage, mxFaceInfoEx);
         HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
-        if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
-            GpioManager.getInstance().openDoorForMR870();
+        if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            GpioManager.getInstance().openDoorForGate();
         }
     }
 
@@ -387,7 +388,8 @@ public class AttendanceViewModel extends BaseViewModel {
         }
         Observable.create((ObservableOnSubscribe<Float>) emitter -> {
             float faceMatchScore = FaceManager.getInstance().matchFeature(feature, idCardMessage.getCardFeature());
-            float maskFaceMatchScore = FaceManager.getInstance().matchFeature(feature, idCardMessage.getMaskCardFeature());
+            float maskFaceMatchScore = FaceManager.getInstance().matchMaskFeature(feature, idCardMessage.getMaskCardFeature());
+            Log.e("asd", "score      " + faceMatchScore + "     " + maskFaceMatchScore);
             emitter.onNext(Math.max(faceMatchScore, maskFaceMatchScore));
         })
                 .subscribeOn(Schedulers.io())
@@ -403,6 +405,10 @@ public class AttendanceViewModel extends BaseViewModel {
                         }
                         showHeader(mxRGBImage, mxFaceInfoEx);
                         detectCold();
+                        if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                            GpioManager.getInstance().openDoorForGate();
+                        }
                     } else {
                         hint.set(idCardMessage.getName() + "-比对失败");
                         FaceManager.getInstance().setNeedNextFeature(true);

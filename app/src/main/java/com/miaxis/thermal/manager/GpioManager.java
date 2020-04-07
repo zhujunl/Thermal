@@ -237,7 +237,7 @@ public class GpioManager {
         }
     }
 
-    public void openDoorForMR870() {
+    public void openDoorForGate() {
         if (gpioStrategy instanceof MR870GpioStrategy) {
             MR870GpioStrategy mr870GpioStrategy = (MR870GpioStrategy) gpioStrategy;
             executorService.execute(() -> {
@@ -245,6 +245,17 @@ public class GpioManager {
                     mr870GpioStrategy.controlDoor(true);
                     Thread.sleep(500);
                     mr870GpioStrategy.controlDoor(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } else if (gpioStrategy instanceof MR890GpioStrategy) {
+            MR890GpioStrategy mr890GpioStrategy = (MR890GpioStrategy) gpioStrategy;
+            executorService.execute(() -> {
+                try {
+                    mr890GpioStrategy.controlDoor(true);
+                    Thread.sleep(500);
+                    mr890GpioStrategy.controlDoor(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -124,21 +124,25 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         }
     };
 
-    private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
-        int rootWidth;
-        int rootHeight;
-        if (binding.flCameraRoot.getHeight() / binding.flCameraRoot.getWidth() < previewSize.height /previewSize.width) {
+    private CameraManager.OnCameraOpenListener cameraListener = (previewSize, message) -> {
+        if (previewSize == null) {
+            mListener.showResultDialog("摄像机多次打开失败：\n" + message);
+        } else {
+            int rootWidth;
+            int rootHeight;
+//        if (binding.flCameraRoot.getHeight() / binding.flCameraRoot.getWidth() < previewSize.height / previewSize.width) {
             rootHeight = binding.flCameraRoot.getHeight();
             rootWidth = rootHeight * previewSize.height / previewSize.width;
-        } else {
-            rootWidth = binding.flCameraRoot.getWidth();
-            rootHeight = rootWidth * previewSize.width / previewSize.height;
+//        } else {
+//            rootWidth = binding.flCameraRoot.getWidth();
+//            rootHeight = rootWidth * previewSize.width / previewSize.height;
+//        }
+            resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
+            resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
+            binding.rsvRect.setRootSize(rootWidth, rootHeight);
+            binding.rsvRect.setZoomRate((float) rootWidth / CameraManager.getInstance().getPreviewSize().getWidth());
+            viewModel.startFaceDetect();
         }
-        resetLayoutParams(binding.tvCamera, rootWidth, rootHeight);
-        resetLayoutParams(binding.rsvRect, rootWidth, rootHeight);
-        binding.rsvRect.setRootSize(rootWidth, rootHeight);
-        binding.rsvRect.setZoomRate((float) rootWidth / CameraManager.getInstance().getPreviewSize().getWidth());
-        viewModel.startFaceDetect();
     };
 
     private Observer<FaceDraw> faceDrawObserver = faceDraw -> {

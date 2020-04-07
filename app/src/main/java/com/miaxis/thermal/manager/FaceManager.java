@@ -857,6 +857,14 @@ public class FaceManager {
         }
     }
 
+    /**
+     * 获取人脸算法版本信息
+     * @return 版本信息
+     */
+    public String faceVersion() {
+        return mxFaceAPI.mxAlgVersion();
+    }
+
     private MXFaceInfoEx sortMXFaceInfoEx(MXFaceInfoEx[] mxFaceInfoExList) {
         MXFaceInfoEx maxMXFaceInfoEx = mxFaceInfoExList[0];
         for (MXFaceInfoEx mxFaceInfoEx : mxFaceInfoExList) {

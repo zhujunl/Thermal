@@ -91,27 +91,30 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
         }
     };
 
-    private CameraManager.OnCameraOpenListener cameraListener = previewSize -> {
-        FrameLayout.LayoutParams textureViewLayoutParams = (FrameLayout.LayoutParams) binding.rtvCamera.getLayoutParams();
-        int newHeight = textureViewLayoutParams.width * previewSize.width / previewSize.height;
-        int newWidth = textureViewLayoutParams.width;
+    private CameraManager.OnCameraOpenListener cameraListener = (previewSize, message) -> {
+        if (previewSize == null) {
+            mListener.showResultDialog("摄像机多次打开失败：\n" + message);
+        } else {
+            FrameLayout.LayoutParams textureViewLayoutParams = (FrameLayout.LayoutParams) binding.rtvCamera.getLayoutParams();
+            int newHeight = textureViewLayoutParams.width * previewSize.width / previewSize.height;
+            int newWidth = textureViewLayoutParams.width;
 
-        roundFrameLayout = new RoundFrameLayout(getContext());
-        int sideLength = Math.min(newWidth, newHeight);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sideLength, sideLength);
-        roundFrameLayout.setLayoutParams(layoutParams);
-        FrameLayout parentView = (FrameLayout) binding.rtvCamera.getParent();
-        parentView.removeView(binding.rtvCamera);
-        parentView.addView(roundFrameLayout);
+            roundFrameLayout = new RoundFrameLayout(getContext());
+            int sideLength = Math.min(newWidth, newHeight);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sideLength, sideLength);
+            roundFrameLayout.setLayoutParams(layoutParams);
+            FrameLayout parentView = (FrameLayout) binding.rtvCamera.getParent();
+            parentView.removeView(binding.rtvCamera);
+            parentView.addView(roundFrameLayout);
 
-        roundFrameLayout.addView(binding.rtvCamera);
-        FrameLayout.LayoutParams newTextureViewLayoutParams = new FrameLayout.LayoutParams(newWidth, newHeight);
-        newTextureViewLayoutParams.topMargin = -(newHeight - newWidth) / 2;
-        binding.rtvCamera.setLayoutParams(newTextureViewLayoutParams);
+            roundFrameLayout.addView(binding.rtvCamera);
+            FrameLayout.LayoutParams newTextureViewLayoutParams = new FrameLayout.LayoutParams(newWidth, newHeight);
+            newTextureViewLayoutParams.topMargin = -(newHeight - newWidth) / 2;
+            binding.rtvCamera.setLayoutParams(newTextureViewLayoutParams);
 
-        View siblingView = roundFrameLayout != null ? roundFrameLayout : binding.rtvCamera;
-        roundBorderView = new RoundBorderView(getContext());
-        ((FrameLayout) siblingView.getParent()).addView(roundBorderView, siblingView.getLayoutParams());
+            View siblingView = roundFrameLayout != null ? roundFrameLayout : binding.rtvCamera;
+            roundBorderView = new RoundBorderView(getContext());
+            ((FrameLayout) siblingView.getParent()).addView(roundBorderView, siblingView.getLayoutParams());
 
 //        new Handler(Looper.getMainLooper()).post(() -> {
 //            roundFrameLayout.setRadius(Math.min(roundFrameLayout.getWidth(), roundFrameLayout.getHeight()) / 2);
@@ -119,7 +122,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 //            roundBorderView.setRadius(Math.min(roundBorderView.getWidth(), roundBorderView.getHeight()) / 2);
 //            roundBorderView.turnRound();
 //        });
-
+        }
     };
 
 }

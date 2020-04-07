@@ -24,6 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 public class App extends Application {
 
     private static App instance;
+    private boolean firstIn = true;
 
     @Override
     public void onCreate() {
@@ -60,6 +61,15 @@ public class App extends Application {
 
     public interface OnAppInitListener {
         void onInit(boolean result, String message);
+    }
+
+    public boolean isFirstIn() {
+        if (firstIn) {
+            firstIn = false;
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
