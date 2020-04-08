@@ -135,6 +135,7 @@ public class FaceManager {
     private void previewDataLoop() {
         try {
             if (this.lastVisiblePreviewData != null || this.lastInfraredPreviewData != null) {
+                WatchDogManager.getInstance().feedFaceDog();
                 Config config = ConfigManager.getInstance().getConfig();
                 if (dormancy) {
                     Log.e("asd", "休眠中");
@@ -162,7 +163,6 @@ public class FaceManager {
     }
 
     private void verify(byte[] detectData, byte[] livenessData) throws Exception {
-        WatchDogManager.getInstance().feedFaceDog();
         Size cameraPreviewSize = CameraManager.getInstance().getCameraPreviewSize();
         if (cameraPreviewSize == null) {
             throw new MyException("未获取到摄像头尺寸信息");

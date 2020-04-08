@@ -60,8 +60,8 @@ public class MXFaceAPI {
 	 * @param    pImage    - 输入，RGB图像数据
 	 * 			 nWidth    - 输入，图像宽度
 	 * 			 nHeight   - 输入，图像高度
-	 * 			 pFaceNum  - 输入/输出，人脸数,内存分配大小 new int[262*100],结构详见MXFaceInfoEx
-	 * 			 pFaceInfo - 输出，人脸信息
+	 * 			 pFaceNum  - 输入/输出，人脸数
+	 * 			 pFaceInfo - 输出，人脸信息,内存分配大小 new int[262*100],结构详见MXFaceInfoEx
 	 * @return   0-成功，其他-失败
 	 * */
 	public int mxDetectFace(byte[] pImage, int nWidth, int nHeight,
@@ -71,31 +71,6 @@ public class MXFaceAPI {
 		}
 		int[] bInfo = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
 		int nRet = m_dllFaceApi.detectFace(pImage, nWidth, nHeight,pFaceNum,bInfo);
-		if(nRet!=0){
-			pFaceNum[0] = 0;
-			return nRet;
-		}
-		MXFaceInfoEx.Int2MXFaceInfoEx(pFaceNum[0],bInfo,pFaceInfo);
-		return 0;
-	}
-
-	/**
-	 * @author   chen.gs
-	 * @category 人脸检测,用于静态图像检测（中正闸机头的双目摄像头）
-	 * @param    pImage    - 输入，RGB图像数据
-	 * 			 nWidth    - 输入，图像宽度
-	 * 			 nHeight   - 输入，图像高度
-	 * 			 pFaceNum  - 输入/输出，人脸数,内存分配大小 new int[262*100],结构详见MXFaceInfoEx
-	 * 			 pFaceInfo - 输出，人脸信息
-	 * @return   0-成功，其他-失败
-	 * */
-	public int mxDetectFaceZJ(byte[] pImage, int nWidth, int nHeight,
-							  int[] pFaceNum, MXFaceInfoEx[] pFaceInfo) {
-		if (m_bInit!=true){
-			return MXErrorCode.ERR_NO_INIT;
-		}
-		int[] bInfo = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
-		int nRet = m_dllFaceApi.detectFaceZJ(pImage, nWidth, nHeight,pFaceNum,bInfo);
 		if(nRet!=0){
 			pFaceNum[0] = 0;
 			return nRet;
@@ -165,8 +140,8 @@ public class MXFaceAPI {
 	 * @author   chen.gs
 	 * @category 根据人脸检测结果，进行人脸图像质量评价，用于过滤参与人脸比对识别的图像
 	 * @param     pImage     	- 输入，RGB图像数据
-	 * 			  nImgWidth     - 输入，图像宽度
-	 * 			  nImgHeight    - 输入，图像高度
+	 * 			  nWidth        - 输入，图像宽度
+	 * 			  nHeight       - 输入，图像高度
 	 * 			  nFaceNum    	- 输入，人脸数
 	 * 			  pFaceInfo     - 输入/输出，人脸信息，质量分数通过MXFaceInfoEx结构体quality属性获取
 	 * @return   0-成功，其他-失败
@@ -215,7 +190,7 @@ public class MXFaceAPI {
 
 	/**
 	 * @author   chen.gs
-	 * @category  可见光活体检测（配合指定型号双目摄像头，中正大屏机摄像头）
+	 * @category  可见光活体检测（配合指定型号双目摄像头）
 	 * @param     pImage        - 输入，可见光图像数据
 	 * 			  nImgWidth  	- 输入，图像宽度
 	 * 			  nImgHeight  	- 输入，图像高度
@@ -237,7 +212,7 @@ public class MXFaceAPI {
 
 	/**
 	 * @author   chen.gs
-	 * @category  近红外活体检测（配合指定型号双目摄像头，中正大屏机摄像头）
+	 * @category  近红外活体检测（配合指定型号双目摄像头）
 	 * @param     pImage        - 输入，近红外图像数据
 	 * 			  nImgWidth  	- 输入，图像宽度
 	 * 			  nImgHeight  	- 输入，图像高度
@@ -254,29 +229,6 @@ public class MXFaceAPI {
 		int[] bInfo = new int[MXFaceInfoEx.SIZE * nFaceNum];
 		MXFaceInfoEx.MXFaceInfoEx2Int(nFaceNum,bInfo,pFaceInfo);
 		int nRet = m_dllFaceApi.nirLivenessDetect(pImage, nImgWidth, nImgHeight,nFaceNum,bInfo);
-		MXFaceInfoEx.Int2MXFaceInfoEx(nFaceNum,bInfo,pFaceInfo);
-		return nRet;
-	}
-
-	/**
-	 * @author   chen.gs
-	 * @category  近红外活体检测（配合指定型号双目摄像头，中正闸机头摄像头）
-	 * @param     pImage        - 输入，近红外图像数据
-	 * 			  nImgWidth  	- 输入，图像宽度
-	 * 			  nImgHeight  	- 输入，图像高度
-	 * 			  nFaceNum    	- 输入，人脸数
-	 * 			  pFaceInfo 	- 输入/输出，人脸信息，活体分数通过MXFaceInfoEx结构体liveness属性获取
-	 * @return   0-成功，其他-失败
-	 * */
-	public int mxNIRLivenessDetectZJ(byte[] pImage, int nImgWidth, int nImgHeight, int nFaceNum, MXFaceInfoEx[] pFaceInfo)
-	{
-		if (m_bInit!=true){
-			return MXErrorCode.ERR_NO_INIT;
-		}
-
-		int[] bInfo = new int[MXFaceInfoEx.SIZE * nFaceNum];
-		MXFaceInfoEx.MXFaceInfoEx2Int(nFaceNum,bInfo,pFaceInfo);
-		int nRet = m_dllFaceApi.nirLivenessDetectZJ(pImage, nImgWidth, nImgHeight,nFaceNum,bInfo);
 		MXFaceInfoEx.Int2MXFaceInfoEx(nFaceNum,bInfo,pFaceInfo);
 		return nRet;
 	}

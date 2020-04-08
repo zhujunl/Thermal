@@ -42,6 +42,9 @@ public class MXFaceInfoEx {
 	public int yaw;           // 左右转头
 	public int roll;          // 平面内偏头
 
+	public MXFaceInfoEx() {
+	}
+
 	public MXFaceInfoEx(MXFaceInfoEx mxFaceInfoEx) {
 		this.x = mxFaceInfoEx.x;
 		this.y = mxFaceInfoEx.y;
@@ -70,9 +73,6 @@ public class MXFaceInfoEx {
 		System.arraycopy(mxFaceInfoEx.keypt_x, 0, this.keypt_x, 0, this.keypt_x.length);
 		this.keypt_y = new int[MAX_KEY_POINT_NUM];
 		System.arraycopy(mxFaceInfoEx.keypt_y, 0, this.keypt_y, 0, this.keypt_y.length);
-	}
-
-	public MXFaceInfoEx() {
 	}
 
 	public static int Int2MXFaceInfoEx(int iFaceNum, int[] iFaceInfo, MXFaceInfoEx[] pMXFaceInfoEx) {

@@ -114,15 +114,15 @@ public class RecordModel {
         }
         if (!TextUtils.isEmpty(recordSearch.getName())) {
             sql.append(" where Record.name like ?");
-            args.add(recordSearch.getName());
+            args.add("%" + recordSearch.getName() + "%");
         }
         if (!TextUtils.isEmpty(recordSearch.getIdentifyNumber())) {
             sql.append(" where Record.identifyNumber like ?");
-            args.add(recordSearch.getIdentifyNumber());
+            args.add("%" + recordSearch.getIdentifyNumber() + "%");
         }
         if (!TextUtils.isEmpty(recordSearch.getPhone())) {
             sql.append(" where Record.phone like ?");
-            args.add(recordSearch.getPhone());
+            args.add("%" + recordSearch.getPhone() + "%");
         }
         if (recordSearch.getUpload() != null) {
             sql.append(" where Record.upload = ?");

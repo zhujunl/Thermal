@@ -43,6 +43,7 @@ public class RecordAdapter extends BaseViewModelAdapter<Record, ItemRecordBindin
         holder.getBinding().tvRecordTemperature.setTextColor(item.getTemperature() < ConfigManager.getInstance().getConfig().getFeverScore()
                 ? context.getResources().getColor(R.color.darkgreen)
                 : context.getResources().getColor(R.color.darkred));
+        holder.getBinding().tvRecordTemperature.setText(item.getTemperature() == -1f ? "无" : String.valueOf(item.getTemperature()));
         holder.getBinding().llItem.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(holder.getBinding().llItem, holder.getLayoutPosition());

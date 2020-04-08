@@ -85,6 +85,6 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
 
     @Override
     public void onBackPressed() {
-
+        mListener.exitApp();
     }
 }

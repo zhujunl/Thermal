@@ -57,20 +57,6 @@ public class JustouchFaceApi {
 
     /**
      * @author   chen.gs
-     * @category 人脸检测,用于静态图像检测（中正闸机头的双目摄像头）
-     * @param    pImage    - 输入，RGB图像数据
-     * 			 nWidth    - 输入，图像宽度
-     * 			 nHeight   - 输入，图像高度
-     * 			 pFaceNum  - 输入/输出，人脸数,内存分配大小 new int[262*100],结构详见MXFaceInfoEx
-     * 			 pFaceInfo - 输出，人脸信息
-     * @return   0-成功，其他-失败
-     * */
-    public native int detectFaceZJ(byte[] pImage, int nWidth, int nHeight,
-                                   int[] pFaceNum, int[] pFaceInfo);
-
-
-    /**
-     * @author   chen.gs
      * @category 人脸特征提取
      * @param    pImage       - 输入，RGB图像数据
      * 			 nWidth       - 输入，图像宽度
@@ -121,7 +107,7 @@ public class JustouchFaceApi {
 
     /**
      * @author   chen.gs
-     * @category  可见光活体检测（配合指定型号双目摄像头，中正大屏机摄像头）
+     * @category  可见光活体检测（配合指定型号双目摄像头）
      * @param     pImage        - 输入，可见光图像数据
      * 			  nImgWidth  	- 输入，图像宽度
      * 			  nImgHeight  	- 输入，图像高度
@@ -133,7 +119,7 @@ public class JustouchFaceApi {
 
     /**
      * @author   chen.gs
-     * @category  近红外活体检测（配合指定型号双目摄像头，中正大屏机摄像头）
+     * @category  近红外活体检测（配合指定型号双目摄像头）
      * @param     pImage        - 输入，近红外图像数据
      * 			  nImgWidth  	- 输入，图像宽度
      * 			  nImgHeight  	- 输入，图像高度
@@ -142,18 +128,6 @@ public class JustouchFaceApi {
      * @return   0-成功，其他-失败
      * */
     public native int nirLivenessDetect(byte[] pImage, int nImgWidth, int nImgHeight, int iFaceNum,int[] pFaceInfo);
-
-    /**
-     * @author   chen.gs
-     * @category  近红外活体检测（配合指定型号双目摄像头，中正闸机头摄像头）
-     * @param     pImage        - 输入，近红外图像数据
-     * 			  nImgWidth  	- 输入，图像宽度
-     * 			  nImgHeight  	- 输入，图像高度
-     * 			  nFaceNum    	- 输入，人脸数
-     * 			  pFaceInfo 	- 输入/输出，人脸信息，活体分数通过MXFaceInfoEx结构体liveness属性获取
-     * @return   0-成功，其他-失败
-     * */
-    public native int nirLivenessDetectZJ(byte[] pImage, int nImgWidth, int nImgHeight, int iFaceNum,int[] pFaceInfo);
 
     /**
      * @author   chen.gs

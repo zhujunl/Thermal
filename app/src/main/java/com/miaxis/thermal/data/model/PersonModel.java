@@ -124,15 +124,15 @@ public class PersonModel {
         }
         if (!TextUtils.isEmpty(personSearch.getName())) {
             sql.append(" where Person.name like ?");
-            args.add(personSearch.getName());
+            args.add("%" + personSearch.getName() + "%");
         }
         if (!TextUtils.isEmpty(personSearch.getIdentifyNumber())) {
             sql.append(" where Person.identifyNumber like ?");
-            args.add(personSearch.getIdentifyNumber());
+            args.add("%" + personSearch.getIdentifyNumber() + "%");
         }
         if (!TextUtils.isEmpty(personSearch.getPhone())) {
             sql.append(" where Person.phone like ?");
-            args.add(personSearch.getPhone());
+            args.add("%" + personSearch.getPhone() + "%");
         }
         if (personSearch.getUpload() != null) {
             sql.append(" where Person.upload = ?");
