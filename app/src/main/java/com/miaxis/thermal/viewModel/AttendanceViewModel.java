@@ -15,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.data.entity.IDCardMessage;
@@ -176,16 +177,16 @@ public class AttendanceViewModel extends BaseViewModel {
 //                hint.set(message);
                 switch (code) {
                     case -1:
-                        hint.set("请正对屏幕");
+                        hint.set(getString(R.string.please_face_the_screen));
                         break;
                     case -2:
-                        hint.set("请靠近屏幕");
+                        hint.set(getString(R.string.please_get_close_to_the_screen));
                         break;
                     case -6:
-                        hint.set("请远离屏幕");
+                        hint.set(getString(R.string.please_stay_away_from_the_screen));
                         break;
                     case -4:
-                        hint.set("活体检测失败");
+                        hint.set(getString(R.string.live_detection_failed));
                         break;
                 }
             }
@@ -221,7 +222,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
-        hint.set(person.getName() + "-考勤成功");
+        hint.set(person.getName() + "-" + getString(R.string.attendance_success));
         GpioManager.getInstance().openGreenLed();
         if (temperature > 0) {
             this.temperature.set(temperature + "°C");

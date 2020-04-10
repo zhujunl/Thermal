@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
+import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.Person;
@@ -37,9 +38,9 @@ public class AddPersonViewModel extends BaseViewModel {
     public ObservableField<String> number = new ObservableField<>();
     public ObservableField<String> phone = new ObservableField<>();
     public ObservableField<String> effectTime = new ObservableField<>(DateUtil.DATE_FORMAT.format(new Date()));
-    public ObservableField<String> invalidTime = new ObservableField<>("请选择失效日期");
+    public ObservableField<String> invalidTime = new ObservableField<>(getString(R.string.fragment_add_person_invalid_time_hint));
     public ObservableField<Boolean> type = new ObservableField<>(true);
-    public ObservableField<String> faceFeatureHint = new ObservableField<>("点击采集");
+    public ObservableField<String> faceFeatureHint = new ObservableField<>(getString(R.string.fragment_add_person_face_collect));
 
     public MutableLiveData<Boolean> registerFlag = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();

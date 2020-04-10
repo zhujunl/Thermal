@@ -38,8 +38,12 @@ public class PersonAdapter extends BaseViewModelAdapter<Person, ItemPersonBindin
     public void onBindViewHolder(@NonNull PersonAdapter.MyViewHolder holder, int position) {
         Person item = dataList.get(position);
         holder.getBinding().setItem(item);
-        holder.getBinding().tvUploadStatus.setText(item.isUpload() ? "已同步" : "未同步");
-        holder.getBinding().tvStatus.setText(TextUtils.equals(item.getStatus(), "1") ? "在库中" : "已删除");
+        holder.getBinding().tvUploadStatus.setText(item.isUpload()
+                ? context.getString(R.string.item_person_uploaded)
+                : context.getString(R.string.item_person_not_upload));
+        holder.getBinding().tvStatus.setText(TextUtils.equals(item.getStatus(), "1")
+                ? context.getString(R.string.item_person_ready)
+                : context.getString(R.string.item_person_delete));
         holder.getBinding().tvRemarks.setText(TextUtils.isEmpty(item.getFaceFeature()) ? "人脸无法使用，原因：" + item.getRemarks() : "");
         holder.getBinding().tvType.setText(ValueUtil.getPersonTypeName(item.getType()));
         if (TextUtils.isEmpty(item.getFacePicturePath())) {

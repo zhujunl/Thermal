@@ -7,11 +7,19 @@ import java.util.Date;
 public class DateConverter {
     @TypeConverter
     public static Date revertDate(long value) {
-        return new Date(value);
+        if (value == 0L) {
+            return null;
+        } else {
+            return new Date(value);
+        }
     }
 
     @TypeConverter
     public static long converterDate(Date value) {
-        return value.getTime();
+        if (value == null) {
+            return 0L;
+        } else {
+            return value.getTime();
+        }
     }
 }

@@ -23,7 +23,7 @@
             android:layout_height="0dp"
             android:background="@color/white"
             android:gravity="center"
-            android:text="设    置"
+            android:text="@string/fragment_config_title"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/iv_back"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,7 +82,7 @@
                     <TextView
                         style="@style/SettingName"
                         android:layout_marginEnd="1dp"
-                        android:text="版本号" />
+                        android:text="@string/fragment_config_version" />
 
                     <View style="@style/VerticalLine" />
 
@@ -102,7 +102,7 @@
                         android:layout_weight="1"
                         android:background="@color/whitesmoke"
                         android:singleLine="true"
-                        android:text="检查更新"
+                        android:text="@string/fragment_config_check_update"
                         android:textColor="@color/colorPrimary" />
 
                 </LinearLayout>
@@ -111,7 +111,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="中正人脸算法版本" />
+                        android:text="@string/fragment_config_face_version" />
 
                     <View style="@style/VerticalLine" />
 
@@ -129,7 +129,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="设备模式(未生效)" />
+                        android:text="@string/fragment_config_device_mode" />
 
                     <View style="@style/VerticalLine" />
 
@@ -146,7 +146,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="混合" />
+                            android:text="@string/fragment_config_device_mix" />
 
                         <RadioButton
                             android:id="@+id/rb_server"
@@ -154,7 +154,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="主机" />
+                            android:text="@string/fragment_config_device_server" />
 
                         <RadioButton
                             android:id="@+id/rb_client"
@@ -162,7 +162,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="客户端" />
+                            android:text="@string/fragment_config_device_client" />
 
                     </RadioGroup>
 
@@ -172,7 +172,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="C：服务器地址" />
+                        android:text="@string/fragment_config_server_host" />
 
                     <View style="@style/VerticalLine" />
 
@@ -190,7 +190,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="C：下载人员路径" />
+                        android:text="@string/fragment_config_server_download_person_path" />
 
                     <View style="@style/VerticalLine" />
 
@@ -208,7 +208,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="C：更新人员路径" />
+                        android:text="@string/fragment_config_server_update_person_path" />
 
                     <View style="@style/VerticalLine" />
 
@@ -226,7 +226,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="C：上传日志路径" />
+                        android:text="@string/fragment_config_server_upload_record_path" />
 
                     <View style="@style/VerticalLine" />
 
@@ -244,7 +244,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="设备MAC" />
+                        android:text="@string/fragment_config_mac" />
 
                     <View style="@style/VerticalLine" />
 
@@ -267,7 +267,7 @@
                         <TextView
                             style="@style/SettingName"
                             android:layout_marginEnd="1dp"
-                            android:text="同步时间戳" />
+                            android:text="@string/fragment_config_time_stamp" />
 
                         <View style="@style/VerticalLine" />
 
@@ -287,7 +287,7 @@
                             android:layout_weight="1"
                             android:background="@color/whitesmoke"
                             android:singleLine="true"
-                            android:text="清空时间戳"
+                            android:text="@string/fragment_config_reset_time_stamp"
                             android:textColor="@color/colorPrimary" />
 
                     </LinearLayout>
@@ -298,7 +298,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="画面显示摄像头" />
+                        android:text="@string/fragment_config_showing_camera" />
 
                     <View style="@style/VerticalLine" />
 
@@ -320,7 +320,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="红外" />
+                            android:text="@string/fragment_config_infrared_camera" />
 
                         <Space
                             android:layout_width="0dp"
@@ -333,7 +333,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="可见光" />
+                            android:text="@string/fragment_config_visible_camera" />
 
                         <Space
                             android:layout_width="0dp"
@@ -348,7 +348,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸处理摄像头" />
+                        android:text="@string/fragment_config_face_camera" />
 
                     <View style="@style/VerticalLine" />
 
@@ -370,7 +370,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="红外" />
+                            android:text="@string/fragment_config_infrared_camera" />
 
                         <Space
                             android:layout_width="0dp"
@@ -383,7 +383,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="可见光" />
+                            android:text="@string/fragment_config_visible_camera" />
 
                         <Space
                             android:layout_width="0dp"
@@ -398,7 +398,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="近红外活体识别" />
+                        android:text="@string/fragment_config_liveness" />
 
                     <View style="@style/VerticalLine" />
 
@@ -420,7 +420,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="打开" />
+                            android:text="@string/fragment_config_open" />
 
                         <Space
                             android:layout_width="0dp"
@@ -433,7 +433,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="关闭" />
+                            android:text="@string/fragment_config_close" />
 
                         <Space
                             android:layout_width="0dp"
@@ -448,7 +448,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸注册质量阈值" />
+                        android:text="@string/fragment_config_register_quality_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -469,7 +469,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸质量阈值" />
+                        android:text="@string/fragment_config_quality_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -490,7 +490,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸比对阈值" />
+                        android:text="@string/fragment_config_verify_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -511,7 +511,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="戴口罩人脸比对阈值" />
+                        android:text="@string/fragment_config_mask_verify_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -532,7 +532,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="口罩检测阈值" />
+                        android:text="@string/fragment_config_mask_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -553,7 +553,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸活体阈值" />
+                        android:text="@string/fragment_config_liveness_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -574,7 +574,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="人脸瞳距范围" />
+                        android:text="@string/fragment_config_pupil_distance" />
 
                     <View style="@style/VerticalLine" />
 
@@ -610,7 +610,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="休眠检测间隔" />
+                        android:text="@string/fragment_config_dormancy_interval" />
 
                     <View style="@style/VerticalLine" />
 
@@ -631,7 +631,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="休眠延迟时间" />
+                        android:text="@string/fragment_config_dormancy_delay" />
 
                     <View style="@style/VerticalLine" />
 
@@ -652,7 +652,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="测温设备校准" />
+                        android:text="@string/fragment_config_temp_device_fix" />
 
                     <View style="@style/VerticalLine" />
 
@@ -661,7 +661,7 @@
                         style="@style/SettingBody"
                         android:background="@color/whitesmoke"
                         android:singleLine="true"
-                        android:text="前往校准"
+                        android:text="@string/fragment_config_click_to_temp_device_fix"
                         android:textColor="@color/colorPrimary" />
 
                 </LinearLayout>
@@ -670,7 +670,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="热力图显示" />
+                        android:text="@string/fragment_config_heat_map" />
 
                     <View style="@style/VerticalLine" />
 
@@ -692,7 +692,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="显示" />
+                            android:text="@string/fragment_config_display" />
 
                         <Space
                             android:layout_width="0dp"
@@ -705,7 +705,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="不显示" />
+                            android:text="@string/fragment_config_no_display" />
 
                         <Space
                             android:layout_width="0dp"
@@ -720,7 +720,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="发热报警阈值" />
+                        android:text="@string/fragment_config_fever_score" />
 
                     <View style="@style/VerticalLine" />
 
@@ -741,7 +741,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="心跳间隔" />
+                        android:text="@string/fragment_config_heart_beat_interval" />
 
                     <View style="@style/VerticalLine" />
 
@@ -762,7 +762,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="失败重查冷却" />
+                        android:text="@string/fragment_config_failed_query_cold" />
 
                     <View style="@style/VerticalLine" />
 
@@ -783,7 +783,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="成功验证冷却" />
+                        android:text="@string/fragment_config_verify_cold" />
 
                     <View style="@style/VerticalLine" />
 
@@ -804,7 +804,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="日志保存" />
+                        android:text="@string/fragment_config_record_clear_threshold" />
 
                     <View style="@style/VerticalLine" />
 
@@ -825,7 +825,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="闪光灯持续时间" />
+                        android:text="@string/fragment_config_flash_time" />
 
                     <View style="@style/VerticalLine" />
 
@@ -846,7 +846,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="设备密码" />
+                        android:text="@string/fragment_config_password" />
 
                     <View style="@style/VerticalLine" />
 

@@ -10,6 +10,7 @@ import android.view.TextureView;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
+import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.bridge.Status;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
@@ -99,7 +100,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     shootFlag.setValue(Status.SUCCESS);
-                    hint.set("人脸特征提取成功");
+                    hint.set(getString(R.string.fragment_face_register_extract_success));
                 }, throwable -> {
                     shootFlag.setValue(Status.FAILED);
                     camera.startPreview();

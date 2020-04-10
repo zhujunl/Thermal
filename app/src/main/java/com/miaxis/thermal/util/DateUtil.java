@@ -1,5 +1,8 @@
 package com.miaxis.thermal.util;
 
+import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,19 +42,19 @@ public class DateUtil {
         int week = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         switch (week) {
             case 1:
-                return "星期日";
+                return App.getInstance().getResources().getString(R.string.Monday);
             case 2:
-                return "星期一";
+                return App.getInstance().getResources().getString(R.string.Tuesday);
             case 3:
-                return "星期二";
+                return App.getInstance().getResources().getString(R.string.Wednesday);
             case 4:
-                return "星期三";
+                return App.getInstance().getResources().getString(R.string.Thursday);
             case 5:
-                return "星期四";
+                return App.getInstance().getResources().getString(R.string.Friday);
             case 6:
-                return "星期五";
+                return App.getInstance().getResources().getString(R.string.Saturday);
             case 7:
-                return "星期六";
+                return App.getInstance().getResources().getString(R.string.Sunday);
         }
         return "";
     }

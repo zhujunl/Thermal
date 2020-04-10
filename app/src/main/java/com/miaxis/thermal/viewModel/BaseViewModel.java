@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.exception.NetResultFailedException;
@@ -29,6 +30,10 @@ public class BaseViewModel extends ViewModel {
         } else {
             return "出现错误";
         }
+    }
+
+    protected String getString(int resourceId) {
+        return App.getInstance().getResources().getString(resourceId);
     }
 
 }

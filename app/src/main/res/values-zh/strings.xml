@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Thermal</string>
     <string name="hello">Hello</string>
@@ -9,8 +10,8 @@
     <string name="fragment_add_person_phone">手机号码</string>
     <string name="fragment_add_person_phone_hint">请输入手机号码</string>
     <string name="fragment_add_person_effect_time">生效日期</string>
-    <string name="fragment_add_person_invalid_time">失效日期</string>
     <string name="fragment_add_person_invalid_time_hint">请选择失效日期</string>
+    <string name="fragment_add_person_invalid_time">失效日期</string>
     <string name="fragment_add_person_type">类&#12288;&#12288;型</string>
     <string name="fragment_add_person_type_staff">员工</string>
     <string name="fragment_add_person_type_visitor">访客</string>

@@ -36,7 +36,9 @@ public class RecordAdapter extends BaseViewModelAdapter<Record, ItemRecordBindin
     public void onBindViewHolder(@NonNull RecordAdapter.MyViewHolder holder, int position) {
         Record item = dataList.get(position);
         holder.getBinding().setItem(item);
-        holder.getBinding().tvRecordUpload.setText(item.isUpload() ? "已上传" : "未上传");
+        holder.getBinding().tvRecordUpload.setText(item.isUpload()
+                ? context.getString(R.string.item_record_uploaded)
+                : context.getString(R.string.item_record_not_upload));
         holder.getBinding().tvRecordUpload.setTextColor(item.isUpload()
                 ? context.getResources().getColor(R.color.darkgreen)
                 : context.getResources().getColor(R.color.darkred));

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Thermal</string>
+    <string name="hello">Hello</string>
+
+    <string name="fragment_add_person_name">Name</string>
+    <string name="fragment_add_person_name_hint">"Please enter a name "</string>
+    <string name="fragment_add_person_number">ID Number</string>
+    <string name="fragment_add_person_number_hint">Please enter the ID Number</string>
+    <string name="fragment_add_person_phone">Phone</string>
+    <string name="fragment_add_person_phone_hint">Please enter the phone number</string>
+    <string name="fragment_add_person_effect_time">Effect Time</string>
+    <string name="fragment_add_person_invalid_time">Invalid Time</string>
+    <string name="fragment_add_person_invalid_time_hint">Please select a date of invalidation</string>
+    <string name="fragment_add_person_type">Type</string>
+    <string name="fragment_add_person_type_staff">Staff</string>
+    <string name="fragment_add_person_type_visitor">Visitor</string>
+    <string name="fragment_add_person_face">Face Feature</string>
+    <string name="fragment_add_person_face_collect">Click to collect</string>
+    <string name="fragment_add_person_face_collect_over">Collect success</string>
+    <string name="fragment_add_person_submit">Submit</string>
+
+    <string name="Monday">Monday</string>
+    <string name="Tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="Thursday">Thursday</string>
+    <string name="Friday">Friday</string>
+    <string name="Saturday">Saturday</string>
+    <string name="Sunday">Sunday</string>
+
+    <string name="please_face_the_screen">Please face the screen</string>
+    <string name="please_get_close_to_the_screen">Please get close to the screen</string>
+    <string name="please_stay_away_from_the_screen">Please stay away from the screen</string>
+    <string name="live_detection_failed">Live detection failed</string>
+    <string name="attendance_success">Attendance</string>
+
+    <string name="websocket_server_online">WebSocket Server Online</string>
+    <string name="fragment_home_attendance">Attendance</string>
+    <string name="fragment_home_personnel">Personnel</string>
+    <string name="fragment_home_new_file">New File</string>
+    <string name="fragment_home_log">Log</string>
+    <string name="fragment_home_setting">Setting</string>
+
+    <string name="fragment_face_register_extract_success">Face feature extraction succeeded</string>
+
+    <string name="fragment_person_title">Personnel</string>
+    <string name="fragment_person_search_name_hint">Name:</string>
+    <string name="fragment_person_search_number_hint">ID Number:</string>
+    <string name="fragment_person_search_phone_hint">Phone:</string>
+    <string name="fragment_person_search_face_status_hint">Feature:</string>
+    <string name="fragment_person_search_upload_hint">Upload:</string>
+    <string name="fragment_person_search_person_status_hint">Status:</string>
+    <string name="fragment_person_search_person_type_hint">Type:</string>
+    <string name="fragment_person_search_search">Search</string>
+    <string name="fragment_person_search_reset">Reset</string>
+
+    <string name="item_person_name_hint">Name:</string>
+    <string name="item_person_number_hint">ID Number:</string>
+    <string name="item_person_phone_hint">Phone:</string>
+    <string name="item_person_person_type_hint">Type:</string>
+    <string name="item_person_expire_time_hint">expire:</string>
+    <string name="item_person_invalid_time_hint">invalid:</string>
+    <string name="item_person_local_update_hint">Update:</string>
+    <string name="item_person_upload_hint">Upload:</string>
+    <string name="item_person_person_status_hint">Status:</string>
+    <string name="item_person_uploaded">uploaded</string>
+    <string name="item_person_not_upload">not upload</string>
+    <string name="item_person_ready">ready</string>
+    <string name="item_person_delete">delete</string>
+
+    <string name="fragment_record_title">Log</string>
+    <string name="fragment_record_search_name_hint">Name:</string>
+    <string name="fragment_record_search_number_hint">ID Number:</string>
+    <string name="fragment_record_search_phone_hint">Phone:</string>
+    <string name="fragment_record_search_upload_hint">Upload:</string>
+    <string name="fragment_record_search_fever_status_hint">Fever:</string>
+    <string name="fragment_record_search_start_time_hint">Start Date:</string>
+    <string name="fragment_record_search_start_time_value_hint">Please select a date</string>
+    <string name="fragment_record_search_end_time_hint">End Date:</string>
+    <string name="fragment_record_search_end_time_value_hint">Please select a date</string>
+    <string name="fragment_record_search_search">Search</string>
+    <string name="fragment_record_search_reset">Reset</string>
+    <string name="fragment_record_name_hint">name</string>
+    <string name="fragment_record_number_hint">ID Number</string>
+    <string name="fragment_record_phone_hint">Phone</string>
+    <string name="fragment_record_temperature_hint">TEMP</string>
+    <string name="fragment_record_person_status_hint">Status</string>
+    <string name="fragment_record_time_hint">Time</string>
+
+    <string name="item_record_uploaded">Uploaded</string>
+    <string name="item_record_not_upload">Not Upload</string>
+
+    <string name="fragment_config_title">Setting</string>
+    <string name="fragment_config_version">Version</string>
+    <string name="fragment_config_check_update">Check Update</string>
+    <string name="fragment_config_face_version">MIAXIS Face Version</string>
+    <string name="fragment_config_device_mode">Device Mode</string>
+    <string name="fragment_config_device_mix">Mix</string>
+    <string name="fragment_config_device_server">Server</string>
+    <string name="fragment_config_device_client">Client</string>
+    <string name="fragment_config_server_host">C:Server Host</string>
+    <string name="fragment_config_server_download_person_path">C：Download Person Path</string>
+    <string name="fragment_config_server_update_person_path">C：Update Person Path</string>
+    <string name="fragment_config_server_upload_record_path">C：Upload Record Path</string>
+    <string name="fragment_config_mac">Mac</string>
+    <string name="fragment_config_time_stamp">Time Stamp</string>
+    <string name="fragment_config_reset_time_stamp">Clear Time Stamp</string>
+    <string name="fragment_config_showing_camera">Showing Camera</string>
+    <string name="fragment_config_face_camera">Face Camera</string>
+    <string name="fragment_config_liveness">Infrared Liveness</string>
+    <string name="fragment_config_register_quality_score">Register Quality Score</string>
+    <string name="fragment_config_quality_score">Quality Score</string>
+    <string name="fragment_config_verify_score">Verify Score</string>
+    <string name="fragment_config_mask_verify_score">Mask Verify Score</string>
+    <string name="fragment_config_mask_score">Mask Detect Score</string>
+    <string name="fragment_config_liveness_score">Liveness Score</string>
+    <string name="fragment_config_pupil_distance">Pupil Distance</string>
+    <string name="fragment_config_dormancy_interval">Dormancy Interval</string>
+    <string name="fragment_config_dormancy_delay">Dormancy Delay</string>
+    <string name="fragment_config_temp_device_fix">TEMP Device Fix</string>
+    <string name="fragment_config_click_to_temp_device_fix">Go To Fix</string>
+    <string name="fragment_config_heat_map">Heat Map</string>
+    <string name="fragment_config_fever_score">Fever Score</string>
+    <string name="fragment_config_heart_beat_interval">Heart Beat Interval</string>
+    <string name="fragment_config_failed_query_cold">Failed Query Cold</string>
+    <string name="fragment_config_verify_cold">Verify Cold</string>
+    <string name="fragment_config_record_clear_threshold">Record Clear Threshold</string>
+    <string name="fragment_config_flash_time">Flash Time</string>
+    <string name="fragment_config_password">Device Password</string>
+    <string name="fragment_config_infrared_camera">Infrared</string>
+    <string name="fragment_config_visible_camera">Visible</string>
+    <string name="fragment_config_display">Display</string>
+    <string name="fragment_config_no_display">No Display</string>
+    <string name="fragment_config_open">Open</string>
+    <string name="fragment_config_close">Close</string>
+
+</resources>

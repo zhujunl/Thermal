@@ -1,6 +1,7 @@
 package com.miaxis.thermal.app;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -20,6 +21,8 @@ import com.miaxis.thermal.manager.WatchDogManager;
 import com.miaxis.thermal.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.Locale;
 
 public class App extends Application {
 
@@ -70,6 +73,15 @@ public class App extends Application {
         } else {
             return false;
         }
+    }
+
+    public static boolean isZh() {
+        Locale locale = instance.getResources().getConfiguration().locale;
+        String language = locale.getLanguage();
+        if (language.toLowerCase().endsWith("zh"))
+            return true;
+        else
+            return false;
     }
 
 }

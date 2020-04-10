@@ -156,7 +156,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 ToastManager.toast("请输入生效日期", ToastManager.INFO);
                 return;
             }
-            if (TextUtils.equals(viewModel.invalidTime.get(), "请选择失效日期")) {
+            if (TextUtils.equals(viewModel.invalidTime.get(), getString(R.string.fragment_add_person_invalid_time))) {
                 ToastManager.toast("请输入失效日期", ToastManager.INFO);
                 return;
             }
@@ -204,7 +204,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onFaceRegisterEvent(FaceRegisterEvent event) {
-        viewModel.faceFeatureHint.set("已采集");
+        viewModel.faceFeatureHint.set(getString(R.string.fragment_add_person_face_collect_over));
         binding.tvFaceFeature.setOnClickListener(null);
         viewModel.setFeatureCache(event.getFaceFeature());
         viewModel.setMaskFeatureCache(event.getMaskFaceFeature());
