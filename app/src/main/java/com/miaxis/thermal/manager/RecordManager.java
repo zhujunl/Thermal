@@ -100,7 +100,6 @@ public class RecordManager {
             byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
             Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
             FileUtil.saveBitmap(bitmap, filePath);
-//            FileUtil.writeBytesToFile(fileImage, FileUtil.FACE_IMAGE_PATH, fileName);
             Record record = makeFaceRecord(person, score, filePath, temperature);
             emitter.onNext(record);
         })

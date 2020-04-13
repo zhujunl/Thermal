@@ -134,4 +134,8 @@
     <string name="fragment_config_open">打开</string>
     <string name="fragment_config_close">关闭</string>
 
+    <string name="person_type_staff">员工</string>
+    <string name="person_type_visitor">访客</string>
+    <string name="person_type_black">黑名单</string>
+
 </resources>

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
@@ -94,7 +95,11 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 binding.rbVisitor.setEnabled(false);
             }
             if (!TextUtils.isEmpty(person.getFacePicturePath())) {
-                GlideApp.with(this).load(person.getFacePicturePath()).into(binding.ivHeader);
+                GlideApp.with(this)
+                        .load(person.getFacePicturePath())
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(binding.ivHeader);
             }
             binding.btnRegister.setText("修改");
         } else {
@@ -209,7 +214,11 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         viewModel.setFeatureCache(event.getFaceFeature());
         viewModel.setMaskFeatureCache(event.getMaskFaceFeature());
         viewModel.setHeaderCache(event.getBitmap());
-        GlideApp.with(this).load(event.getBitmap()).into(binding.ivHeader);
+        GlideApp.with(this)
+                .load(event.getBitmap())
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(binding.ivHeader);
         EventBus.getDefault().removeStickyEvent(event);
     }
 

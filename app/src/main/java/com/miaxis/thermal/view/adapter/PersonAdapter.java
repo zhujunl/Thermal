@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Person;
@@ -47,9 +48,17 @@ public class PersonAdapter extends BaseViewModelAdapter<Person, ItemPersonBindin
         holder.getBinding().tvRemarks.setText(TextUtils.isEmpty(item.getFaceFeature()) ? "人脸无法使用，原因：" + item.getRemarks() : "");
         holder.getBinding().tvType.setText(ValueUtil.getPersonTypeName(item.getType()));
         if (TextUtils.isEmpty(item.getFacePicturePath())) {
-            GlideApp.with(context).load(R.drawable.default_header).into(holder.getBinding().ivHeader);
+            GlideApp.with(context)
+                    .load(R.drawable.default_header)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(holder.getBinding().ivHeader);
         } else {
-            GlideApp.with(context).load(item.getFacePicturePath()).into(holder.getBinding().ivHeader);
+            GlideApp.with(context)
+                    .load(item.getFacePicturePath())
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(holder.getBinding().ivHeader);
         }
         if (TextUtils.equals(item.getStatus(), "1")) {
             holder.getBinding().ivEdit.setVisibility(View.VISIBLE);

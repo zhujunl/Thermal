@@ -10,6 +10,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
@@ -177,6 +178,8 @@ public class PersonManager {
         FutureTarget<Bitmap> futureTarget = GlideApp.with(App.getInstance().getApplicationContext())
                 .asBitmap()
                 .load(url + "?" + System.currentTimeMillis())
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .submit();
         return futureTarget.get();
     }

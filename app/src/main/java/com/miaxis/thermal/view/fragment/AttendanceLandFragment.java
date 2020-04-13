@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.miaxis.thermal.R;
@@ -147,8 +148,13 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         if (header == null) {
             GlideApp.with(this).clear(binding.ivHeader);
         } else {
+            GlideApp.with(this).clear(binding.ivHeader);
             GlideApp.with(this)
+                    .asDrawable()
                     .load(header)
+                    .dontAnimate()
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                     .into(binding.ivHeader);
         }
@@ -183,7 +189,13 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
 
     private Observer<Boolean> heatMapObserver = update -> {
         if (viewModel.heatMapCache != null) {
-            GlideApp.with(this).load(viewModel.heatMapCache).into(binding.ivHeatMap);
+            GlideApp.with(this)
+                    .asDrawable()
+                    .load(viewModel.heatMapCache)
+                    .dontAnimate()
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(binding.ivHeatMap);
         } else {
             GlideApp.with(this).clear(binding.ivHeatMap);
         }

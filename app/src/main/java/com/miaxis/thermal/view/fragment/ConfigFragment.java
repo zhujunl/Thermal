@@ -211,7 +211,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etVerifyCold.getText().toString())
-                            || Integer.parseInt(binding.etVerifyCold.getText().toString()) < 1
+                            || Integer.parseInt(binding.etVerifyCold.getText().toString()) < 2
                             || Integer.parseInt(binding.etVerifyCold.getText().toString()) > 5) {
                         ToastManager.toast("成功验证冷却 2 - 5 秒", ToastManager.INFO);
                         return;

@@ -36,14 +36,14 @@
 
     <string name="websocket_server_online">WebSocket Server Online</string>
     <string name="fragment_home_attendance">Attendance</string>
-    <string name="fragment_home_personnel">Personnel</string>
-    <string name="fragment_home_new_file">New File</string>
+    <string name="fragment_home_personnel">Person Information</string>
+    <string name="fragment_home_new_file">Add Person</string>
     <string name="fragment_home_log">Log</string>
     <string name="fragment_home_setting">Setting</string>
 
     <string name="fragment_face_register_extract_success">Face feature extraction succeeded</string>
 
-    <string name="fragment_person_title">Personnel</string>
+    <string name="fragment_person_title">Person Information</string>
     <string name="fragment_person_search_name_hint">Name:</string>
     <string name="fragment_person_search_number_hint">ID Number:</string>
     <string name="fragment_person_search_phone_hint">Phone:</string>
@@ -133,5 +133,9 @@
     <string name="fragment_config_no_display">No Display</string>
     <string name="fragment_config_open">Open</string>
     <string name="fragment_config_close">Close</string>
+
+    <string name="person_type_staff">Staff</string>
+    <string name="person_type_visitor">Visitor</string>
+    <string name="person_type_black">Black List</string>
 
 </resources>

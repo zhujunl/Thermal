@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.miaxis.thermal.BR;
@@ -75,9 +76,12 @@ public class XhnCalibrationFragment extends BaseViewModelFragment<FragmentXhnCal
     private Observer<Boolean> heatMapUpdateObserver = update -> {
         if (viewModel.heatMapCache != null) {
             GlideApp.with(this)
+                    .asDrawable()
                     .load(viewModel.heatMapCache)
                     .dontAnimate()
 //                    .placeholder(binding.ivHeatMap.getDrawable())
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(new CustomTarget<Drawable>() {
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {

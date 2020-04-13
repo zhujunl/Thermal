@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import androidx.databinding.BindingAdapter;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.miaxis.thermal.bridge.GlideApp;
 
 public class ViewAdapter {
@@ -32,7 +33,12 @@ public class ViewAdapter {
     @BindingAdapter(value = {"imageSource"}, requireAll = false)
     public static void imageSource(ImageView view, Object o) {
         if (o == null) return;
-        GlideApp.with(view).load(o).into(view);
+        GlideApp.with(view)
+                .asDrawable()
+                .load(o)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(view);
     }
 
 }

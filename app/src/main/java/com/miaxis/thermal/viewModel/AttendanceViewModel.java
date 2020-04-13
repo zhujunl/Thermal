@@ -299,18 +299,18 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void showHeader(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx) {
         if (mxRGBImage == null || mxFaceInfoEx == null) return;
-        Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
+        Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             Bitmap bitmap = FaceManager.getInstance().tailoringFace(mxRGBImage, mxFaceInfoEx);
             if (bitmap != null) {
-                emitter.onNext(bitmap);
+                headerCache = bitmap;
+                emitter.onNext(Boolean.TRUE);
             } else {
                 emitter.onError(new MyException("裁剪图片失败"));
             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
-                    headerCache = bitmap;
+                .subscribe(result -> {
                     updateHeader.setValue(Boolean.TRUE);
                 }, throwable -> {
                     headerCache = null;
@@ -329,7 +329,6 @@ public class AttendanceViewModel extends BaseViewModel {
             //如果已经在人证核验模式下，直接返回
             if (cardMode) return;
             Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
-//                    byte[] feature = FaceManager.getInstance().getCardFeatureByBitmapPosting(idCardMessage.getCardBitmap());
                 PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
                 emitter.onNext(cardFaceFeature);
             })

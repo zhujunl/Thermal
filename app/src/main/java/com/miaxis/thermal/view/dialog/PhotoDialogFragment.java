@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.databinding.FragmentPhotoDialogBinding;
@@ -46,7 +47,11 @@ public class PhotoDialogFragment extends BaseDialogFragment<FragmentPhotoDialogB
 
     @Override
     protected void initView() {
-        GlideApp.with(this).load(image).into(binding.ivPhoto);
+        GlideApp.with(this)
+                .load(image)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(binding.ivPhoto);
     }
 
     @Override

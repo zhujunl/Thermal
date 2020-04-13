@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     public void backToRoot() {
-        getSupportFragmentManager().popBackStack(root, 0);
+        getSupportFragmentManager().popBackStack(root, 1);
     }
 
     @Override
@@ -96,9 +96,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
         if (backStackEntryCount > 1) {
             if (fragment != null) {
-                getSupportFragmentManager().popBackStack(fragment.getName(), 0);
+                getSupportFragmentManager().popBackStackImmediate(fragment.getName(), 1);
             } else {
-                getSupportFragmentManager().popBackStack();
+                getSupportFragmentManager().popBackStackImmediate(null, 0);
             }
         } else {
             exitApp();

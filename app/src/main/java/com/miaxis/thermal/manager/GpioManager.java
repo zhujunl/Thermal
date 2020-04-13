@@ -181,11 +181,7 @@ public class GpioManager {
                 handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
                 handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
                 handler.sendMessage(handler.obtainMessage(GREEN_LED));
-                Thread.sleep(500);
-                handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
-                Thread.sleep(500);
-                handler.sendMessage(handler.obtainMessage(GREEN_LED));
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -207,11 +203,7 @@ public class GpioManager {
                 handler.sendMessage(handler.obtainMessage(CLOSE_WHITE_LED));
                 handler.sendMessage(handler.obtainMessage(CLOSE_GREEN_LED));
                 handler.sendMessage(handler.obtainMessage(RED_LED));
-                Thread.sleep(500);
-                handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
-                Thread.sleep(500);
-                handler.sendMessage(handler.obtainMessage(RED_LED));
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 handler.sendMessage(handler.obtainMessage(CLOSE_RED_LED));
             } catch (Exception e) {
                 e.printStackTrace();

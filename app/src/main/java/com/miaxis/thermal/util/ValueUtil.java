@@ -3,6 +3,8 @@ package com.miaxis.thermal.util;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.manager.strategy.Sign;
 
 import java.net.ConnectException;
@@ -14,7 +16,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P;
 
     public static final Gson GSON = new Gson();
 
@@ -55,10 +57,6 @@ public class ValueUtil {
     public static final String PERSON_TYPE_WORKER = "00601";
     public static final String PERSON_TYPE_VISITOR = "00602";
     public static final String PERSON_TYPE_BLACK = "00603";
-
-    public static final String PERSON_TYPE_WORKER_NAME = "员工";
-    public static final String PERSON_TYPE_VISITOR_NAME = "访客";
-    public static final String PERSON_TYPE_BLACK_NAME = "黑名单";
 
     public static boolean isNetException(Throwable throwable) {
         return throwable instanceof SocketTimeoutException
@@ -127,11 +125,11 @@ public class ValueUtil {
         if (TextUtils.isEmpty(personType)) return "";
         switch (personType) {
             case PERSON_TYPE_WORKER:
-                return PERSON_TYPE_WORKER_NAME;
+                return App.getInstance().getString(R.string.person_type_staff);
             case PERSON_TYPE_VISITOR:
-                return PERSON_TYPE_VISITOR_NAME;
+                return App.getInstance().getString(R.string.person_type_visitor);
             case PERSON_TYPE_BLACK:
-                return PERSON_TYPE_BLACK_NAME;
+                return App.getInstance().getString(R.string.person_type_black);
         }
         return "";
     }
