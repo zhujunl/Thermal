@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.model.ConfigModel;
+import com.miaxis.thermal.data.net.ThermalApi;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.ValueUtil;
@@ -99,15 +100,18 @@ public class ConfigManager {
     public void saveConfigSync(@NonNull Config config) {
         ConfigModel.saveConfig(config);
         this.config = config;
+        ThermalApi.rebuildRetrofit();
     }
 
     public void saveConfig(@NonNull Config config, @NonNull OnConfigSaveListener listener) {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             ConfigModel.saveConfig(config);
             this.config = config;
+            ThermalApi.rebuildRetrofit();
             emitter.onNext(Boolean.TRUE);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> listener.onConfigSave(true, "保存成功")
                         , throwable -> listener.onConfigSave(false, "保存失败，" + throwable.getMessage()));
@@ -119,8 +123,7 @@ public class ConfigManager {
         }
         String macFromHardware = DeviceUtil.getMacFromHardware();
         Observable.just(macFromHardware)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .subscribe(s -> {
                     config.setMac(s);
                     saveConfigSync(config);

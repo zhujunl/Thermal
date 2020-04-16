@@ -2,6 +2,7 @@ package com.miaxis.thermal.viewModel;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.entity.RecordSearch;
@@ -12,6 +13,8 @@ import com.miaxis.thermal.util.ValueUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -27,6 +30,11 @@ public class RecordViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> refreshing = new SingleLiveEvent<>();
 
     public RecordViewModel() {
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
     }
 
     public List<Record> getRecordList() {
@@ -46,11 +54,12 @@ public class RecordViewModel extends BaseViewModel {
 //            List<Record> recordList = RecordRepository.getInstance().loadRecordByPage(pageNum, 30);
             if (recordList != null) {
                 emitter.onNext(recordList);
+                emitter.onComplete();
             } else {
                 emitter.onError(new MyException("查询结果为空"));
             }
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(recordList -> {
                     refreshing.setValue(Boolean.FALSE);
@@ -79,8 +88,9 @@ public class RecordViewModel extends BaseViewModel {
                 count = RecordRepository.getInstance().loadRecordCount();
             }
             emitter.onNext(count);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(count -> {
                     recordCountLiveData.setValue(count);

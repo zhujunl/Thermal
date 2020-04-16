@@ -226,6 +226,7 @@ public class FaceManager {
                 extract(intermediaryData);
                 intermediaryData = null;
             }
+            Thread.sleep(300);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

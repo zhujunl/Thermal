@@ -15,53 +15,26 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class BaseAPI {
 
-    protected final static Retrofit.Builder RETROFIT = new Retrofit.Builder()
+    protected final static Retrofit.Builder RETROFIT_BUILDER = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
-    protected static Retrofit getRetrofit() {
-        return RETROFIT.baseUrl(ConfigManager.getInstance().getConfig().getHost()).build();
-    }
+    protected static Retrofit retrofit;
 
-    protected static Observable<ThermalNet> getThermalNet() {
-        return Observable.create(emitter -> {
-            Retrofit retrofit = getRetrofit();
-            ThermalNet thermalNet = retrofit.create(ThermalNet.class);
-            emitter.onNext(thermalNet);
-        });
+    protected static Retrofit getRetrofit() {
+        return retrofit;
     }
 
     protected static ThermalNet getThermalNetSync() {
         return getRetrofit().create(ThermalNet.class);
     }
 
-    protected static Observable<ResponseEntity> handleResponse(Observable<ResponseEntity> observable) {
-        return observable.subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(responseEntity -> {
-                    if (!TextUtils.equals(responseEntity.getCode(), ValueUtil.SUCCESS)) {
-                        throw new MyException(responseEntity.getMessage());
-                    }
-                });
+    public static void rebuildRetrofit() {
+        retrofit = RETROFIT_BUILDER
+                .baseUrl(ConfigManager.getInstance().getConfig().getHost())
+                .build();
     }
 
-    protected static <T> Observable<ResponseEntity<T>> handleGenericityResponse(Observable<ResponseEntity<T>> observable) {
-        return observable.subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(responseEntity -> {
-                    if (!TextUtils.equals(responseEntity.getCode(), ValueUtil.SUCCESS)) {
-                        throw new MyException(responseEntity.getMessage());
-                    }
-                });
-    }
-
-    protected static <T> Observable<ResponseEntity<T>> handleLocalResponse(Observable<ResponseEntity<T>> observable) {
-        return observable.doOnNext(responseEntity -> {
-            if (!TextUtils.equals(responseEntity.getCode(), ValueUtil.SUCCESS)) {
-                throw new MyException(responseEntity.getMessage());
-            }
-        });
-    }
 
 }

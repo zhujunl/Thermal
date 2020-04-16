@@ -5,7 +5,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.data.dao.AppDatabase;
+import com.miaxis.thermal.data.net.ThermalApi;
 import com.miaxis.thermal.manager.CalibrationManager;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
@@ -23,11 +25,17 @@ import com.miaxis.thermal.util.FileUtil;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class App extends Application {
 
     private static App instance;
     private boolean firstIn = true;
+
+    private ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("ThermalApp-%d").build();
+    private ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, namedThreadFactory);
 
     @Override
     public void onCreate() {
@@ -45,6 +53,7 @@ public class App extends Application {
             FileUtil.initDirectory();
             AppDatabase.initDB(this);
             ConfigManager.getInstance().checkConfig();
+            ThermalApi.rebuildRetrofit();
             CalibrationManager.getInstance().checkCalibration();
             WatchDogManager.getInstance().init(this);
             CrashExceptionManager.getInstance().init(this);
@@ -84,4 +93,7 @@ public class App extends Application {
             return false;
     }
 
+    public ExecutorService getThreadExecutor() {
+        return threadExecutor;
+    }
 }

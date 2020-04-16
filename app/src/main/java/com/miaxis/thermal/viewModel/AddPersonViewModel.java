@@ -9,6 +9,7 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.Person;
@@ -91,9 +92,10 @@ public class AddPersonViewModel extends BaseViewModel {
                     .status("1")
                     .build();
             emitter.onNext(person);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(person -> {
                     Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
                     if (findPerson == null) {
@@ -125,8 +127,7 @@ public class AddPersonViewModel extends BaseViewModel {
     private void updatePerson(Person mPerson) {
         waitMessage.setValue("正在更新，请稍后...");
         Observable.just(mPerson)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(person -> {
                     String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
                     FileUtil.saveBitmap(headerCache, filePath);
@@ -153,9 +154,9 @@ public class AddPersonViewModel extends BaseViewModel {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             PersonRepository.getInstance().updatePerson(person);
             emitter.onNext(Boolean.TRUE);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(result -> {
                     person.setUpload(true);
                     PersonRepository.getInstance().savePerson(person);

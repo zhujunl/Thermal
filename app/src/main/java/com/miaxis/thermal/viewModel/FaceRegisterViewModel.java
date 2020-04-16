@@ -11,6 +11,7 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.bridge.Status;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
@@ -84,9 +85,10 @@ public class FaceRegisterViewModel extends BaseViewModel {
                 bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getWidth(), null, false);
             }
             emitter.onNext(bitmap);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(bitmap -> {
                     PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                     if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {

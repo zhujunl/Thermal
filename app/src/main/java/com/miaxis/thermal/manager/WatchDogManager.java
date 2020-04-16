@@ -95,13 +95,13 @@ public class WatchDogManager {
     }
 
     private void onNeedHandleError(String message) throws InterruptedException {
+        CameraManager.getInstance().closeCamera();
         Log.e("asd", "开始进行应用重启，事故原因：" + message);
         new Thread(() -> {
             Looper.prepare();
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             Looper.loop();
         }).start();
-        Thread.sleep(1000);
         restartApp();
     }
 

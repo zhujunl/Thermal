@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PersonSearch;
@@ -18,6 +19,8 @@ import com.miaxis.thermal.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -36,6 +39,11 @@ public class PersonViewModel extends BaseViewModel {
     public PersonViewModel() {
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+    }
+
     public List<Person> getPersonList() {
         List<Person> value = personListLiveData.getValue();
         if (value == null) {
@@ -52,11 +60,12 @@ public class PersonViewModel extends BaseViewModel {
             List<Person> personList = PersonRepository.getInstance().searchPerson(personSearch);
             if (personList != null) {
                 emitter.onNext(personList);
+                emitter.onComplete();
             } else {
                 emitter.onError(new MyException("查询结果为空"));
             }
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(personList -> {
                     refreshing.setValue(Boolean.FALSE);
@@ -85,8 +94,9 @@ public class PersonViewModel extends BaseViewModel {
                 count = PersonRepository.getInstance().loadPersonCount();
             }
             emitter.onNext(count);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(count -> {
                     personCountLiveData.setValue(count);
@@ -98,8 +108,8 @@ public class PersonViewModel extends BaseViewModel {
     public void changePersonStatus(Person mPerson, boolean enable) {
         waitMessage.setValue("正在执行操作，请稍后...");
         Observable.just(mPerson)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(person -> {
                     person.setUpload(false);
                     person.setUpdateTime(new Date());
@@ -121,9 +131,10 @@ public class PersonViewModel extends BaseViewModel {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             PersonRepository.getInstance().updatePerson(person);
             emitter.onNext(Boolean.TRUE);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(result -> {
                     person.setUpload(true);
                     PersonRepository.getInstance().savePerson(person);

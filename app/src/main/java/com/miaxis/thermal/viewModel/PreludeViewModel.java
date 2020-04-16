@@ -41,7 +41,7 @@ public class PreludeViewModel extends BaseViewModel {
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .doOnNext(aBoolean -> hint.set("正在初始化"))
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .subscribe(success -> {
                     if (success) {
                         App.getInstance().initApplication(onAppInitListener);

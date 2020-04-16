@@ -65,8 +65,9 @@ public class CalibrationManager {
             CalibrationModel.saveCalibration(calibration);
             this.calibration = calibration;
             emitter.onNext(Boolean.TRUE);
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> listener.onCalibrationSave(true, "保存成功")
                         , throwable -> listener.onCalibrationSave(false, "保存失败，" + throwable.getMessage()));

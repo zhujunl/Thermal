@@ -26,6 +26,11 @@ public class TpsTemperatureStrategy implements TemperatureManager.TemperatureStr
     @Override
     public void readTemperature(TemperatureManager.TemperatureListener listener) {
         if (listener != null) {
+            listener.onTemperature(-1f);
+            listener.onHeatMap(null);
+            return;
+        }
+        if (listener != null) {
             TemperatureData temperatureData = temperatureUtil.getDataAndBitmap(50,
                     1,
                     false,

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Config;
@@ -19,14 +20,19 @@ import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
+import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -50,7 +56,8 @@ public class PersonManager {
      * ================================ 静态内部类单例写法 ================================
      **/
 
-//    private static ExecutorService executorService = Executors.newFixedThreadPool(20);
+    private ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("PERSON_UPLOAD-%d").build();
+    private ExecutorService threadExecutor = Executors.newSingleThreadExecutor(namedThreadFactory);
 
     private List<Person> personList;
 
@@ -73,38 +80,29 @@ public class PersonManager {
         handler.sendMessage(handler.obtainMessage(0));
     }
 
-    public void uploadRecord() {
-        handler.removeMessages(0);
-        Observable.create((ObservableOnSubscribe<Person>) emitter -> {
+    private void uploadRecord() {
+        try {
             uploading = true;
+            handler.removeMessages(0);
             Person person = PersonRepository.getInstance().findOldestRecord();
-            if (person != null) {
-                emitter.onNext(person);
-            } else {
-                emitter.onError(new MyException("未找到待上传人员"));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(person -> {
-                    PersonRepository.getInstance().updatePerson(person);
-                    PersonRepository.getInstance().clearOverduePerson();
-                })
-                .subscribe(person -> {
-                    Log.e("asd", "上传人员成功");
-                    person.setUpload(true);
-                    PersonRepository.getInstance().updatePerson(person);
-                    handler.sendMessage(handler.obtainMessage(0));
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e("asd", "" + throwable.getMessage());
-                    uploading = false;
-                    handler.sendMessageDelayed(handler.obtainMessage(0), 60 * 60 * 1000);
-                });
+            if (person == null) throw new MyException("未找到待上传人员");
+            PersonRepository.getInstance().updatePerson(person);
+            Log.e("asd", "人员上传成功");
+            PersonRepository.getInstance().clearOverduePerson();
+            person.setUpload(true);
+            PersonRepository.getInstance().savePerson(person);
+            handler.sendMessage(handler.obtainMessage(0));
+        } catch (Exception e) {
+            Log.e("asd", "" + e.getMessage());
+            handler.sendMessageDelayed(handler.obtainMessage(0), 60 * 60 * 1000);
+        } finally {
+            uploading = false;
+        }
     }
 
     public void startUploadPerson() {
         if (uploading) return;
+        handler.removeMessages(0);
         handler.sendMessage(handler.obtainMessage(0));
     }
 
@@ -117,12 +115,12 @@ public class PersonManager {
             List<Person> personList = PersonRepository.getInstance().loadUsability();
             if (personList != null) {
                 emitter.onNext(personList);
+                emitter.onComplete();
             } else {
                 emitter.onError(new MyException("查询结果为空"));
             }
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(threadExecutor))
                 .subscribe(personList -> {
                     this.personList = Collections.synchronizedList(personList);
                 }, throwable -> {
@@ -189,12 +187,11 @@ public class PersonManager {
             MatchPerson matchPerson = getMatchPerson(feature, mask);
             if (matchPerson != null) {
                 emitter.onNext(matchPerson);
+                emitter.onComplete();
             } else {
                 emitter.onError(new MyException("未找到匹配人员"));
             }
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(matchPerson -> {
                     Person person = matchPerson.getPerson();
                     Date now = new Date();

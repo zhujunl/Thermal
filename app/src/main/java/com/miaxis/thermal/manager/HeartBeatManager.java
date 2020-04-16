@@ -7,9 +7,11 @@ import android.util.Log;
 
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.exception.MyException;
+import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.util.ValueUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -67,7 +69,7 @@ public class HeartBeatManager {
     public void heartBeatLimitBurst() {
         if (!activeBurstLimit && !updating) {
             activeBurstLimit = true;
-            getPersonData();
+            heartBeatNow();
             long cold = ConfigManager.getInstance().getConfig().getFailedQueryCold() * 1000;
             handler.sendMessageDelayed(handler.obtainMessage(MSG_TIME_LIMIT), cold);
         }
@@ -79,39 +81,30 @@ public class HeartBeatManager {
     }
 
     private void getPersonData() {
-        if (updating) return;
-        handler.removeMessages(MSG_TIME_DELAY_BURST);
-        Observable.create((ObservableOnSubscribe<List<Person>>) emitter -> {
+        try {
             updating = true;
+            handler.removeMessages(MSG_TIME_DELAY_BURST);
             List<Person> personList = PersonRepository.getInstance().downloadPerson();
-            if (personList != null) {
-                emitter.onNext(personList);
+            if (personList != null && !personList.isEmpty()) {
+                for (Person person : personList) {
+                    PersonManager.getInstance().handlePersonHeartBeat(person);
+                }
+                Log.e("asd", "人员同步成功：" + personList.size());
             } else {
-                emitter.onError(new MyException("接口结果为空"));
+                throw new MyException("服务端待更新人员为为空");
             }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(personList -> {
-                    for (Person person : personList) {
-                        PersonManager.getInstance().handlePersonHeartBeat(person);
-                    }
-                })
-                .subscribe(personList -> {
-                    Log.e("asd", "更新人员：" + personList.size() + "个");
-                    PersonManager.getInstance().loadPersonDataFromCache();
-                    if (personList.size() == ValueUtil.PAGE_SIZE) {
-                        handler.removeMessages(MSG_TIME_DELAY_BURST);
-                        updating = false;
-                        getPersonData();
-                    } else {
-                        prepareForNextHeartBeat();
-                    }
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e("asd", "更新人员出错：" + throwable.getMessage());
-                    prepareForNextHeartBeat();
-                });
+            PersonManager.getInstance().loadPersonDataFromCache();
+            if (personList.size() == ValueUtil.PAGE_SIZE) {
+                handler.sendMessage(handler.obtainMessage(MSG_TIME_DELAY_BURST));
+            } else {
+                prepareForNextHeartBeat();
+            }
+        } catch (Exception e) {
+            Log.e("asd", "" + e.getMessage());
+            prepareForNextHeartBeat();
+        } finally {
+            updating = false;
+        }
     }
 
     private void prepareForNextHeartBeat() {
@@ -119,6 +112,12 @@ public class HeartBeatManager {
         Message message = handler.obtainMessage(MSG_TIME_DELAY_BURST);
         handler.sendMessageDelayed(message, delayTime);
         updating = false;
+    }
+
+    private void heartBeatNow() {
+        if (updating) return;
+        handler.removeMessages(MSG_TIME_DELAY_BURST);
+        handler.sendMessage(handler.obtainMessage(MSG_TIME_DELAY_BURST));
     }
 
 }

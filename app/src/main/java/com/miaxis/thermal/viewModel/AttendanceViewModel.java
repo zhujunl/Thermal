@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.data.entity.IDCardMessage;
@@ -245,7 +246,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void personMatchSuccessButFever(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
-        fever.setValue(Boolean.TRUE);
+        fever.postValue(Boolean.TRUE);
         GpioManager.getInstance().openRedLed();
         hint.set(person.getName() + "-体温异常");
         this.temperature.set(temperature + "°C");
@@ -286,11 +287,11 @@ public class AttendanceViewModel extends BaseViewModel {
         temperature.set("");
         countDown.set("");
         headerCache = null;
-        updateHeader.setValue(Boolean.TRUE);
+        updateHeader.postValue(Boolean.TRUE);
         idCardMessage = null;
-        fever.setValue(Boolean.FALSE);
+        fever.postValue(Boolean.FALSE);
         heatMapCache = null;
-        heatMapUpdate.setValue(Boolean.TRUE);
+        heatMapUpdate.postValue(Boolean.TRUE);
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);
@@ -299,24 +300,16 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void showHeader(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx) {
         if (mxRGBImage == null || mxFaceInfoEx == null) return;
-        Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
-            Bitmap bitmap = FaceManager.getInstance().tailoringFace(mxRGBImage, mxFaceInfoEx);
-            if (bitmap != null) {
-                headerCache = bitmap;
-                emitter.onNext(Boolean.TRUE);
-            } else {
-                emitter.onError(new MyException("裁剪图片失败"));
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                headerCache = FaceManager.getInstance().tailoringFace(mxRGBImage, mxFaceInfoEx);
+            } catch (Exception e) {
+                e.printStackTrace();
+                headerCache = null;
+            } finally {
+                updateHeader.postValue(Boolean.TRUE);
             }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    updateHeader.setValue(Boolean.TRUE);
-                }, throwable -> {
-                    headerCache = null;
-                    updateHeader.setValue(Boolean.TRUE);
-                    Log.e("asd", "照片裁剪失败");
-                });
+        });
     }
 
     private FaceManager.OnDormancyListener dormancyListener = dormancy -> {
@@ -331,8 +324,9 @@ public class AttendanceViewModel extends BaseViewModel {
             Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
                 PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
                 emitter.onNext(cardFaceFeature);
+                emitter.onComplete();
             })
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(cardFaceFeature -> {
                         if (cardFaceFeature.getFaceFeature() != null || cardFaceFeature.getMaskFaceFeature() != null) {
@@ -391,8 +385,9 @@ public class AttendanceViewModel extends BaseViewModel {
             float maskFaceMatchScore = FaceManager.getInstance().matchMaskFeature(feature, idCardMessage.getMaskCardFeature());
             Log.e("asd", "score      " + faceMatchScore + "     " + maskFaceMatchScore);
             emitter.onNext(Math.max(faceMatchScore, maskFaceMatchScore));
+            emitter.onComplete();
         })
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(score -> {
                     if (score >= ConfigManager.getInstance().getConfig().getVerifyScore()) {

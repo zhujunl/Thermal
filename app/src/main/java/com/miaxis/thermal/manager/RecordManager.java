@@ -8,16 +8,21 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.MxRGBImage;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.exception.MyException;
+import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.RecordRepository;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -45,6 +50,8 @@ public class RecordManager {
     private HandlerThread handlerThread;
     private Handler handler;
 
+//    private ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
+
     private volatile boolean uploading = false;
 
     public void init() {
@@ -60,58 +67,47 @@ public class RecordManager {
         handler.sendMessage(handler.obtainMessage(0));
     }
 
-    public void uploadRecord() {
-        handler.removeMessages(0);
-        Observable.create((ObservableOnSubscribe<Record>) emitter -> {
+    private void uploadRecord() {
+        try {
             uploading = true;
+            handler.removeMessages(0);
             Record record = RecordRepository.getInstance().findOldestRecord();
-            if (record != null) {
-                emitter.onNext(record);
-            } else {
-                emitter.onError(new MyException("未找到待上传日志"));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(record -> {
-                    RecordRepository.getInstance().uploadRecord(record);
-                })
-                .subscribe(record -> {
-                    Log.e("asd", "上传日志成功");
-                    record.setUpload(true);
-                    RecordRepository.getInstance().saveRecord(record);
-                    handler.sendMessage(handler.obtainMessage(0));
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e("asd", "" + throwable.getMessage());
-                    uploading = false;
-                    handler.sendMessageDelayed(handler.obtainMessage(0), 60 * 60 * 1000);
-                });
+            if (record == null) throw new MyException("未找到待上传日志");
+            RecordRepository.getInstance().uploadRecord(record);
+            Log.e("asd", "日志上传成功");
+            record.setUpload(true);
+            RecordRepository.getInstance().saveRecord(record);
+            handler.sendMessage(handler.obtainMessage(0));
+        } catch (Exception e) {
+            Log.e("asd", "" + e.getMessage());
+            handler.sendMessageDelayed(handler.obtainMessage(0), 30 * 60 * 1000);
+        } finally {
+            uploading = false;
+        }
     }
 
-    public void startUploadRecord() {
+    private void startUploadRecord() {
         if (uploading) return;
+        handler.removeMessages(0);
         handler.sendMessage(handler.obtainMessage(0));
     }
 
     public void handlerFaceRecord(Person person, MxRGBImage mxRGBImage, float score, float temperature) {
-        Observable.create((ObservableOnSubscribe<Record>) emitter -> {
-            String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-            byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
-            Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
-            FileUtil.saveBitmap(bitmap, filePath);
-            Record record = makeFaceRecord(person, score, filePath, temperature);
-            emitter.onNext(record);
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(record -> RecordRepository.getInstance().saveRecord(record))
-                .subscribe(record -> {
-                    startUploadRecord();
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + throwable.getMessage());
-                });
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
+                Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+                FileUtil.saveBitmap(bitmap, filePath);
+                bitmap.recycle();
+                Record record = makeFaceRecord(person, score, filePath, temperature);
+                RecordRepository.getInstance().saveRecord(record);
+                startUploadRecord();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
+            }
+        });
     }
 
     private Record makeFaceRecord(Person person, float score, String facePicture, float temperature) {

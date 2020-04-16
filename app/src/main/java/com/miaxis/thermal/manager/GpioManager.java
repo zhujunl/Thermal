@@ -6,6 +6,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
@@ -19,6 +20,7 @@ import com.miaxis.thermal.util.ValueUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class GpioManager {
 
@@ -96,7 +98,8 @@ public class GpioManager {
     private static final int CLOSE_GREEN_LED = 4;
     private static final int CLOSE_RED_LED = 5;
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private static ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("FLASH_LED-%d").build();
+    private static ExecutorService executorService = Executors.newFixedThreadPool(5, namedThreadFactory);
     private HandlerThread handlerThread;
     private Handler handler;
 
