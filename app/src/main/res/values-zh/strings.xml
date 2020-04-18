@@ -137,5 +137,8 @@
     <string name="person_type_staff">员工</string>
     <string name="person_type_visitor">访客</string>
     <string name="person_type_black">黑名单</string>
+    <string name="fragment_config_forced_mask">强制戴口罩</string>
+    <string name="please_put_on_mask">请戴口罩</string>
+    <string name="open_gate_success">开门成功</string>
 
 </resources>

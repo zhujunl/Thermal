@@ -20,7 +20,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 4)
+@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 5)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -50,8 +50,9 @@ public abstract class AppDatabase extends RoomDatabase {
                         super.onOpen(db);
                     }
                 })
-                .fallbackToDestructiveMigration()
+//                .fallbackToDestructiveMigration()
                 .addMigrations(MIGRATION_3_4)
+                .addMigrations(MIGRATION_4_5)
                 .build();
     }
 
@@ -59,6 +60,13 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("create table Calibration (id INTEGER primary key, xhnEmissivity INTEGER not null, xhnModel INTEGER not null)");
+        }
+    };
+
+    private static Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Config ADD COLUMN forcedMask INTEGER not null default 0");
         }
     };
 

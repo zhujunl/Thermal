@@ -15,6 +15,7 @@ import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.event.FaceRegisterEvent;
 import com.miaxis.thermal.databinding.FragmentAddPersonBinding;
 import com.miaxis.thermal.manager.CardManager;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -103,8 +104,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             }
             binding.btnRegister.setText("修改");
         } else {
-            if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            if (ConfigManager.isCardDevice()) {
                 viewModel.initCard.observe(this, initCardObserver);
                 viewModel.cardStatus.observe(this, cardStatusObserver);
                 viewModel.initCard.setValue(Boolean.TRUE);
@@ -112,13 +112,9 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         }
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
-            if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            if (ConfigManager.isLandCameraDevice()) {
                 mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
-                    || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            } else {
                 mListener.replaceFragment(FaceRegisterFragment.newInstance());
             }
         }));
@@ -201,8 +197,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+        if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().release();
         }
     }

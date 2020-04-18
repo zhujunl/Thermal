@@ -82,6 +82,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.rbVisibleFace.setChecked(!config.isFaceCamera());
         binding.rbLivenessOpen.setChecked(config.isLiveness());
         binding.rbLivenessClose.setChecked(!config.isLiveness());
+        binding.rbForcesMaskOpen.setChecked(config.isForcedMask());
+        binding.rbForcesMaskClose.setChecked(!config.isForcedMask());
         binding.etRegisterQualityScore.setText(String.valueOf(config.getRegisterQualityScore()));
         binding.etQualityScore.setText(String.valueOf(config.getQualityScore()));
         binding.etVerifyScore.setText(String.valueOf(config.getVerifyScore()));
@@ -236,6 +238,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setShowCamera(binding.rbInfraredShow.isChecked());
                     config.setFaceCamera(binding.rbInfraredFace.isChecked());
                     config.setLiveness(binding.rbLivenessOpen.isChecked());
+                    config.setForcedMask(binding.rbForcesMaskOpen.isChecked());
                     config.setRegisterQualityScore(Integer.parseInt(binding.etRegisterQualityScore.getText().toString()));
                     config.setQualityScore(Integer.parseInt(binding.etQualityScore.getText().toString()));
                     config.setVerifyScore(Float.parseFloat(binding.etVerifyScore.getText().toString()));

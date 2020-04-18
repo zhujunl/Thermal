@@ -137,5 +137,8 @@
     <string name="person_type_staff">Staff</string>
     <string name="person_type_visitor">Visitor</string>
     <string name="person_type_black">Black List</string>
+    <string name="fragment_config_forced_mask">Forced Mask</string>
+    <string name="please_put_on_mask">Please put on mask</string>
+    <string name="open_gate_success">Open gate success</string>
 
 </resources>

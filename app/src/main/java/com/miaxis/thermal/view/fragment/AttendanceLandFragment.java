@@ -25,6 +25,7 @@ import com.miaxis.thermal.databinding.FragmentAttendanceLandBinding;
 import com.miaxis.thermal.manager.AmapManager;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.strategy.Sign;
@@ -76,8 +77,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.fever.observe(this, feverObserver);
         viewModel.faceDormancy.observe(this, dormancyObserver);
         viewModel.heatMapUpdate.observe(this, heatMapObserver);
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+        if (ConfigManager.isCardDevice()) {
             viewModel.initCard.observe(this, initCardObserver);
             viewModel.cardStatus.observe(this, cardStatusObserver);
         }
@@ -109,8 +109,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         CameraManager.getInstance().closeCamera();
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+        if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().release();
         }
         GpioManager.getInstance().resetGpio();
@@ -202,7 +201,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     };
 
     private Observer<Boolean> initCardObserver = aBoolean -> {
-        new Thread(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener)).start();
+        App.getInstance().getThreadExecutor().execute(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener));
     };
 
     private Observer<Boolean> cardStatusObserver = status -> {

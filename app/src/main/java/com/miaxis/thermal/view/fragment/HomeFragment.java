@@ -16,6 +16,7 @@ import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.databinding.FragmentHomeBinding;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
@@ -57,13 +58,9 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding, Hom
     @Override
     protected void initView() {
         binding.clAttendance.setOnClickListener(new OnLimitClickHelper(view -> {
-            if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            if (ConfigManager.isLandCameraDevice()) {
                 mListener.replaceFragment(AttendanceLandFragment.newInstance());
-            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
-                    || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            } else {
                 mListener.replaceFragment(AttendanceFragment.newInstance());
             }
         }));

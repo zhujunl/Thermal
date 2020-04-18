@@ -61,6 +61,7 @@ public class ConfigManager {
                     .qualityScore(ValueUtil.DEFAULT_QUALITY_SCORE)
                     .registerQualityScore(ValueUtil.DEFAULT_REGISTER_QUALITY_SCORE)
                     .maskScore(ValueUtil.DEFAULT_MASK_SCORE)
+                    .forcedMask(ValueUtil.DEFAULT_FORCED_MASK)
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .maskVerifyScore(ValueUtil.DEFAULT_MASK_VERIFY_SCORE)
                     .livenessScore(ValueUtil.DEFAULT_LIVENESS_SCORE)
@@ -133,6 +134,35 @@ public class ConfigManager {
 
     public interface OnConfigSaveListener {
         void onConfigSave(boolean result, String message);
+    }
+
+    public static boolean isGateDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isCardDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isLandCameraDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.XH
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            return true;
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return false;
+        }
+        return false;
     }
 
 }

@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
+import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.MatchPerson;
@@ -113,8 +114,7 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setDormancyListener(dormancyListener);
         FaceManager.getInstance().startLoop();
         WatchDogManager.getInstance().startFaceFeedDog();
-        if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+        if (ConfigManager.isCardDevice()) {
             initCard.setValue(Boolean.TRUE);
         }
     }
@@ -196,7 +196,7 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void matchPerson(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, byte[] feature, boolean mask, float temperature) {
         if (cardMode) {
-            onCardVerify(mxRGBImage, mxFaceInfoEx, temperature, feature);
+            onCardVerify(mxRGBImage, mxFaceInfoEx, temperature, feature, mask);
         } else {
             PersonManager.getInstance().handleFeature(feature, mask, new PersonManager.OnPersonMatchResultListener() {
                 @Override
@@ -206,8 +206,13 @@ public class AttendanceViewModel extends BaseViewModel {
 
                 @Override
                 public void onMatchSuccess(MatchPerson matchPerson) {
-                    if (temperature < ConfigManager.getInstance().getConfig().getFeverScore()) {
-                        personMatchSuccess(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                    Config config = ConfigManager.getInstance().getConfig();
+                    if (temperature < config.getFeverScore()) {
+                        if (!config.isForcedMask() || mask) {
+                            personMatchSuccess(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        } else {
+                            personMatchSuccessButNoMask(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        }
                     } else {
                         personMatchSuccessButFever(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
                     }
@@ -223,25 +228,48 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
         detectCold();
-        hint.set(person.getName() + "-" + getString(R.string.attendance_success));
+        Config config = ConfigManager.getInstance().getConfig();
+        hint.set(person.getName() + "-" +
+                (ConfigManager.isGateDevice()
+                        ? getString(R.string.open_gate_success)
+                        : getString(R.string.attendance_success)));
         GpioManager.getInstance().openGreenLed();
         if (temperature > 0) {
             this.temperature.set(temperature + "°C");
-            if (ConfigManager.getInstance().getConfig().isHeatMap()) {
+            if (config.isHeatMap()) {
                 heatMapUpdate.postValue(Boolean.TRUE);
             }
-            TTSManager.getInstance().playVoiceMessageFlush("考勤成功，体温正常");
+            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.isGateDevice() ? "开门成功，体温正常" : "考勤成功，体温正常");
         } else if (temperature == -1f) {
             this.temperature.set("");
-            TTSManager.getInstance().playVoiceMessageFlush("考勤成功");
+            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.isGateDevice() ? "开门成功" : "考勤成功");
         }
         showHeader(mxRGBImage, mxFaceInfoEx);
         HeartBeatManager.getInstance().relieveLimit();
         RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
-        if (ValueUtil.DEFAULT_SIGN == Sign.MR870
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+        if (ConfigManager.isGateDevice()) {
             GpioManager.getInstance().openDoorForGate();
         }
+    }
+
+    private void personMatchSuccessButNoMask(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
+        detectCold();
+        Config config = ConfigManager.getInstance().getConfig();
+        hint.set(person.getName() + "-" + getString(R.string.please_put_on_mask));
+        GpioManager.getInstance().openGreenLed();
+        if (temperature > 0) {
+            this.temperature.set(temperature + "°C");
+            if (config.isHeatMap()) {
+                heatMapUpdate.postValue(Boolean.TRUE);
+            }
+            TTSManager.getInstance().playVoiceMessageFlush("请戴口罩，体温正常");
+        } else if (temperature == -1f) {
+            this.temperature.set("");
+            TTSManager.getInstance().playVoiceMessageFlush("请戴口罩");
+        }
+        showHeader(mxRGBImage, mxFaceInfoEx);
+        HeartBeatManager.getInstance().relieveLimit();
+        RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
     }
 
     private void personMatchSuccessButFever(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
@@ -295,7 +323,9 @@ public class AttendanceViewModel extends BaseViewModel {
         lock = false;
         cardMode = false;
         FaceManager.getInstance().setNeedNextFeature(true);
-        CardManager.getInstance().needNextRead(true);
+        if (ConfigManager.isCardDevice()) {
+            CardManager.getInstance().needNextRead(true);
+        }
     }
 
     private void showHeader(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx) {
@@ -375,7 +405,7 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setNeedNextFeature(true);
     }
 
-    private void onCardVerify(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature) {
+    private void onCardVerify(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature, boolean mask) {
         if (idCardMessage == null) {
             cardMode = false;
             return;
@@ -390,19 +420,26 @@ public class AttendanceViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(score -> {
-                    if (score >= ConfigManager.getInstance().getConfig().getVerifyScore()) {
+                    Config config = ConfigManager.getInstance().getConfig();
+                    if (score >= config.getVerifyScore()) {
                         handler.removeCallbacks(cardVerifyDelayRunnable);
                         countDown.set("");
-                        hint.set(idCardMessage.getName() + "-比对成功");
-                        TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+                        if (!config.isForcedMask() || mask) {
+                            hint.set(idCardMessage.getName() + "-比对成功");
+                            TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+                        } else {
+                            hint.set(idCardMessage.getName() + "-请戴口罩");
+                            TTSManager.getInstance().playVoiceMessageFlush("请戴口罩");
+                        }
                         if (temperature > 0) {
                             this.temperature.set(temperature + "°C");
                         }
                         showHeader(mxRGBImage, mxFaceInfoEx);
                         detectCold();
-                        if (ValueUtil.DEFAULT_SIGN == Sign.MR870
-                                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
-                            GpioManager.getInstance().openDoorForGate();
+                        if (ConfigManager.isGateDevice()) {
+                            if (!config.isForcedMask() || mask) {
+                                GpioManager.getInstance().openDoorForGate();
+                            }
                         }
                     } else {
                         hint.set(idCardMessage.getName() + "-比对失败");

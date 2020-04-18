@@ -32,6 +32,8 @@
     <string name="please_stay_away_from_the_screen">请远离屏幕</string>
     <string name="live_detection_failed">活体检测失败</string>
     <string name="attendance_success">考勤成功</string>
+    <string name="open_gate_success">开门成功</string>
+    <string name="please_put_on_mask">请戴口罩</string>
 
     <string name="websocket_server_online">WebSocketServer服务在线中</string>
     <string name="fragment_home_attendance">考&#12288;勤</string>
@@ -107,6 +109,7 @@
     <string name="fragment_config_showing_camera">画面显示摄像头</string>
     <string name="fragment_config_face_camera">人脸处理摄像头</string>
     <string name="fragment_config_liveness">近红外活体识别</string>
+    <string name="fragment_config_forced_mask">强制戴口罩</string>
     <string name="fragment_config_register_quality_score">人脸注册质量阈值</string>
     <string name="fragment_config_quality_score">人脸质量阈值</string>
     <string name="fragment_config_verify_score">人脸比对阈值</string>

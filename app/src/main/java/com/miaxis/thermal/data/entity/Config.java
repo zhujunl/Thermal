@@ -22,6 +22,7 @@ public class Config {
     private float verifyScore;
     private float maskVerifyScore;
     private int maskScore;
+    private boolean forcedMask;
     private int livenessScore;
     private int pupilDistanceMin;
     private int pupilDistanceMax;
@@ -56,6 +57,7 @@ public class Config {
         setVerifyScore(builder.verifyScore);
         setMaskVerifyScore(builder.maskVerifyScore);
         setMaskScore(builder.maskScore);
+        setForcedMask(builder.forcedMask);
         setLivenessScore(builder.livenessScore);
         setPupilDistanceMin(builder.pupilDistanceMin);
         setPupilDistanceMax(builder.pupilDistanceMax);
@@ -192,6 +194,14 @@ public class Config {
         this.maskScore = maskScore;
     }
 
+    public boolean isForcedMask() {
+        return forcedMask;
+    }
+
+    public void setForcedMask(boolean forcedMask) {
+        this.forcedMask = forcedMask;
+    }
+
     public int getLivenessScore() {
         return livenessScore;
     }
@@ -320,6 +330,7 @@ public class Config {
         private float verifyScore;
         private float maskVerifyScore;
         private int maskScore;
+        private boolean forcedMask;
         private int livenessScore;
         private int pupilDistanceMin;
         private int pupilDistanceMax;
@@ -410,6 +421,11 @@ public class Config {
 
         public Builder maskScore(int val) {
             maskScore = val;
+            return this;
+        }
+
+        public Builder forcedMask(boolean val) {
+            forcedMask = val;
             return this;
         }
 
