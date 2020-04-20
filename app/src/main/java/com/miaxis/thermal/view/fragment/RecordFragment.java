@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
     private RecordAdapter adapter;
     private LinearLayoutManager layoutManager;
 
+    private boolean loadingMore = false;
     private boolean search = false;
     private int currentPage = 1;
     private int localCount = 0;
@@ -171,42 +173,34 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
             localCount = recordList.size();
         }
         viewModel.updateRecordCount(search, search ? makeRecordSearchView() : null);
+        loadingMore = false;
     };
 
     private Observer<Boolean> refreshingObserver = flag -> binding.srlRecord.setRefreshing(flag);
 
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-        private boolean loadingMore = true;
-        @Override
-        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                if (!loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
-                    loadMore();
-                }
-            }
-        }
-
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            if (loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
+            if (!loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
                 loadMore();
-            } else if (loadingMore) {
-                loadingMore = false;
             }
         }
     };
 
     private void refresh() {
+        loadingMore = true;
         localCount = 0;
         currentPage = 1;
         viewModel.loadRecordByPage(makeRecordSearchView());
     }
 
     private void loadMore() {
-        currentPage++;
-        viewModel.loadRecordByPage(makeRecordSearchView());
+        if (!viewModel.isLoadAllOver()) {
+            loadingMore = true;
+            currentPage++;
+            viewModel.loadRecordByPage(makeRecordSearchView());
+        }
     }
 
     private RecordSearch makeRecordSearchView() {
@@ -223,7 +217,7 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
                     .phone(binding.etPhone.getText().toString())
                     .name(binding.etName.getText().toString())
                     .upload(binding.spUploadStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? Boolean.TRUE : Boolean.FALSE))
-                    .fever(binding.spFeverStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? Boolean.FALSE : Boolean.TRUE))
+                    .fever(binding.spFeverStatus.getSelectedItemPosition() == 0 ? null : (binding.spFeverStatus.getSelectedItemPosition() == 1 ? Boolean.FALSE : Boolean.TRUE))
                     .startTime(TextUtils.equals(binding.tvStartTime.getText().toString(), "请选择开始日期") ? null : binding.tvStartTime.getText().toString())
                     .endTime(TextUtils.equals(binding.tvEndTime.getText().toString(), "请选择结束日期") ? null : binding.tvEndTime.getText().toString())
                     .build();

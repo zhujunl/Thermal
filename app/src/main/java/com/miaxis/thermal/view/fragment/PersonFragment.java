@@ -38,6 +38,7 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     private PersonAdapter adapter;
     private LinearLayoutManager layoutManager;
 
+    private boolean loadingMore = false;
     private boolean search = false;
     private int currentPage = 1;
     private int localCount = 0;
@@ -219,6 +220,7 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
             localCount = personList.size();
         }
         viewModel.updatePersonCount(search, search ? makePersonSearch() : null);
+        loadingMore = false;
     };
 
     private Observer<Boolean> refreshingObserver = flag -> binding.srlPerson.setRefreshing(flag);
@@ -230,37 +232,28 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     };
 
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-        private boolean loadingMore = true;
-        @Override
-        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                if (!loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
-                    loadMore();
-                }
-            }
-        }
-
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            if (loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
+            if (!loadingMore && layoutManager.findLastVisibleItemPosition() + 1 == adapter.getItemCount()) {
                 loadMore();
-            } else if (loadingMore) {
-                loadingMore = false;
             }
         }
     };
 
     private void refresh() {
+        loadingMore = true;
         localCount = 0;
         currentPage = 1;
         viewModel.loadPersonByPage(makePersonSearch());
     }
 
     private void loadMore() {
-        currentPage++;
-        viewModel.loadPersonByPage(makePersonSearch());
+        if (!viewModel.isLoadAllOver()) {
+            loadingMore = true;
+            currentPage++;
+            viewModel.loadPersonByPage(makePersonSearch());
+        }
     }
 
     private PersonSearch makePersonSearch() {
@@ -278,8 +271,8 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
                     .name(binding.etName.getText().toString())
                     .upload(binding.spUploadStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? Boolean.TRUE : Boolean.FALSE))
                     .face(binding.spFaceStatus.getSelectedItemPosition() == 0 ? null : (binding.spFaceStatus.getSelectedItemPosition() == 1 ? Boolean.TRUE : Boolean.FALSE))
-                    .status(binding.spPersonStatus.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? "1" : "2"))
-                    .type(binding.spPersonType.getSelectedItemPosition() == 0 ? null : (binding.spUploadStatus.getSelectedItemPosition() == 1 ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR))
+                    .status(binding.spPersonStatus.getSelectedItemPosition() == 0 ? null : (binding.spPersonStatus.getSelectedItemPosition() == 1 ? "1" : "2"))
+                    .type(binding.spPersonType.getSelectedItemPosition() == 0 ? null : (binding.spPersonType.getSelectedItemPosition() == 1 ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR))
                     .build();
         }
     }

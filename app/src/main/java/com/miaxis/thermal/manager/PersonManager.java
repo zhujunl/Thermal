@@ -211,7 +211,7 @@ public class PersonManager {
                 });
     }
 
-    private MatchPerson getMatchPerson(byte[] feature, boolean mask) {
+    public MatchPerson getMatchPerson(byte[] feature, boolean mask) {
         float maxScore = 0f;
         Person bestMatchPerson = null;
         for (Person person : PersonManager.getInstance().getPersonList()) {

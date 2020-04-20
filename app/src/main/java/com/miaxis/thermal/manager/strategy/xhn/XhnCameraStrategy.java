@@ -8,6 +8,7 @@ import android.view.TextureView;
 
 import androidx.annotation.NonNull;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
@@ -135,12 +136,12 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
             visibleCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
-            new Thread(() -> {
+            App.getInstance().getThreadExecutor().execute(() -> {
                 if (retryTime <= RETRY_TIMES) {
                     retryTime++;
                     openVisibleCamera();
                 }
-            }).start();
+            });
         }
     }
 
@@ -154,12 +155,12 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new Thread(() -> {
+            App.getInstance().getThreadExecutor().execute(() -> {
                 if (retryTime <= RETRY_TIMES) {
                     retryTime++;
                     closeVisibleCamera();
                 }
-            }).start();
+            });
         }
     }
 
@@ -188,12 +189,12 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
-            new Thread(() -> {
+            App.getInstance().getThreadExecutor().execute(() -> {
                 if (retryTime <= RETRY_TIMES) {
                     retryTime++;
                     openInfraredCamera();
                 }
-            }).start();
+            });
         }
     }
 
@@ -211,12 +212,12 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new Thread(() -> {
+            App.getInstance().getThreadExecutor().execute(() -> {
                 if (retryTime <= RETRY_TIMES) {
                     retryTime++;
                     closeInfraredCamera();
                 }
-            }).start();
+            });
         }
     }
 

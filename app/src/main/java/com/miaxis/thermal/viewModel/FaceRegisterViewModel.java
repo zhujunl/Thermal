@@ -14,11 +14,13 @@ import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.SingleLiveEvent;
 import com.miaxis.thermal.bridge.Status;
+import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.event.FaceRegisterEvent;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.ToastManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,6 +28,7 @@ import org.greenrobot.eventbus.EventBus;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class FaceRegisterViewModel extends BaseViewModel {
@@ -33,6 +36,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
     public MutableLiveData<Status> shootFlag = new MutableLiveData<>(Status.FAILED);
     public ObservableField<String> hint = new ObservableField<>("");
     public MutableLiveData<Boolean> confirmFlag = new SingleLiveEvent<>();
+    public MutableLiveData<MatchPerson> repeatFaceFlag = new SingleLiveEvent<>();
 
     private String faceFeatureCache;
     private String maskFaceFeatureCache;
@@ -89,19 +93,24 @@ public class FaceRegisterViewModel extends BaseViewModel {
         })
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
-                .doOnNext(bitmap -> {
+                .map(bitmap -> {
                     PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                     if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
                         faceFeatureCache = Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP);
                         maskFaceFeatureCache = Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP);
                         headerCache = bitmap;
+                        return photoFaceFeature.getFaceFeature();
                     } else {
                         throw new MyException(photoFaceFeature.getMessage());
                     }
                 })
+                .doOnNext(faceFeatureCache -> {
+                    MatchPerson matchPerson = PersonManager.getInstance().getMatchPerson(faceFeatureCache, false);
+                    repeatFaceFlag.postValue(matchPerson);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    shootFlag.setValue(Status.SUCCESS);
+                    shootFlag.postValue(Status.SUCCESS);
                     hint.set(getString(R.string.fragment_face_register_extract_success));
                 }, throwable -> {
                     shootFlag.setValue(Status.FAILED);
@@ -111,7 +120,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
                     } else {
                         throwable.printStackTrace();
                         Log.e("asd", "" + throwable.getMessage());
-                        hint.set("出现错误，请重新拍摄\n" + FaceManager.getInstance().getErrorMessage());
+                        hint.set("出现错误，请重新拍摄\n" + throwable.getMessage());
                     }
                 });
     }

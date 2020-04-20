@@ -152,4 +152,10 @@ public class PersonViewModel extends BaseViewModel {
                 });
     }
 
+    public boolean isLoadAllOver() {
+        if (getPersonList().size() == 0) return false;
+        if (personCountLiveData.getValue() == null || personCountLiveData.getValue() == 0) return false;
+        return getPersonList().size() == personCountLiveData.getValue();
+    }
+
 }

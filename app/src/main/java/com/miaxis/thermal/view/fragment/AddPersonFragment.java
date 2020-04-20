@@ -5,7 +5,10 @@ import android.app.DatePickerDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.miaxis.thermal.R;
@@ -19,6 +22,7 @@ import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
+import com.miaxis.thermal.util.PatternUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
@@ -67,7 +71,53 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
 
     @Override
     protected void initView() {
+        binding.ivBack.setOnClickListener(v -> onBackPressed());
+        binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
+            if (ConfigManager.isLandCameraDevice()) {
+                mListener.replaceFragment(FaceRegisterLandFragment.newInstance(person != null));
+            } else {
+                mListener.replaceFragment(FaceRegisterFragment.newInstance(person != null));
+            }
+        }));
+        initPerson();
+        initTextListener();
+        initDateSelector();
+        binding.btnRegister.setOnClickListener(v -> savePerson());
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        mListener.backToStack(null);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+        if (ConfigManager.isCardDevice()) {
+            CardManager.getInstance().release();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onFaceRegisterEvent(FaceRegisterEvent event) {
+        viewModel.faceFeatureHint.set(getString(R.string.fragment_add_person_face_collect_over));
+        binding.tvFaceFeature.setOnClickListener(null);
+        viewModel.setFeatureCache(event.getFaceFeature());
+        viewModel.setMaskFeatureCache(event.getMaskFaceFeature());
+        viewModel.setHeaderCache(event.getBitmap());
+        GlideApp.with(this)
+                .load(event.getBitmap())
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(binding.ivHeader);
+        EventBus.getDefault().removeStickyEvent(event);
+    }
+
+    private void initPerson() {
         if (person != null) {
+            binding.tvTitle.setText("修改人员");
             viewModel.setPersonCache(person);
             if (!TextUtils.isEmpty(person.getName())) {
                 viewModel.name.set(person.getName());
@@ -104,20 +154,61 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             }
             binding.btnRegister.setText("修改");
         } else {
+            binding.tvTitle.setText("新增人员");
             if (ConfigManager.isCardDevice()) {
                 viewModel.initCard.observe(this, initCardObserver);
                 viewModel.cardStatus.observe(this, cardStatusObserver);
                 viewModel.initCard.setValue(Boolean.TRUE);
+            } else {
+                initTextListener();
             }
         }
-        binding.ivBack.setOnClickListener(v -> onBackPressed());
-        binding.tvFaceFeature.setOnClickListener(new OnLimitClickHelper(view -> {
-            if (ConfigManager.isLandCameraDevice()) {
-                mListener.replaceFragment(FaceRegisterLandFragment.newInstance());
-            } else {
-                mListener.replaceFragment(FaceRegisterFragment.newInstance());
-            }
-        }));
+    }
+
+    private void initTextListener() {
+        if (ConfigManager.isNeedPatternMatcherDevice()) {
+            binding.etNumber.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String inputText = s.toString();
+                    if (TextUtils.isEmpty(inputText) || PatternUtil.isIDNumber(inputText)) {
+                        binding.tvNumberWarn.setVisibility(View.INVISIBLE);
+                    } else {
+                        binding.tvNumberWarn.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+            binding.etPhone.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String inputText = s.toString();
+                    if (TextUtils.isEmpty(inputText) || PatternUtil.checkMobilePhone(inputText)) {
+                        binding.tvPhoneWarn.setVisibility(View.INVISIBLE);
+                    } else {
+                        binding.tvPhoneWarn.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+    }
+
+    private void initDateSelector() {
         binding.tvEffectTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
             new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
@@ -140,7 +231,10 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                     , calendar.get(Calendar.MONTH)
                     , calendar.get(Calendar.DAY_OF_MONTH)).show();
         }));
-        binding.btnRegister.setOnClickListener(v -> {
+    }
+
+    private void savePerson() {
+        try {
             if (TextUtils.isEmpty(viewModel.name.get())) {
                 ToastManager.toast("请输入姓名", ToastManager.INFO);
                 return;
@@ -173,52 +267,28 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 }
                 return;
             }
-            try {
-                Date effectTime = DateUtil.DATE_FORMAT.parse(viewModel.effectTime.get());
-                Date invalidTime = DateUtil.DATE_FORMAT.parse(viewModel.invalidTime.get());
-                if (invalidTime.getTime() <= effectTime.getTime()) {
-                    ToastManager.toast("失效时间必须大于生效时间", ToastManager.INFO);
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!PatternUtil.checkMobilePhone(viewModel.phone.get())) {
+                ToastManager.toast("手机号码格式验证不通过", ToastManager.INFO);
+                return;
+            }
+            if (!PatternUtil.isIDNumber(viewModel.number.get())) {
+                ToastManager.toast("证件号码格式验证不通过", ToastManager.INFO);
+                return;
+            }
+            Date effectTime = DateUtil.DATE_FORMAT.parse(viewModel.effectTime.get());
+            Date invalidTime = DateUtil.DATE_FORMAT.parse(viewModel.invalidTime.get());
+            if (invalidTime.getTime() <= effectTime.getTime()) {
+                ToastManager.toast("失效时间必须大于生效时间", ToastManager.INFO);
+                return;
             }
             viewModel.savePerson();
-        });
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        mListener.backToStack(null);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-        if (ConfigManager.isCardDevice()) {
-            CardManager.getInstance().release();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onFaceRegisterEvent(FaceRegisterEvent event) {
-        viewModel.faceFeatureHint.set(getString(R.string.fragment_add_person_face_collect_over));
-        binding.tvFaceFeature.setOnClickListener(null);
-        viewModel.setFeatureCache(event.getFaceFeature());
-        viewModel.setMaskFeatureCache(event.getMaskFaceFeature());
-        viewModel.setHeaderCache(event.getBitmap());
-        GlideApp.with(this)
-                .load(event.getBitmap())
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.ivHeader);
-        EventBus.getDefault().removeStickyEvent(event);
-    }
-
     private Observer<Boolean> initCardObserver = aBoolean -> {
-        new Thread(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener)).start();
+        App.getInstance().getThreadExecutor().execute(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener));
     };
 
     private Observer<Boolean> cardStatusObserver = result -> {
@@ -228,6 +298,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
         } else {
             binding.etName.setEnabled(true);
             binding.etNumber.setEnabled(true);
+            initTextListener();
         }
     };
 

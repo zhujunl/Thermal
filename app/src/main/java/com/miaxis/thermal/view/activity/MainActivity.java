@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.databinding.ActivityMainBinding;
 import com.miaxis.thermal.manager.GpioManager;
@@ -68,13 +69,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         root = fragment.getClass().getName();
         replaceFragment(fragment);
         WatchDogManager.getInstance().startANRWatchDog();
-        new Thread(() -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
 //            GpioManager.getInstance().setStatusBar(false);
             HeartBeatManager.getInstance().startHeartBeat();
             PersonManager.getInstance().init();
             RecordManager.getInstance().init();
             WebServerManager.getInstance().startServer();
-        }).start();
+        });
     }
 
     @Override

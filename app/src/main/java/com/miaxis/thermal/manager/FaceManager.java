@@ -333,37 +333,6 @@ public class FaceManager {
         }
     }
 
-    public byte[] getCardFeatureByBitmapPosting(Bitmap bitmap) {
-        errorMessage = "";
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        byte[] rgbData = imageFileDecode(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight());
-        if (rgbData == null) {
-            errorMessage = "图片转码失败";
-            return null;
-        }
-        int[] pFaceNum = new int[]{0};
-        MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
-        boolean result = faceDetect(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum, pFaceBuffer);
-        if (result) {
-            result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
-            MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
-//            if (result && mxFaceInfoEx.quality > 50) {
-            byte[] feature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-            if (feature != null) {
-                return feature;
-            } else {
-                errorMessage = "提取特征失败";
-            }
-//            } else {
-//                errorMessage = "人脸质量过低";
-//            }
-        } else {
-            errorMessage = "未检测到人脸";
-        }
-        return null;
-    }
-
     public PhotoFaceFeature getCardFaceFeatureByBitmapPosting(Bitmap bitmap) {
         String message = "";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
@@ -419,14 +388,19 @@ public class FaceManager {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
                 if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                    byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                    if (faceFeature != null) {
-                        byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                        if (maskFaceFeature != null) {
-                            return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                    result = detectMask(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                    if (result && mxFaceInfoEx.mask < ConfigManager.getInstance().getConfig().getMaskScore()) {
+                        byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                        if (faceFeature != null) {
+                            byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                            if (maskFaceFeature != null) {
+                                return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                            }
+                        } else {
+                            message = "提取特征失败";
                         }
                     } else {
-                        message = "提取特征失败";
+                        message = "检测到口罩";
                     }
                 } else {
                     message = "人脸质量过低";
@@ -438,45 +412,6 @@ public class FaceManager {
             message = "未检测到人脸";
         }
         return new PhotoFaceFeature(message);
-    }
-
-    public byte[] getPhotoFeatureByBitmapPosting(Bitmap bitmap) {
-        errorMessage = "";
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        byte[] rgbData = imageFileDecode(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight());
-        if (rgbData == null) {
-            errorMessage = "图片转码失败";
-            return null;
-        }
-        int[] pFaceNum = new int[]{0};
-        MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
-        boolean result = faceDetect(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum, pFaceBuffer);
-        if (result && pFaceNum[0] > 0) {
-            if (pFaceNum[0] == 1) {
-                result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
-                MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
-                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                    byte[] feature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                    if (feature != null) {
-                        return feature;
-                    } else {
-                        errorMessage = "提取特征失败";
-                    }
-                } else {
-                    errorMessage = "人脸质量过低";
-                }
-            } else {
-                errorMessage = "检测到多张人脸";
-            }
-        } else {
-            errorMessage = "未检测到人脸";
-        }
-        return null;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     /**

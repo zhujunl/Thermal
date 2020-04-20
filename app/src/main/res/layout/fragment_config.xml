@@ -124,8 +124,8 @@
 
                 </LinearLayout>
 
-
-                <LinearLayout style="@style/SettingItem">
+                <LinearLayout style="@style/SettingItem"
+                    android:visibility="gone">
 
                     <TextView
                         style="@style/SettingName"

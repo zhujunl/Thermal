@@ -165,4 +165,17 @@ public class ConfigManager {
         return false;
     }
 
+    public static boolean isNeedPatternMatcherDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.XH
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            return true;
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.ZH
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+            return false;
+        }
+        return false;
+    }
+
 }

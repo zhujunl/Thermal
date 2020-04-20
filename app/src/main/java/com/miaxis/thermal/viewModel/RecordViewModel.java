@@ -98,4 +98,11 @@ public class RecordViewModel extends BaseViewModel {
                     resultMessage.setValue(handleError(throwable));
                 });
     }
+
+    public boolean isLoadAllOver() {
+        if (getRecordList().size() == 0) return false;
+        if (recordCountLiveData.getValue() == null || recordCountLiveData.getValue() == 0) return false;
+        return getRecordList().size() == recordCountLiveData.getValue();
+    }
+
 }

@@ -23,6 +23,19 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.8"/>
 
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="新增人员"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <ImageView
             android:id="@+id/iv_back"
             android:layout_width="0dp"
@@ -34,18 +47,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <View
+            android:id="@+id/v_line"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/main_color"
+            app:layout_constraintTop_toBottomOf="@id/iv_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <ImageView
             android:id="@+id/iv_header"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            app:layout_constraintWidth_percent="0.4"
-            app:layout_constraintDimensionRatio="64:48"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/default_header"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/cl_name"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/v_line"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_name"
@@ -89,9 +113,22 @@
                 android:hint="@string/fragment_add_person_name_hint"
                 android:text="@={viewModel.name}"
                 app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintWidth_percent="0.75"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintEnd_toStartOf="@id/tv_name_warn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_name_warn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="格式错误"
+                android:textSize="16sp"
+                android:textColor="@color/darkred"
+                android:gravity="center"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -148,9 +185,22 @@
                 android:text="@={viewModel.number}"
                 android:inputType="phone"
                 app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintWidth_percent="0.75"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintEnd_toStartOf="@id/tv_number_warn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_number_warn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="格式错误"
+                android:textSize="16sp"
+                android:textColor="@color/darkred"
+                android:gravity="center"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -207,9 +257,22 @@
                 android:text="@={viewModel.phone}"
                 android:inputType="phone"
                 app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintWidth_percent="0.75"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintEnd_toStartOf="@id/tv_phone_warn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_phone_warn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="格式错误"
+                android:textSize="16sp"
+                android:textColor="@color/darkred"
+                android:gravity="center"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -453,6 +516,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:text="@{viewModel.faceFeatureHint}"
+                android:textSize="18sp"
                 android:gravity="center|start"
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintWidth_percent="0.75"
