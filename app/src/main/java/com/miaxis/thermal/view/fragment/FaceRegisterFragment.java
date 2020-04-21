@@ -22,6 +22,7 @@ import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.custom.RoundBorderView;
 import com.miaxis.thermal.view.custom.RoundFrameLayout;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.viewModel.FaceRegisterViewModel;
 
 public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegisterBinding, FaceRegisterViewModel> {
@@ -88,7 +89,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
     private Observer<MatchPerson> repeatFaceFlag = matchPerson -> {
         if (matchPerson != null && !forUpdate) {
-            new MaterialDialog.Builder(getContext())
+            DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                     .title("高相似度人脸")
                     .content("检测到就绪状态人员库中，存在高相似度人脸\n"
                             + "最高相似度人员：" + matchPerson.getPerson().getIdentifyNumber()
@@ -106,6 +107,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
                     .onNegative((dialog, which) -> {
                         dialog.dismiss();
                     })
+                    .build())
                     .show();
         }
     };

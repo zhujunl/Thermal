@@ -28,6 +28,7 @@ import com.miaxis.thermal.view.adapter.PersonAdapter;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.viewModel.PersonViewModel;
 import com.miaxis.thermal.viewModel.RecordViewModel;
 
@@ -181,23 +182,25 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
                 mListener.replaceFragment(AddPersonFragment.newInstance(adapter.getData(position)));
                 break;
             case R.id.iv_delete:
-                new MaterialDialog.Builder(getContext())
+                DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                         .title("确认删除？")
                         .positiveText("确认")
                         .onPositive((dialog, which) -> {
                             viewModel.changePersonStatus(adapter.getData(position), false);
                         })
                         .negativeText("取消")
+                        .build())
                         .show();
                 break;
             case R.id.iv_recover:
-                new MaterialDialog.Builder(getContext())
+                DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                         .title("确认启用？")
                         .positiveText("确认")
                         .onPositive((dialog, which) -> {
                             viewModel.changePersonStatus(adapter.getData(position), true);
                         })
                         .negativeText("取消")
+                        .build())
                         .show();
                 break;
         }

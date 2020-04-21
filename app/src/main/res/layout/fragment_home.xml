@@ -89,49 +89,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_person"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/orange_hibiscus"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_attendance"
-            app:layout_constraintEnd_toStartOf="@id/cl_add_person"
-            app:layout_constraintHeight_percent="0.2">
-
-            <ImageView
-                android:id="@+id/iv_person_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_local_florist_black"
-                android:scaleType="fitCenter"
-                android:padding="10dp"
-                app:layout_constraintHeight_percent="0.6"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_person_hint"/>
-
-            <TextView
-                android:id="@+id/tv_person_hint"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:text="@string/fragment_home_personnel"
-                android:textColor="@color/white"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/iv_person_icon"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_add_person"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -139,8 +96,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
-            app:layout_constraintStart_toEndOf="@id/cl_person"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cl_attendance"
+            app:layout_constraintEnd_toStartOf="@id/cl_person"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.2">
 
@@ -149,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_local_florist_black"
+                android:src="@drawable/ic_person_add_white"
                 android:scaleType="fitCenter"
                 android:padding="10dp"
                 app:layout_constraintHeight_percent="0.6"
@@ -175,6 +133,51 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_person"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/orange_hibiscus"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toEndOf="@id/cl_add_person"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_attendance"
+            app:layout_constraintHeight_percent="0.2">
+
+            <ImageView
+                android:id="@+id/iv_person_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_group_white"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_person_hint"/>
+
+            <TextView
+                android:id="@+id/tv_person_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@string/fragment_home_personnel"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/iv_person_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_record"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -192,7 +195,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_local_florist_black"
+                android:src="@drawable/ic_list_black_white"
                 android:scaleType="fitCenter"
                 android:padding="10dp"
                 app:layout_constraintHeight_percent="0.6"
@@ -235,7 +238,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_local_florist_black"
+                android:src="@drawable/ic_settings_white"
                 android:scaleType="fitCenter"
                 android:padding="10dp"
                 app:layout_constraintHeight_percent="0.6"

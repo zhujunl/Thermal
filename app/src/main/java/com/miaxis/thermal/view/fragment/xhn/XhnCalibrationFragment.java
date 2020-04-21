@@ -21,6 +21,7 @@ import com.miaxis.thermal.manager.CalibrationManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.viewModel.xhn.XhnCalibrationViewModel;
 
 public class XhnCalibrationFragment extends BaseViewModelFragment<FragmentXhnCalibrationBinding, XhnCalibrationViewModel> {
@@ -56,13 +57,14 @@ public class XhnCalibrationFragment extends BaseViewModelFragment<FragmentXhnCal
         binding.etEmissivity.setText(String.valueOf(calibration.getXhnEmissivity()));
         binding.etModel.setText(String.valueOf(calibration.getXhnModel()));
         binding.ivCheck.setOnClickListener(new OnLimitClickHelper(view -> {
-            new MaterialDialog.Builder(getContext())
+            DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                     .content("保存成功之后，应用将自动重启，是否确认？")
                     .positiveText("确认")
                     .onPositive((dialog, which) -> {
                         checkCalibration();
                     })
                     .negativeText("取消")
+                    .build())
                     .show();
         }));
     }

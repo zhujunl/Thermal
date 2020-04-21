@@ -50,9 +50,9 @@ public abstract class AppDatabase extends RoomDatabase {
                         super.onOpen(db);
                     }
                 })
-//                .fallbackToDestructiveMigration()
                 .addMigrations(MIGRATION_3_4)
                 .addMigrations(MIGRATION_4_5)
+                .fallbackToDestructiveMigration()
                 .build();
     }
 

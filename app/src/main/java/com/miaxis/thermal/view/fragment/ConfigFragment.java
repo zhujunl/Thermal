@@ -23,6 +23,7 @@ import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.view.fragment.xhn.XhnCalibrationFragment;
 import com.miaxis.thermal.viewModel.ConfigViewModel;
 
@@ -117,13 +118,14 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
     protected void initView() {
         binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
         binding.tvClearTimeStamp.setOnClickListener(new OnLimitClickHelper(view -> {
-            new MaterialDialog.Builder(getContext())
+            DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                     .title("确认清空同步时间戳？")
                     .onPositive((dialog, which) -> {
                         viewModel.clearTimeStamp();
                     })
                     .positiveText("确认")
                     .negativeText("取消")
+                    .build())
                     .show();
         }));
         binding.ivBack.setOnClickListener(v -> onBackPressed());

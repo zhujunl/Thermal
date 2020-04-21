@@ -55,7 +55,7 @@ public class ExcelManager {
             try {
                 XSSFWorkbook workbook = createWorkbook();
                 XSSFSheet sheet = workbook.getSheet(SHEET_NAME);
-//                recordSearch.setPageSize(100);
+                recordSearch.setPageSize(100);
                 List<Record> recordList;
                 int allPage = recordCount / recordSearch.getPageSize() + 1;
                 for (int page = 1; page <= allPage; page++) {

@@ -32,6 +32,7 @@ import com.miaxis.thermal.view.adapter.RecordAdapter;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.view.dialog.PhotoDialogFragment;
 import com.miaxis.thermal.viewModel.RecordViewModel;
 
@@ -96,13 +97,14 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
             refresh();
         }));
         binding.btnExport.setOnClickListener(new OnLimitClickHelper(view -> {
-            new MaterialDialog.Builder(getContext())
+            DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                     .title("确认导出查询结果？")
                     .positiveText("确认")
                     .onPositive((dialog, which) -> {
                         viewModel.exportRecord(makeRecordSearchView());
                     })
                     .negativeText("取消")
+                    .build())
                     .show();
         }));
         binding.btnReset.setOnClickListener(new OnLimitClickHelper(view -> {
@@ -146,25 +148,25 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
     private void initSearchView() {
         binding.tvStartTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+            DialogHelper.fullScreenAlertDialogLink(new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 00:00:00";
                 binding.tvStartTime.setText(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
-                    , calendar.get(Calendar.DAY_OF_MONTH)).show();
+                    , calendar.get(Calendar.DAY_OF_MONTH))).show();
         }));
         binding.tvEndTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+            DialogHelper.fullScreenAlertDialogLink(new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 23:59:59";
                 binding.tvEndTime.setText(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
-                    , calendar.get(Calendar.DAY_OF_MONTH)).show();
+                    , calendar.get(Calendar.DAY_OF_MONTH))).show();
         }));
     }
 

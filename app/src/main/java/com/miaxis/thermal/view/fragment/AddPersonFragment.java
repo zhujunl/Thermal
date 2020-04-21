@@ -26,6 +26,7 @@ import com.miaxis.thermal.util.PatternUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.viewModel.AddPersonViewModel;
 
 import org.greenrobot.eventbus.EventBus;
@@ -211,25 +212,25 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     private void initDateSelector() {
         binding.tvEffectTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+            DialogHelper.fullScreenAlertDialogLink(new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 23:59:59";
                 viewModel.effectTime.set(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
-                    , calendar.get(Calendar.DAY_OF_MONTH)).show();
+                    , calendar.get(Calendar.DAY_OF_MONTH))).show();
         }));
         binding.tvInvalidTime.setOnClickListener(new OnLimitClickHelper(view -> {
             Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+            DialogHelper.fullScreenAlertDialogLink(new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 23:59:59";
                 viewModel.invalidTime.set(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
-                    , calendar.get(Calendar.DAY_OF_MONTH)).show();
+                    , calendar.get(Calendar.DAY_OF_MONTH))).show();
         }));
     }
 

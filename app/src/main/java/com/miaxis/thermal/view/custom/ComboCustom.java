@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.ToastManager;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 
 public class ComboCustom extends FrameLayout {
 
@@ -123,6 +124,7 @@ public class ComboCustom extends FrameLayout {
                 .onNegative((dialog, which) -> handler.removeCallbacks(runnable))
                 .dismissListener(dialog -> handler.removeCallbacks(runnable))
                 .build();
+        DialogHelper.fullScreenMaterialDialog(passwordDialog);
         passwordDialog.getInputEditText().setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
     }
 

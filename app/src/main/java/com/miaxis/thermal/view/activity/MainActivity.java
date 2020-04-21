@@ -18,6 +18,7 @@ import com.miaxis.thermal.manager.WebServerManager;
 import com.miaxis.thermal.view.base.BaseActivity;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.base.OnFragmentInteractionListener;
+import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.view.fragment.PreludeFragment;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements OnFragmentInteractionListener {
@@ -70,7 +71,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
         replaceFragment(fragment);
         WatchDogManager.getInstance().startANRWatchDog();
         App.getInstance().getThreadExecutor().execute(() -> {
-//            GpioManager.getInstance().setStatusBar(false);
+            GpioManager.getInstance().setStatusBar(false);
             HeartBeatManager.getInstance().startHeartBeat();
             PersonManager.getInstance().init();
             RecordManager.getInstance().init();
@@ -159,6 +160,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
                 .content("")
                 .positiveText("确认")
                 .build();
+        DialogHelper.fullScreenMaterialDialog(waitDialog);
+        DialogHelper.fullScreenMaterialDialog(quitDialog);
+        DialogHelper.fullScreenMaterialDialog(resultDialog);
     }
 
 }
