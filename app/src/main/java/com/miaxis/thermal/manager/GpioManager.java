@@ -14,6 +14,7 @@ import com.miaxis.thermal.manager.strategy.mr890.MR890GpioStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
+import com.miaxis.thermal.manager.strategy.xhc.XhcGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xhn.XhnGpioStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhGpioStrategy;
 import com.miaxis.thermal.util.ValueUtil;
@@ -54,6 +55,8 @@ public class GpioManager {
             gpioStrategy = new XhnGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             gpioStrategy = new MR890GpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+            gpioStrategy = new XhcGpioStrategy();
         }
         initGpio(application);
         resetGpio();

@@ -17,18 +17,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.entity.RecordSearch;
 import com.miaxis.thermal.databinding.FragmentRecordBinding;
+import com.miaxis.thermal.manager.ExcelManager;
+import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.adapter.RecordAdapter;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.dialog.PhotoDialogFragment;
 import com.miaxis.thermal.viewModel.RecordViewModel;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
@@ -87,6 +94,16 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
             hideInputMethod();
             search = true;
             refresh();
+        }));
+        binding.btnExport.setOnClickListener(new OnLimitClickHelper(view -> {
+            new MaterialDialog.Builder(getContext())
+                    .title("确认导出查询结果？")
+                    .positiveText("确认")
+                    .onPositive((dialog, which) -> {
+                        viewModel.exportRecord(makeRecordSearchView());
+                    })
+                    .negativeText("取消")
+                    .show();
         }));
         binding.btnReset.setOnClickListener(new OnLimitClickHelper(view -> {
             binding.etName.setText("");

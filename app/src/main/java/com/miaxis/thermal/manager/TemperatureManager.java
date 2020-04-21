@@ -10,6 +10,7 @@ import com.miaxis.thermal.manager.strategy.mr870.MR870TemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890TemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhTemperatureStrategy;
+import com.miaxis.thermal.manager.strategy.xhc.XhcTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xhn.XhnTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhTemperatureStrategy;
 import com.miaxis.thermal.util.DataUtils;
@@ -64,6 +65,8 @@ public class TemperatureManager {
             temperatureStrategy = new XhnTemperatureStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             temperatureStrategy = new MR890TemperatureStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+            temperatureStrategy = new XhcTemperatureStrategy();
         }
     }
 

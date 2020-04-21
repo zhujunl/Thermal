@@ -49,6 +49,7 @@ public class CardManager {
     public void init() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870) {
             cardStrategy = new DefaultCardStrategy();

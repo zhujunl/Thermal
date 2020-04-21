@@ -85,7 +85,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.2.4"
     implementation 'androidx.room:room-rxjava2:2.2.4'
     //Guava
-    implementation("com.google.guava:guava:29.0-android")
+    implementation 'com.google.guava:guava:29.0-android'
     //WatchDog
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
     //WebSocket
@@ -110,4 +110,6 @@ dependencies {
     implementation files('src/main/libs/online_liantian_3-1-6-5-655_0312.jar')
     implementation files('src/main/libs/IDCardComDriver.jar')
     implementation files('src/main/libs/nexgo-smartpos-sdk-v2.3.3_20191226-sources.jar')
+    implementation files('src/main/libs/poi-3.12-android-a.jar')
+    implementation files('src/main/libs/poi-ooxml-schemas-3.12-20150511-a.jar')
 }

@@ -33,6 +33,7 @@ public class FileUtil {
     public static final String ADVERTISE = MAIN_PATH + File.separator + "advertise";
     public static final String FACE_IMAGE_PATH = MAIN_PATH + File.separator + "recordImage";
     public static final String FACE_STOREHOUSE_PATH = MAIN_PATH + File.separator + "faceStorehouse";
+    public static final String RECORD_EXCEL_PATH = MAIN_PATH + File.separator + "excel";
 
     public static void initDirectory() {
         File path = new File(FileUtil.PATH);
@@ -43,10 +44,10 @@ public class FileUtil {
         if (!path.exists()) {
             path.mkdirs();
         }
-//        path = new File(FileUtil.MODEL_PATH);
-//        if (!path.exists()) {
-//            path.mkdirs();
-//        }
+        path = new File(FileUtil.RECORD_EXCEL_PATH);
+        if (!path.exists()) {
+            path.mkdirs();
+        }
         path = new File(FileUtil.ADVERTISE);
         if (!path.exists()) {
             path.mkdirs();

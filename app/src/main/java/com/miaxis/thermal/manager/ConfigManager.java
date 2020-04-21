@@ -85,6 +85,7 @@ public class ConfigManager {
             }
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
                     || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                     || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
@@ -154,7 +155,8 @@ public class ConfigManager {
 
     public static boolean isLandCameraDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
@@ -167,7 +169,8 @@ public class ConfigManager {
 
     public static boolean isNeedPatternMatcherDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_N
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
