@@ -5,7 +5,12 @@ import android.app.Application;
 import com.android.xhapimanager.XHApiManager;
 import com.miaxis.thermal.manager.GpioManager;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
 public class XhnGpioStrategy implements GpioManager.GpioStrategy {
+
+    private static final String GPIO5 = "/sys/class/xh_custom/xh_custom_gpio/device/gpio5";
 
     private Application context;
     private XHApiManager xhApiManager;
@@ -45,7 +50,47 @@ public class XhnGpioStrategy implements GpioManager.GpioStrategy {
         xhApiManager.XHShowOrHideStatusBar(show);
     }
 
+    @Override
+    public void openGate(boolean open) {
+        RootCommand("echo " + (open ? 1 : 0) + " > " + GPIO5);
+    }
+
     public void setGpio(int gpio, int value) {
         xhApiManager.XHSetGpioValue(gpio, value);
+    }
+
+    private void RootCommand(String cmd) {
+        Process process = null;
+        DataOutputStream os = null;
+        DataInputStream is = null;
+        try {
+            process = Runtime.getRuntime().exec("/system/xbin/su");
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+
+            int aa = process.waitFor();
+            is = new DataInputStream(process.getInputStream());
+
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);
+
+            //String out = new String(buffer);
+            // Log.d(TAG, out + aa);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+                process.destroy();
+            } catch (Exception e) {
+            }
+        }
     }
 }

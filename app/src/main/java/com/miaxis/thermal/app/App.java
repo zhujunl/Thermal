@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.multidex.MultiDex;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.data.dao.AppDatabase;
@@ -41,6 +42,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        MultiDex.install(this);
 //        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
     }
 

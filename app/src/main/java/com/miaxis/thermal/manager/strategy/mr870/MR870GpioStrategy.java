@@ -54,9 +54,10 @@ public class MR870GpioStrategy implements GpioManager.GpioStrategy {
 
     }
 
-    public void controlDoor(boolean bOpen) {
+    @Override
+    public void openGate(boolean open) {
         try {
-            if (bOpen) {
+            if (open) {
                 outputStream.write((byte) 0x01);//01开门
             } else {
                 outputStream.write((byte) 0xf1);//f1关门

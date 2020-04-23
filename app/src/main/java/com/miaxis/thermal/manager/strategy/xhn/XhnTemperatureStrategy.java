@@ -26,6 +26,7 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
     @Override
     public void open() {
         if (!init) {
+            XhnTempForward.getInstance().open();
             Calibration calibration = CalibrationManager.getInstance().getCalibration();
             sdk = new Fsdk(App.getInstance().getApplicationContext());
             sdk.setDelay(100);
@@ -60,6 +61,7 @@ public class XhnTemperatureStrategy implements TemperatureManager.TemperatureStr
 
     @Override
     public void close() {
+        XhnTempForward.getInstance().close();
     }
 
     @Override

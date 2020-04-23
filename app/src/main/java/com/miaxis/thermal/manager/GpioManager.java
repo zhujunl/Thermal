@@ -81,6 +81,12 @@ public class GpioManager {
         }
     }
 
+    private void openGate(boolean open) {
+        if (gpioStrategy != null) {
+            gpioStrategy.openGate(open);
+        }
+    }
+
     public interface GpioStrategy {
         void init(Application application);
         void resetGpio();
@@ -88,6 +94,7 @@ public class GpioManager {
         void controlGreenLed(boolean status);
         void controlRedLed(boolean status);
         void setStatusBar(boolean show);
+        void openGate(boolean open);
     }
 
     /**
@@ -236,24 +243,12 @@ public class GpioManager {
     }
 
     public void openDoorForGate() {
-        if (gpioStrategy instanceof MR870GpioStrategy) {
-            MR870GpioStrategy mr870GpioStrategy = (MR870GpioStrategy) gpioStrategy;
+        if (ConfigManager.isGateDevice()) {
             executorService.execute(() -> {
                 try {
-                    mr870GpioStrategy.controlDoor(true);
-                    Thread.sleep(500);
-                    mr870GpioStrategy.controlDoor(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        } else if (gpioStrategy instanceof MR890GpioStrategy) {
-            MR890GpioStrategy mr890GpioStrategy = (MR890GpioStrategy) gpioStrategy;
-            executorService.execute(() -> {
-                try {
-                    mr890GpioStrategy.controlDoor(true);
-                    Thread.sleep(500);
-                    mr890GpioStrategy.controlDoor(false);
+                    openGate(true);
+                    Thread.sleep(ConfigManager.getInstance().getConfig().getVerifyCold() * 1000 - 100);
+                    openGate(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

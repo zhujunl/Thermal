@@ -57,7 +57,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         viewModel.clearTimeStampResult.observe(this, clearTimeStamp);
         Config config = ConfigManager.getInstance().getConfig();
         binding.tvFaceVersion.setText(FaceManager.getInstance().faceVersion());
-        binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
+        String versionName = DeviceUtil.getCurVersion(getContext()) + "_" + Sign.getSignName(ValueUtil.DEFAULT_SIGN);
+        binding.tvVersion.setText(versionName);
         if (TextUtils.equals(config.getServerMode(), "0")) {
             binding.rbMix.setChecked(true);
             binding.rbServer.setChecked(false);
@@ -116,7 +117,6 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
 
     @Override
     protected void initView() {
-        binding.tvVersion.setText(DeviceUtil.getCurVersion(getContext()));
         binding.tvClearTimeStamp.setOnClickListener(new OnLimitClickHelper(view -> {
             DialogHelper.fullScreenMaterialDialogLink(new MaterialDialog.Builder(getContext())
                     .title("确认清空同步时间戳？")

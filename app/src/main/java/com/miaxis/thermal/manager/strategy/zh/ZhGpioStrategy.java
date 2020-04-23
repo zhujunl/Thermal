@@ -69,6 +69,10 @@ public class ZhGpioStrategy implements GpioManager.GpioStrategy {
 
     }
 
+    @Override
+    public void openGate(boolean open) {
+
+    }
 
     private void ctlLedRelay(String val) {
         File file = new File(LED_CTL_PATH);

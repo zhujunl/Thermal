@@ -39,6 +39,7 @@ import com.miaxis.thermal.manager.TemperatureManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.WatchDogManager;
 import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.manager.strategy.xhn.XhnTempForward;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
@@ -227,6 +228,9 @@ public class AttendanceViewModel extends BaseViewModel {
     }
 
     private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
+        if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+            XhnTempForward.getInstance().forward(temperature);
+        }
         detectCold();
         Config config = ConfigManager.getInstance().getConfig();
         hint.set(person.getName() + "-" +

@@ -59,9 +59,10 @@ public class MR890GpioStrategy implements GpioManager.GpioStrategy {
 
     }
 
-    public void controlDoor(boolean bOpen) {
+    @Override
+    public void openGate(boolean open) {
         try {
-            ledDriver.setLed(LightModeEnum.BLUE, bOpen);
+            ledDriver.setLed(LightModeEnum.BLUE, open);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -45,4 +45,9 @@ public class TpsGpioStrategy implements GpioManager.GpioStrategy {
             Util.hideNoticeBar(context);
         }
     }
+
+    @Override
+    public void openGate(boolean open) {
+
+    }
 }
