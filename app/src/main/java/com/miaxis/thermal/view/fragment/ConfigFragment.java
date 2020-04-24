@@ -86,6 +86,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.rbLivenessClose.setChecked(!config.isLiveness());
         binding.rbForcesMaskOpen.setChecked(config.isForcedMask());
         binding.rbForcesMaskClose.setChecked(!config.isForcedMask());
+        binding.rbStrangerRecordOn.setChecked(config.isStrangerRecord());
+        binding.rbStrangerRecordOff.setChecked(!config.isStrangerRecord());
+        binding.rbDeviceModeAttendance.setChecked(config.isDeviceMode());
+        binding.rbDeviceModeGate.setChecked(!config.isDeviceMode());
         binding.etRegisterQualityScore.setText(String.valueOf(config.getRegisterQualityScore()));
         binding.etQualityScore.setText(String.valueOf(config.getQualityScore()));
         binding.etVerifyScore.setText(String.valueOf(config.getVerifyScore()));
@@ -97,12 +101,15 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etDormancyInterval.setText(String.valueOf(config.getDormancyInterval()));
         binding.etDormancyTime.setText(String.valueOf(config.getDormancyTime()));
         binding.etFeverScore.setText(String.valueOf(config.getFeverScore()));
+        binding.rbTempRealTimeOn.setChecked(config.isTempRealTime());
+        binding.rbTempRealTimeOff.setChecked(!config.isTempRealTime());
         binding.rbHeatMapShow.setChecked(config.isHeatMap());
         binding.rbHeatMapDismiss.setChecked(!config.isHeatMap());
         binding.etHeartBeatInterval.setText(String.valueOf(config.getHeartBeatInterval()));
         binding.etFailedQueryCold.setText(String.valueOf(config.getFailedQueryCold()));
         binding.etRecordClearThreshold.setText(String.valueOf(config.getRecordClearThreshold()));
         binding.etVerifyCold.setText(String.valueOf(config.getVerifyCold()));
+        binding.etFailedVerifyCold.setText(String.valueOf(config.getFailedVerifyCold()));
         binding.etFlashTime.setText(String.valueOf(config.getFlashTime()));
         binding.etDevicePassword.setText(config.getDevicePassword());
         binding.ivBack.setOnClickListener(v -> mListener.backToStack(null));
@@ -220,6 +227,12 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("成功验证冷却 2 - 5 秒", ToastManager.INFO);
                         return;
                     }
+                    if (TextUtils.isEmpty(binding.etFailedVerifyCold.getText().toString())
+                            || Integer.parseInt(binding.etFailedVerifyCold.getText().toString()) < 2
+                            || Integer.parseInt(binding.etFailedVerifyCold.getText().toString()) > 5) {
+                        ToastManager.toast("陌生人验证冷却 2 - 5 秒", ToastManager.INFO);
+                        return;
+                    }
                     if (TextUtils.isEmpty(binding.etRecordClearThreshold.getText().toString())
                             || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) < 2000
                             || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) > 20000) {
@@ -241,6 +254,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setFaceCamera(binding.rbInfraredFace.isChecked());
                     config.setLiveness(binding.rbLivenessOpen.isChecked());
                     config.setForcedMask(binding.rbForcesMaskOpen.isChecked());
+                    config.setStrangerRecord(binding.rbStrangerRecordOn.isChecked());
+                    config.setDeviceMode(binding.rbDeviceModeAttendance.isChecked());
                     config.setRegisterQualityScore(Integer.parseInt(binding.etRegisterQualityScore.getText().toString()));
                     config.setQualityScore(Integer.parseInt(binding.etQualityScore.getText().toString()));
                     config.setVerifyScore(Float.parseFloat(binding.etVerifyScore.getText().toString()));
@@ -253,10 +268,12 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setDormancyTime(Integer.parseInt(binding.etDormancyTime.getText().toString()));
                     config.setFeverScore(Float.parseFloat(binding.etFeverScore.getText().toString()));
                     config.setHeatMap(binding.rbHeatMapShow.isChecked());
+                    config.setTempRealTime(binding.rbTempRealTimeOn.isChecked());
                     config.setHeartBeatInterval(Integer.parseInt(binding.etHeartBeatInterval.getText().toString()));
                     config.setFailedQueryCold(Integer.parseInt(binding.etFailedQueryCold.getText().toString()));
                     config.setRecordClearThreshold(Integer.parseInt(binding.etRecordClearThreshold.getText().toString()));
                     config.setVerifyCold(Integer.parseInt(binding.etVerifyCold.getText().toString()));
+                    config.setFailedVerifyCold(Integer.parseInt(binding.etFailedVerifyCold.getText().toString()));
                     config.setFlashTime(Integer.parseInt(binding.etFlashTime.getText().toString()));
                     config.setDevicePassword(binding.etDevicePassword.getText().toString());
                     viewModel.saveConfig(config);

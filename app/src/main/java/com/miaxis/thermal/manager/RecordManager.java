@@ -110,6 +110,24 @@ public class RecordManager {
         });
     }
 
+    public void handlerStrangerRecord(MxRGBImage mxRGBImage, float temperature) {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + "Stranger-" + System.currentTimeMillis() + ".jpg";
+                byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
+                Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+                FileUtil.saveBitmap(bitmap, filePath);
+                bitmap.recycle();
+                Record record = makeStrangerRecord(filePath, temperature);
+                RecordRepository.getInstance().saveRecord(record);
+                startUploadRecord();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
+            }
+        });
+    }
+
     private Record makeFaceRecord(Person person, float score, String facePicture, float temperature) {
         return new Record.Builder()
                 .personId(person.getId())
@@ -120,6 +138,18 @@ public class RecordManager {
                 .verifyTime(new Date())
                 .verifyPicturePath(facePicture)
                 .score(score)
+                .upload(false)
+                .temperature(temperature)
+                .build();
+    }
+
+    private Record makeStrangerRecord(String facePicture, float temperature) {
+        return new Record.Builder()
+                .name("比对人员")
+                .identifyNumber("-1")
+                .phone("-1")
+                .verifyTime(new Date())
+                .verifyPicturePath(facePicture)
                 .upload(false)
                 .temperature(temperature)
                 .build();

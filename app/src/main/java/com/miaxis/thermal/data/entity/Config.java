@@ -23,6 +23,8 @@ public class Config {
     private float maskVerifyScore;
     private int maskScore;
     private boolean forcedMask;
+    private boolean strangerRecord;
+    private boolean deviceMode;
     private int livenessScore;
     private int pupilDistanceMin;
     private int pupilDistanceMax;
@@ -30,10 +32,12 @@ public class Config {
     private int dormancyTime;
     private float feverScore;
     private boolean heatMap;
+    private boolean tempRealTime;
     private int heartBeatInterval;
     private int failedQueryCold;
     private int recordClearThreshold;
     private int verifyCold;
+    private int failedVerifyCold;
     private int flashTime;
     private String devicePassword;
     private long timeStamp;
@@ -58,6 +62,8 @@ public class Config {
         setMaskVerifyScore(builder.maskVerifyScore);
         setMaskScore(builder.maskScore);
         setForcedMask(builder.forcedMask);
+        setStrangerRecord(builder.strangerRecord);
+        setDeviceMode(builder.deviceMode);
         setLivenessScore(builder.livenessScore);
         setPupilDistanceMin(builder.pupilDistanceMin);
         setPupilDistanceMax(builder.pupilDistanceMax);
@@ -65,10 +71,12 @@ public class Config {
         setDormancyTime(builder.dormancyTime);
         setFeverScore(builder.feverScore);
         setHeatMap(builder.heatMap);
+        setTempRealTime(builder.tempRealTime);
         setHeartBeatInterval(builder.heartBeatInterval);
         setFailedQueryCold(builder.failedQueryCold);
         setRecordClearThreshold(builder.recordClearThreshold);
         setVerifyCold(builder.verifyCold);
+        setFailedVerifyCold(builder.failedVerifyCold);
         setFlashTime(builder.flashTime);
         setDevicePassword(builder.devicePassword);
         setTimeStamp(builder.timeStamp);
@@ -202,6 +210,22 @@ public class Config {
         this.forcedMask = forcedMask;
     }
 
+    public boolean isStrangerRecord() {
+        return strangerRecord;
+    }
+
+    public void setStrangerRecord(boolean strangerRecord) {
+        this.strangerRecord = strangerRecord;
+    }
+
+    public boolean isDeviceMode() {
+        return deviceMode;
+    }
+
+    public void setDeviceMode(boolean deviceMode) {
+        this.deviceMode = deviceMode;
+    }
+
     public int getLivenessScore() {
         return livenessScore;
     }
@@ -258,6 +282,14 @@ public class Config {
         this.heatMap = heatMap;
     }
 
+    public boolean isTempRealTime() {
+        return tempRealTime;
+    }
+
+    public void setTempRealTime(boolean tempRealTime) {
+        this.tempRealTime = tempRealTime;
+    }
+
     public int getHeartBeatInterval() {
         return heartBeatInterval;
     }
@@ -288,6 +320,14 @@ public class Config {
 
     public void setVerifyCold(int verifyCold) {
         this.verifyCold = verifyCold;
+    }
+
+    public int getFailedVerifyCold() {
+        return failedVerifyCold;
+    }
+
+    public void setFailedVerifyCold(int failedVerifyCold) {
+        this.failedVerifyCold = failedVerifyCold;
     }
 
     public int getFlashTime() {
@@ -331,6 +371,8 @@ public class Config {
         private float maskVerifyScore;
         private int maskScore;
         private boolean forcedMask;
+        private boolean strangerRecord;
+        private boolean deviceMode;
         private int livenessScore;
         private int pupilDistanceMin;
         private int pupilDistanceMax;
@@ -338,10 +380,12 @@ public class Config {
         private int dormancyTime;
         private float feverScore;
         private boolean heatMap;
+        private boolean tempRealTime;
         private int heartBeatInterval;
         private int failedQueryCold;
         private int recordClearThreshold;
         private int verifyCold;
+        private int failedVerifyCold;
         private int flashTime;
         private String devicePassword;
         private long timeStamp;
@@ -429,6 +473,16 @@ public class Config {
             return this;
         }
 
+        public Builder strangerRecord(boolean val) {
+            strangerRecord = val;
+            return this;
+        }
+
+        public Builder deviceMode(boolean val) {
+            deviceMode = val;
+            return this;
+        }
+
         public Builder livenessScore(int val) {
             livenessScore = val;
             return this;
@@ -464,6 +518,11 @@ public class Config {
             return this;
         }
 
+        public Builder tempRealTime(boolean val) {
+            tempRealTime = val;
+            return this;
+        }
+
         public Builder heartBeatInterval(int val) {
             heartBeatInterval = val;
             return this;
@@ -481,6 +540,11 @@ public class Config {
 
         public Builder verifyCold(int val) {
             verifyCold = val;
+            return this;
+        }
+
+        public Builder failedVerifyCold(int val) {
+            failedVerifyCold = val;
             return this;
         }
 

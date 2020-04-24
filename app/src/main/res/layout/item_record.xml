@@ -36,7 +36,6 @@
             <TextView
                 android:id="@+id/tv_record_identify_number"
                 style="@style/record_item"
-                android:text="@{item.identifyNumber}"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
@@ -49,7 +48,6 @@
             <TextView
                 android:id="@+id/tv_record_phone"
                 style="@style/record_item"
-                android:text="@{item.phone}"
                 android:layout_weight="0.7"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />

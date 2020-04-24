@@ -20,7 +20,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 5)
+@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 7)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -52,6 +52,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 })
                 .addMigrations(MIGRATION_3_4)
                 .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_5_6)
+                .addMigrations(MIGRATION_6_7)
                 .fallbackToDestructiveMigration()
                 .build();
     }
@@ -67,6 +69,22 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Config ADD COLUMN forcedMask INTEGER not null default 0");
+        }
+    };
+
+    private static Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Config ADD COLUMN strangerRecord INTEGER not null default 0");
+            database.execSQL("ALTER TABLE Config ADD COLUMN tempRealTime INTEGER not null default 0");
+        }
+    };
+
+    private static Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Config ADD COLUMN deviceMode INTEGER not null default 0");
+            database.execSQL("ALTER TABLE Config ADD COLUMN failedVerifyCold INTEGER not null default 2");
         }
     };
 

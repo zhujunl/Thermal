@@ -136,13 +136,13 @@ public class AttendanceViewModel extends BaseViewModel {
             TemperatureManager.getInstance().readTemperature(new TemperatureManager.TemperatureListener() {
                 @Override
                 public void onTemperature(float temperature) {
-//            if (!lock) {
-//                if (temperature == 0f) {
-//                    AttendanceViewModel.this.temperature.set("");
-//                } else {
-//                    AttendanceViewModel.this.temperature.set(temperature + "°C");
-//                }
-//            }
+                    if (!lock && ConfigManager.getInstance().getConfig().isTempRealTime()) {
+                        if (temperature == 0f) {
+                            AttendanceViewModel.this.temperature.set("");
+                        } else {
+                            AttendanceViewModel.this.temperature.set(temperature + "°C");
+                        }
+                    }
                     if (temperature == -2f) {
                         toast.postValue(ToastManager.getToastBody("读温错误", ToastManager.INFO));
                     }
@@ -155,12 +155,20 @@ public class AttendanceViewModel extends BaseViewModel {
                         FaceManager.getInstance().setNeedNextFeature(true);
                         return;
                     }
+                    if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
+                        XhnTempForward.getInstance().forward(temperature);
+                    }
                     matchPerson(mxRGBImage, mxFaceInfoEx, feature, mask, temperature);
                 }
 
                 @Override
                 public void onHeatMap(Bitmap bitmap) {
                     heatMapCache = bitmap;
+                    if (!lock && ConfigManager.getInstance().getConfig().isTempRealTime()) {
+                        if (ConfigManager.getInstance().getConfig().isHeatMap()) {
+                            AttendanceViewModel.this.heatMapUpdate.postValue(Boolean.TRUE);
+                        }
+                    }
                 }
             });
         }
@@ -202,116 +210,119 @@ public class AttendanceViewModel extends BaseViewModel {
             PersonManager.getInstance().handleFeature(feature, mask, new PersonManager.OnPersonMatchResultListener() {
                 @Override
                 public void onMatchFailed() {
-                    personMatchFailed();
-                }
-
-                @Override
-                public void onMatchSuccess(MatchPerson matchPerson) {
                     Config config = ConfigManager.getInstance().getConfig();
-                    if (temperature < config.getFeverScore()) {
-                        if (!config.isForcedMask() || mask) {
-                            personMatchSuccess(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
-                        } else {
-                            personMatchSuccessButNoMask(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
-                        }
+                    if (config.isStrangerRecord()) {
+                        detectCold(false);
+                        showHeader(mxRGBImage, mxFaceInfoEx);
+                        showTemperature(temperature);
+                        showMatchFailedHint(temperature);
+                        RecordManager.getInstance().handlerStrangerRecord(mxRGBImage, temperature);
                     } else {
-                        personMatchSuccessButFever(mxRGBImage, mxFaceInfoEx, matchPerson.getPerson(), matchPerson.getScore(), temperature);
+                        hint.set("未找到人员");
+                        FaceManager.getInstance().setNeedNextFeature(true);
                     }
+                    HeartBeatManager.getInstance().heartBeatLimitBurst();
                 }
 
                 @Override
-                public void onMatchOutOfRange(boolean overdue, Person person) {
-                    personMatchOutOfRange(mxRGBImage, mxFaceInfoEx, overdue, person, temperature);
+                public void onMatchSuccess(MatchPerson matchPerson, PersonManager.Overdue overdue) {
+                    boolean attendanceSuccess = isAttendanceSuccess(temperature, overdue, mask);
+                    detectCold(true);
+                    showHeader(mxRGBImage, mxFaceInfoEx);
+                    showTemperature(temperature);
+                    showMatchSuccessHint(temperature, mask, matchPerson.getPerson(), overdue);
+                    HeartBeatManager.getInstance().relieveLimit();
+                    decideOpenGate();
+                    if (attendanceSuccess) {
+                        RecordManager.getInstance().handlerFaceRecord(matchPerson.getPerson(), mxRGBImage, matchPerson.getScore(), temperature);
+                    }
                 }
             });
         }
     }
 
-    private void personMatchSuccess(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
-        if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
-            XhnTempForward.getInstance().forward(temperature);
-        }
-        detectCold();
+    private boolean isAttendanceSuccess(float temperature, PersonManager.Overdue overdue, boolean mask) {
         Config config = ConfigManager.getInstance().getConfig();
-        hint.set(person.getName() + "-" +
-                (ConfigManager.isGateDevice()
-                        ? getString(R.string.open_gate_success)
-                        : getString(R.string.attendance_success)));
-        GpioManager.getInstance().openGreenLed();
+        if (temperature >= config.getFeverScore()) {
+            return false;
+        } else {
+            if (overdue == PersonManager.Overdue.effective) {
+                if (!config.isForcedMask() || mask) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private void showTemperature(float temperature) {
         if (temperature > 0) {
-            this.temperature.set(temperature + "°C");
-            if (config.isHeatMap()) {
+            AttendanceViewModel.this.temperature.set(temperature + "°C");
+            if (ConfigManager.getInstance().getConfig().isHeatMap()) {
                 heatMapUpdate.postValue(Boolean.TRUE);
             }
-            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.isGateDevice() ? "开门成功，体温正常" : "考勤成功，体温正常");
-        } else if (temperature == -1f) {
-            this.temperature.set("");
-            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.isGateDevice() ? "开门成功" : "考勤成功");
+        } else {
+            AttendanceViewModel.this.temperature.set("");
         }
-        showHeader(mxRGBImage, mxFaceInfoEx);
-        HeartBeatManager.getInstance().relieveLimit();
-        RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
-        if (ConfigManager.isGateDevice()) {
+    }
+
+    private void showMatchSuccessHint(float temperature, boolean mask, Person person, PersonManager.Overdue overdue) {
+        Config config = ConfigManager.getInstance().getConfig();
+        String voice;
+        if (temperature >= config.getFeverScore()) {//判定优先级最高：发热异常
+            GpioManager.getInstance().openRedLed();
+            hint.set(person.getName() + "-体温异常");
+            voice = "体温异常";
+        } else {
+            if (overdue == PersonManager.Overdue.effective) {
+                GpioManager.getInstance().openGreenLed();
+                if (!config.isForcedMask() || mask) {
+                    hint.set(person.getName() + "-" + (ConfigManager.isGateDevice() && !config.isDeviceMode() ? getString(R.string.open_gate_success) : getString(R.string.attendance_success)));
+                    voice = ConfigManager.isGateDevice() && !config.isDeviceMode() ? "开门成功" : "考勤成功"
+                            + (temperature == -1f ? "" : "，体温正常");
+                } else {
+                    hint.set(person.getName() + "-" + getString(R.string.please_put_on_mask));
+                    voice = "请戴口罩" + (temperature == -1f ? "" : "，体温正常");
+                }
+            } else {
+                hint.set(person.getName() + (overdue == PersonManager.Overdue.expired ? "-已过期" : "-未生效"));
+                voice = (overdue == PersonManager.Overdue.expired ? "已过期" : "未生效") + (temperature == -1f ? "" : "，体温正常");
+            }
+        }
+        TTSManager.getInstance().playVoiceMessageFlush(voice);
+    }
+
+    private void showMatchFailedHint(float temperature) {
+        Config config = ConfigManager.getInstance().getConfig();
+        if (temperature >= config.getFeverScore()) {
+            GpioManager.getInstance().openRedLed();
+            hint.set("比对人员-温度异常");
+            TTSManager.getInstance().playVoiceMessageFlush("体温异常");
+        } else  {
+            hint.set("比对人员-识别失败");
+            if (temperature > 0) {
+                TTSManager.getInstance().playVoiceMessageFlush("识别失败，体温正常");
+            } else {
+                TTSManager.getInstance().playVoiceMessageFlush("识别失败");
+            }
+        }
+    }
+
+    private void decideOpenGate() {
+        Config config = ConfigManager.getInstance().getConfig();
+        if (ConfigManager.isGateDevice() && !config.isDeviceMode()) {
             GpioManager.getInstance().openDoorForGate();
         }
     }
 
-    private void personMatchSuccessButNoMask(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
-        detectCold();
-        Config config = ConfigManager.getInstance().getConfig();
-        hint.set(person.getName() + "-" + getString(R.string.please_put_on_mask));
-        GpioManager.getInstance().openGreenLed();
-        if (temperature > 0) {
-            this.temperature.set(temperature + "°C");
-            if (config.isHeatMap()) {
-                heatMapUpdate.postValue(Boolean.TRUE);
-            }
-            TTSManager.getInstance().playVoiceMessageFlush("请戴口罩，体温正常");
-        } else if (temperature == -1f) {
-            this.temperature.set("");
-            TTSManager.getInstance().playVoiceMessageFlush("请戴口罩");
-        }
-        showHeader(mxRGBImage, mxFaceInfoEx);
-        HeartBeatManager.getInstance().relieveLimit();
-        RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
-    }
-
-    private void personMatchSuccessButFever(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, Person person, float score, float temperature) {
-        detectCold();
-        fever.postValue(Boolean.TRUE);
-        GpioManager.getInstance().openRedLed();
-        hint.set(person.getName() + "-体温异常");
-        this.temperature.set(temperature + "°C");
-        TTSManager.getInstance().playVoiceMessageFlush("体温异常");
-        showHeader(mxRGBImage, mxFaceInfoEx);
-        RecordManager.getInstance().handlerFaceRecord(person, mxRGBImage, score, temperature);
-    }
-
-    private void personMatchOutOfRange(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, boolean overdue, Person person, float temperature) {
-        detectCold();
-        hint.set(person.getName() + (overdue ? "-已过期" : "-未生效"));
-        showHeader(mxRGBImage, mxFaceInfoEx);
-        if (temperature > 0) {
-            this.temperature.set(temperature + "°C");
-            TTSManager.getInstance().playVoiceMessageFlush("考勤失败，体温正常");
-        } else if (temperature == -1f) {
-            this.temperature.set("");
-            TTSManager.getInstance().playVoiceMessageFlush("考勤失败");
-        }
-    }
-
-    private void personMatchFailed() {
-        hint.set("未找到人员");
-        FaceManager.getInstance().setNeedNextFeature(true);
-        HeartBeatManager.getInstance().heartBeatLimitBurst();
-    }
-
-    private void detectCold() {
+    private void detectCold(boolean result) {
         lock = true;
         CardManager.getInstance().needNextRead(false);
         handler.removeMessages(MSG_VERIFY_LOCK);
         Message message = handler.obtainMessage(MSG_VERIFY_LOCK);
-        handler.sendMessageDelayed(message, ConfigManager.getInstance().getConfig().getVerifyCold() * 1000);
+        handler.sendMessageDelayed(message, result
+                ? ConfigManager.getInstance().getConfig().getVerifyCold() * 1000
+                : ConfigManager.getInstance().getConfig().getFailedVerifyCold() * 1000);
     }
 
     private void detectColdDown() {
@@ -439,7 +450,7 @@ public class AttendanceViewModel extends BaseViewModel {
                             this.temperature.set(temperature + "°C");
                         }
                         showHeader(mxRGBImage, mxFaceInfoEx);
-                        detectCold();
+                        detectCold(true);
                         if (ConfigManager.isGateDevice()) {
                             if (!config.isForcedMask() || mask) {
                                 GpioManager.getInstance().openDoorForGate();

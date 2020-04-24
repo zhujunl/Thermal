@@ -1,6 +1,7 @@
 package com.miaxis.thermal.view.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,12 @@ public class RecordAdapter extends BaseViewModelAdapter<Record, ItemRecordBindin
     public void onBindViewHolder(@NonNull RecordAdapter.MyViewHolder holder, int position) {
         Record item = dataList.get(position);
         holder.getBinding().setItem(item);
+        holder.getBinding().tvRecordIdentifyNumber.setText(TextUtils.equals(item.getIdentifyNumber(), "-1")
+                ? ""
+                : item.getIdentifyNumber());
+        holder.getBinding().tvRecordPhone.setText(TextUtils.equals(item.getPhone(), "-1")
+                ? ""
+                : item.getPhone());
         holder.getBinding().tvRecordUpload.setText(item.isUpload()
                 ? context.getString(R.string.item_record_uploaded)
                 : context.getString(R.string.item_record_not_upload));

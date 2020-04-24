@@ -197,12 +197,12 @@ public class PersonManager {
                     Date now = new Date();
                     if (now.after(person.getEffectiveTime())) {
                         if (now.before(person.getInvalidTime())) {
-                            listener.onMatchSuccess(matchPerson);
+                            listener.onMatchSuccess(matchPerson, Overdue.effective);
                         } else {
-                            listener.onMatchOutOfRange(true, person);
+                            listener.onMatchSuccess(matchPerson, Overdue.expired);
                         }
                     } else {
-                        listener.onMatchOutOfRange(false, person);
+                        listener.onMatchSuccess(matchPerson, Overdue.ineffective);
                     }
                 }, throwable -> {
                     listener.onMatchFailed();
@@ -245,8 +245,11 @@ public class PersonManager {
 
     public interface OnPersonMatchResultListener {
         void onMatchFailed();
-        void onMatchSuccess(MatchPerson matchPerson);
-        void onMatchOutOfRange(boolean overdue, Person person);
+        void onMatchSuccess(MatchPerson matchPerson, Overdue overdue);
+    }
+
+    public enum Overdue {
+        ineffective, effective, expired
     }
 
 }

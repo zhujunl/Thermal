@@ -448,6 +448,56 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="设备模式(未校验)" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_device_mode_attendance"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="考勤" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_device_mode_gate"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="闸机" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="@string/fragment_config_forced_mask" />
 
                     <View style="@style/VerticalLine" />
@@ -479,6 +529,56 @@
 
                         <RadioButton
                             android:id="@+id/rb_forces_mask_close"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_close" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="记录陌生人" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_stranger_record_on"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_open" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_stranger_record_off"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -770,6 +870,56 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="测温实时显示" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_temp_real_time_on"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_display" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_temp_real_time_off"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_no_display" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="@string/fragment_config_fever_score" />
 
                     <View style="@style/VerticalLine" />
@@ -839,6 +989,27 @@
 
                     <EditText
                         android:id="@+id/et_verify_cold"
+                        style="@style/SettingBody"
+                        android:background="@color/white"
+                        android:digits="2345"
+                        android:hint="2 - 5秒"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="陌生人验证冷却" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <EditText
+                        android:id="@+id/et_failed_verify_cold"
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="2345"
