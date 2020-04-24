@@ -43,19 +43,19 @@ public class DateUtil {
         int week = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         switch (week) {
             case 1:
-                return App.getInstance().getResources().getString(R.string.Monday);
-            case 2:
-                return App.getInstance().getResources().getString(R.string.Tuesday);
-            case 3:
-                return App.getInstance().getResources().getString(R.string.Wednesday);
-            case 4:
-                return App.getInstance().getResources().getString(R.string.Thursday);
-            case 5:
-                return App.getInstance().getResources().getString(R.string.Friday);
-            case 6:
-                return App.getInstance().getResources().getString(R.string.Saturday);
-            case 7:
                 return App.getInstance().getResources().getString(R.string.Sunday);
+            case 2:
+                return App.getInstance().getResources().getString(R.string.Monday);
+            case 3:
+                return App.getInstance().getResources().getString(R.string.Tuesday);
+            case 4:
+                return App.getInstance().getResources().getString(R.string.Wednesday);
+            case 5:
+                return App.getInstance().getResources().getString(R.string.Thursday);
+            case 6:
+                return App.getInstance().getResources().getString(R.string.Friday);
+            case 7:
+                return App.getInstance().getResources().getString(R.string.Saturday);
         }
         return "";
     }

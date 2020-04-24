@@ -92,7 +92,7 @@ public class RecordManager {
         handler.sendMessage(handler.obtainMessage(0));
     }
 
-    public void handlerFaceRecord(Person person, MxRGBImage mxRGBImage, float score, float temperature) {
+    public void handlerFaceRecord(Person person, MxRGBImage mxRGBImage, float score, float temperature, boolean attendance) {
         App.getInstance().getThreadExecutor().execute(() -> {
             try {
                 String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
@@ -101,6 +101,7 @@ public class RecordManager {
                 FileUtil.saveBitmap(bitmap, filePath);
                 bitmap.recycle();
                 Record record = makeFaceRecord(person, score, filePath, temperature);
+                record.setAttendance(attendance ? "1" : "0");
                 RecordRepository.getInstance().saveRecord(record);
                 startUploadRecord();
             } catch (Exception e) {
@@ -152,6 +153,7 @@ public class RecordManager {
                 .verifyPicturePath(facePicture)
                 .upload(false)
                 .temperature(temperature)
+                .attendance("0")
                 .build();
     }
 

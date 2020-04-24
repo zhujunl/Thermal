@@ -166,9 +166,11 @@ public class AddPersonViewModel extends BaseViewModel {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息已上传");
                     PersonManager.getInstance().startUploadPerson();
+                    registerFlag.setValue(Boolean.TRUE);
                 }, throwable -> {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息上传失败，已缓存至本地，将自动尝试续传");
+                    registerFlag.setValue(Boolean.TRUE);
                 });
     }
 

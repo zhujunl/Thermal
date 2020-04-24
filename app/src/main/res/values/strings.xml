@@ -49,7 +49,7 @@
     <string name="fragment_person_search_number_hint">证件号码：</string>
     <string name="fragment_person_search_phone_hint">手机号码：</string>
     <string name="fragment_person_search_face_status_hint">人脸状态：</string>
-    <string name="fragment_person_search_upload_hint">同步状态：</string>
+    <string name="fragment_person_search_upload_hint">上传状态：</string>
     <string name="fragment_person_search_person_status_hint">人员状态：</string>
     <string name="fragment_person_search_person_type_hint">人员类型：</string>
     <string name="fragment_person_search_search">查询</string>

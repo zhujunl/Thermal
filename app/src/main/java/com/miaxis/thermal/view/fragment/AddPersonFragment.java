@@ -67,7 +67,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
 
     @Override
     protected void initData() {
-
+        viewModel.registerFlag.observe(this, registerObserver);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
     }
 
     private void initTextListener() {
-        if (ConfigManager.isNeedPatternMatcherDevice()) {
+        if (person == null && ConfigManager.isNeedPatternMatcherDevice()) {
             binding.etNumber.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -252,7 +252,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 ToastManager.toast("请输入生效日期", ToastManager.INFO);
                 return;
             }
-            if (TextUtils.equals(viewModel.invalidTime.get(), getString(R.string.fragment_add_person_invalid_time))) {
+            if (TextUtils.equals(viewModel.invalidTime.get(), getString(R.string.fragment_add_person_invalid_time_hint))) {
                 ToastManager.toast("请输入失效日期", ToastManager.INFO);
                 return;
             }
@@ -268,11 +268,11 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 }
                 return;
             }
-            if (!PatternUtil.checkMobilePhone(viewModel.phone.get())) {
+            if (person == null && !PatternUtil.checkMobilePhone(viewModel.phone.get())) {
                 ToastManager.toast("手机号码格式验证不通过", ToastManager.INFO);
                 return;
             }
-            if (!PatternUtil.isIDNumber(viewModel.number.get())) {
+            if (person == null && !PatternUtil.isIDNumber(viewModel.number.get())) {
                 ToastManager.toast("证件号码格式验证不通过", ToastManager.INFO);
                 return;
             }
@@ -301,6 +301,10 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
             binding.etNumber.setEnabled(true);
             initTextListener();
         }
+    };
+
+    private Observer<Boolean> registerObserver = flag -> {
+        onBackPressed();
     };
 
     public void setPerson(Person person) {

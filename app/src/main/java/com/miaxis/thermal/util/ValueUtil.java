@@ -16,7 +16,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH;
+    public static final Sign DEFAULT_SIGN = Sign.XH_N;
 
     public static final Gson GSON = new Gson();
 
@@ -32,6 +32,9 @@ public class ValueUtil {
     public static final int DEFAULT_REGISTER_QUALITY_SCORE = 70;
     public static final int DEFAULT_MASK_SCORE = 40;
     public static final boolean DEFAULT_FORCED_MASK = false;
+    public static final boolean DEFAULT_STRANGER_RECORD = false;
+    public static final boolean DEFAULT_DEVICE_MODE = true; // t考勤/f闸机
+    public static final boolean DEFAULT_GATE_LIMIT = true;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
     public static final float DEFAULT_MASK_VERIFY_SCORE = 0.72f;
     public static final int DEFAULT_LIVENESS_SCORE = 80;
@@ -43,10 +46,12 @@ public class ValueUtil {
     public static final int DEFAULT_DORMANCY_TIME = 180;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
     public static final boolean DEFAULT_HEAT_MAP = false;
+    public static final boolean DEFAULT_TEMP_REAL_TIME = false;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
     public static final int DEFAULT_FAILED_QUERY_COLD = 10;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 10000;
     public static final int DEFAULT_VERIFY_COLD = 3;
+    public static final int DEFAULT_FAILED_VERIFY_COLD = 2;
     public static final int DEFAULT_FLASH_TIME = 5;
     public static final String DEFAULT_DEVICE_PASSWORD = "666666";
     public static final long DEFAULT_TIME_STAMP = 0;

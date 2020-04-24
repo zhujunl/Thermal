@@ -136,13 +136,6 @@ public class AttendanceViewModel extends BaseViewModel {
             TemperatureManager.getInstance().readTemperature(new TemperatureManager.TemperatureListener() {
                 @Override
                 public void onTemperature(float temperature) {
-                    if (!lock && ConfigManager.getInstance().getConfig().isTempRealTime()) {
-                        if (temperature == 0f) {
-                            AttendanceViewModel.this.temperature.set("");
-                        } else {
-                            AttendanceViewModel.this.temperature.set(temperature + "°C");
-                        }
-                    }
                     if (temperature == -2f) {
                         toast.postValue(ToastManager.getToastBody("读温错误", ToastManager.INFO));
                     }
@@ -154,6 +147,13 @@ public class AttendanceViewModel extends BaseViewModel {
                         hint.set("");
                         FaceManager.getInstance().setNeedNextFeature(true);
                         return;
+                    }
+                    if (!lock && ConfigManager.getInstance().getConfig().isTempRealTime()) {
+                        if (temperature == 0f) {
+                            AttendanceViewModel.this.temperature.set("");
+                        } else {
+                            AttendanceViewModel.this.temperature.set(temperature + "°C");
+                        }
                     }
                     if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
                         XhnTempForward.getInstance().forward(temperature);
@@ -216,6 +216,7 @@ public class AttendanceViewModel extends BaseViewModel {
                         showHeader(mxRGBImage, mxFaceInfoEx);
                         showTemperature(temperature);
                         showMatchFailedHint(temperature);
+                        decideOpenGate(false, temperature);
                         RecordManager.getInstance().handlerStrangerRecord(mxRGBImage, temperature);
                     } else {
                         hint.set("未找到人员");
@@ -232,10 +233,8 @@ public class AttendanceViewModel extends BaseViewModel {
                     showTemperature(temperature);
                     showMatchSuccessHint(temperature, mask, matchPerson.getPerson(), overdue);
                     HeartBeatManager.getInstance().relieveLimit();
-                    decideOpenGate();
-                    if (attendanceSuccess) {
-                        RecordManager.getInstance().handlerFaceRecord(matchPerson.getPerson(), mxRGBImage, matchPerson.getScore(), temperature);
-                    }
+                    decideOpenGate(attendanceSuccess, temperature);
+                    RecordManager.getInstance().handlerFaceRecord(matchPerson.getPerson(), mxRGBImage, matchPerson.getScore(), temperature, true);
                 }
             });
         }
@@ -271,6 +270,7 @@ public class AttendanceViewModel extends BaseViewModel {
         String voice;
         if (temperature >= config.getFeverScore()) {//判定优先级最高：发热异常
             GpioManager.getInstance().openRedLed();
+            fever.postValue(Boolean.TRUE);
             hint.set(person.getName() + "-体温异常");
             voice = "体温异常";
         } else {
@@ -278,7 +278,7 @@ public class AttendanceViewModel extends BaseViewModel {
                 GpioManager.getInstance().openGreenLed();
                 if (!config.isForcedMask() || mask) {
                     hint.set(person.getName() + "-" + (ConfigManager.isGateDevice() && !config.isDeviceMode() ? getString(R.string.open_gate_success) : getString(R.string.attendance_success)));
-                    voice = ConfigManager.isGateDevice() && !config.isDeviceMode() ? "开门成功" : "考勤成功"
+                    voice = (ConfigManager.isGateDevice() && !config.isDeviceMode() ? "开门成功" : "考勤成功")
                             + (temperature == -1f ? "" : "，体温正常");
                 } else {
                     hint.set(person.getName() + "-" + getString(R.string.please_put_on_mask));
@@ -296,6 +296,7 @@ public class AttendanceViewModel extends BaseViewModel {
         Config config = ConfigManager.getInstance().getConfig();
         if (temperature >= config.getFeverScore()) {
             GpioManager.getInstance().openRedLed();
+            fever.postValue(Boolean.TRUE);
             hint.set("比对人员-温度异常");
             TTSManager.getInstance().playVoiceMessageFlush("体温异常");
         } else  {
@@ -308,10 +309,12 @@ public class AttendanceViewModel extends BaseViewModel {
         }
     }
 
-    private void decideOpenGate() {
+    private void decideOpenGate(boolean attendance, float temperature) {
         Config config = ConfigManager.getInstance().getConfig();
         if (ConfigManager.isGateDevice() && !config.isDeviceMode()) {
-            GpioManager.getInstance().openDoorForGate();
+            if ((attendance || !config.isGateLimit()) && temperature < config.getFeverScore()) {
+                GpioManager.getInstance().openDoorForGate();
+            }
         }
     }
 

@@ -122,35 +122,36 @@ public class PersonModel {
         } else {
             sql = new StringBuilder("select * from Person");
         }
+        sql.append(" where 1 = 1");
         if (!TextUtils.isEmpty(personSearch.getName())) {
-            sql.append(" where Person.name like ?");
+            sql.append(" and Person.name like ?");
             args.add("%" + personSearch.getName() + "%");
         }
         if (!TextUtils.isEmpty(personSearch.getIdentifyNumber())) {
-            sql.append(" where Person.identifyNumber like ?");
+            sql.append(" and Person.identifyNumber like ?");
             args.add("%" + personSearch.getIdentifyNumber() + "%");
         }
         if (!TextUtils.isEmpty(personSearch.getPhone())) {
-            sql.append(" where Person.phone like ?");
+            sql.append(" and Person.phone like ?");
             args.add("%" + personSearch.getPhone() + "%");
         }
         if (personSearch.getUpload() != null) {
-            sql.append(" where Person.upload = ?");
+            sql.append(" and Person.upload = ?");
             args.add(personSearch.getUpload() ? "1" : "0");
         }
         if (personSearch.getFace() != null) {
             if (personSearch.getFace()) {
-                sql.append(" where Person.faceFeature is not null");
+                sql.append(" and Person.faceFeature is not null");
             } else {
-                sql.append(" where Person.faceFeature is null");
+                sql.append(" and Person.faceFeature is null");
             }
         }
         if (personSearch.getStatus() != null) {
-            sql.append(" where Person.status = ?");
+            sql.append(" and Person.status = ?");
             args.add(personSearch.getStatus());
         }
         if (personSearch.getType() != null) {
-            sql.append(" where Person.type = ?");
+            sql.append(" and Person.type = ?");
             args.add(personSearch.getType());
         }
         if (!count) {

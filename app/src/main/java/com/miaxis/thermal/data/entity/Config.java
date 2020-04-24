@@ -25,6 +25,7 @@ public class Config {
     private boolean forcedMask;
     private boolean strangerRecord;
     private boolean deviceMode;
+    private boolean gateLimit;
     private int livenessScore;
     private int pupilDistanceMin;
     private int pupilDistanceMax;
@@ -64,6 +65,7 @@ public class Config {
         setForcedMask(builder.forcedMask);
         setStrangerRecord(builder.strangerRecord);
         setDeviceMode(builder.deviceMode);
+        setGateLimit(builder.gateLimit);
         setLivenessScore(builder.livenessScore);
         setPupilDistanceMin(builder.pupilDistanceMin);
         setPupilDistanceMax(builder.pupilDistanceMax);
@@ -226,6 +228,14 @@ public class Config {
         this.deviceMode = deviceMode;
     }
 
+    public boolean isGateLimit() {
+        return gateLimit;
+    }
+
+    public void setGateLimit(boolean gateLimit) {
+        this.gateLimit = gateLimit;
+    }
+
     public int getLivenessScore() {
         return livenessScore;
     }
@@ -373,6 +383,7 @@ public class Config {
         private boolean forcedMask;
         private boolean strangerRecord;
         private boolean deviceMode;
+        private boolean gateLimit;
         private int livenessScore;
         private int pupilDistanceMin;
         private int pupilDistanceMax;
@@ -480,6 +491,11 @@ public class Config {
 
         public Builder deviceMode(boolean val) {
             deviceMode = val;
+            return this;
+        }
+
+        public Builder gateLimit(boolean val) {
+            gateLimit = val;
             return this;
         }
 

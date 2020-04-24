@@ -59,6 +59,7 @@ public class ThermalApi extends BaseAPI {
                                                     float temperature,
                                                     String type,
                                                     String faceType,
+                                                    String attendance,
                                                     String mac,
                                                     File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -72,6 +73,7 @@ public class ThermalApi extends BaseAPI {
                 temperature,
                 type,
                 faceType,
+                attendance,
                 mac,
                 fileBody);
     }

@@ -112,27 +112,28 @@ public class RecordModel {
         } else {
             sql = new StringBuilder("select * from Record");
         }
+        sql.append(" where 1 = 1");
         if (!TextUtils.isEmpty(recordSearch.getName())) {
-            sql.append(" where Record.name like ?");
+            sql.append(" and Record.name like ?");
             args.add("%" + recordSearch.getName() + "%");
         }
         if (!TextUtils.isEmpty(recordSearch.getIdentifyNumber())) {
-            sql.append(" where Record.identifyNumber like ?");
+            sql.append(" and Record.identifyNumber like ?");
             args.add("%" + recordSearch.getIdentifyNumber() + "%");
         }
         if (!TextUtils.isEmpty(recordSearch.getPhone())) {
-            sql.append(" where Record.phone like ?");
+            sql.append(" and Record.phone like ?");
             args.add("%" + recordSearch.getPhone() + "%");
         }
         if (recordSearch.getUpload() != null) {
-            sql.append(" where Record.upload = ?");
+            sql.append(" and Record.upload = ?");
             args.add(recordSearch.getUpload() ? "1" : "0");
         }
         if (!TextUtils.isEmpty(recordSearch.getStartTime())) {
             try {
                 Date startTime = DateUtil.DATE_FORMAT.parse(recordSearch.getStartTime());
                 if (startTime != null) {
-                    sql.append(" where Record.verifyTime >= ?");
+                    sql.append(" and Record.verifyTime >= ?");
                     args.add(startTime.getTime());
                 }
             } catch (ParseException e) {
@@ -143,7 +144,7 @@ public class RecordModel {
             try {
                 Date endTime = DateUtil.DATE_FORMAT.parse(recordSearch.getEndTime());
                 if (endTime != null) {
-                    sql.append(" where Record.verifyTime <= ?");
+                    sql.append(" and Record.verifyTime <= ?");
                     args.add(endTime.getTime());
                 }
             } catch (ParseException e) {
@@ -152,9 +153,9 @@ public class RecordModel {
         }
         if (recordSearch.getFever() != null) {
             if (recordSearch.getFever()) {
-                sql.append(" where Record.temperature >= " + ConfigManager.getInstance().getConfig().getFeverScore());
+                sql.append(" and Record.temperature >= " + ConfigManager.getInstance().getConfig().getFeverScore());
             } else {
-                sql.append(" where Record.temperature < " + ConfigManager.getInstance().getConfig().getFeverScore());
+                sql.append(" and Record.temperature < " + ConfigManager.getInstance().getConfig().getFeverScore());
             }
         }
         if (!count) {

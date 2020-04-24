@@ -20,7 +20,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 7)
+@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 8)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -54,7 +54,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 .addMigrations(MIGRATION_4_5)
                 .addMigrations(MIGRATION_5_6)
                 .addMigrations(MIGRATION_6_7)
-                .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_7_8)
+//                .fallbackToDestructiveMigration()
                 .build();
     }
 
@@ -85,6 +86,14 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Config ADD COLUMN deviceMode INTEGER not null default 0");
             database.execSQL("ALTER TABLE Config ADD COLUMN failedVerifyCold INTEGER not null default 2");
+        }
+    };
+
+    private static Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Record ADD COLUMN attendance TEXT default '1'");
+            database.execSQL("ALTER TABLE Config ADD COLUMN gateLimit INTEGER not null default 0");
         }
     };
 

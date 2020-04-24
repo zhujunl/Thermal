@@ -498,6 +498,56 @@
 
                     <TextView
                         style="@style/SettingName"
+                        android:text="闸机开门限制" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_gate_limit_on"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="限制" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_gate_limit_off"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="不限制" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
                         android:text="@string/fragment_config_forced_mask" />
 
                     <View style="@style/VerticalLine" />
