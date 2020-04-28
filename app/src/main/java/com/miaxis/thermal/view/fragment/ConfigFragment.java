@@ -103,6 +103,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etDormancyInterval.setText(String.valueOf(config.getDormancyInterval()));
         binding.etDormancyTime.setText(String.valueOf(config.getDormancyTime()));
         binding.etFeverScore.setText(String.valueOf(config.getFeverScore()));
+        binding.etTempScore.setText(String.valueOf(config.getTempScore()));
         binding.rbTempRealTimeOn.setChecked(config.isTempRealTime());
         binding.rbTempRealTimeOff.setChecked(!config.isTempRealTime());
         binding.rbHeatMapShow.setChecked(config.isHeatMap());
@@ -241,6 +242,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;
                     }
+                    if (binding.rbDeviceModeGate.isChecked() && !ConfigManager.isGateDevice()) {
+                        ToastManager.toast("该版本不支持闸机开门", ToastManager.INFO);
+                        return;
+                    }
                     if (binding.rbMix.isChecked()) {
                         config.setServerMode("0");
                     } else if (binding.rbServer.isChecked()) {
@@ -270,6 +275,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setDormancyInterval(Integer.parseInt(binding.etDormancyInterval.getText().toString()));
                     config.setDormancyTime(Integer.parseInt(binding.etDormancyTime.getText().toString()));
                     config.setFeverScore(Float.parseFloat(binding.etFeverScore.getText().toString()));
+                    config.setTempScore(Float.parseFloat(binding.etTempScore.getText().toString()));
                     config.setHeatMap(binding.rbHeatMapShow.isChecked());
                     config.setTempRealTime(binding.rbTempRealTimeOn.isChecked());
                     config.setHeartBeatInterval(Integer.parseInt(binding.etHeartBeatInterval.getText().toString()));

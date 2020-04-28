@@ -71,6 +71,7 @@ public class ConfigManager {
                     .dormancyInterval(ValueUtil.DEFAULT_DORMANCY_INTERVAL)
                     .dormancyTime(ValueUtil.DEFAULT_DORMANCY_TIME)
                     .feverScore(ValueUtil.DEFAULT_FEVER_SCORE)
+                    .tempScore(ValueUtil.DEFAULT_TEMP_SCORE)
                     .heatMap(ValueUtil.DEFAULT_HEAT_MAP)
                     .tempRealTime(ValueUtil.DEFAULT_TEMP_REAL_TIME)
                     .heartBeatInterval(ValueUtil.DEFAULT_HEART_BEAT_INTERVAL)

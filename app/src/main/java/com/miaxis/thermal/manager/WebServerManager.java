@@ -27,6 +27,7 @@ import com.miaxis.thermal.data.repository.RecordRepository;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.DeviceUtil;
 import com.miaxis.thermal.util.FileUtil;
+import com.miaxis.thermal.util.ValueUtil;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -228,10 +229,11 @@ public class WebServerManager {
                 }
             }
             String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + transform.getName() + "-" + transform.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-            FileUtil.saveBitmap(bitmap, filePath);
+            FileUtil.saveQualityBitmap(bitmap, filePath);
             transform.setFacePicturePath(filePath);
             transform.setUpload(false);
             transform.setUpdateTime(new Date());
+            transform.setStatus(ValueUtil.PERSON_STATUS_READY);
             PersonRepository.getInstance().savePerson(transform);
             PersonManager.getInstance().loadPersonDataFromCache();
             conn.send(GSON.toJson(new ResponseEntity("200", "新增人员成功")));
@@ -292,7 +294,7 @@ public class WebServerManager {
                     throw new MyException("人员图片解码出错");
                 }
                 String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + findPerson.getName() + "-" + findPerson.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-                FileUtil.saveBitmap(bitmap, filePath);
+                FileUtil.saveQualityBitmap(bitmap, filePath);
                 FileUtil.deleteImg(findPerson.getFacePicturePath());
                 findPerson.setFacePicturePath(filePath);
                 if (TextUtils.isEmpty(transform.getFaceFeature()) || TextUtils.isEmpty(transform.getMaskFaceFeature())) {

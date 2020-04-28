@@ -75,7 +75,6 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     @Override
     protected void initView() {
         initRecycleView();
-        initSearchView();
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.srlPerson.setOnRefreshListener(this::refresh);
         binding.ivSearch.setOnClickListener(v -> {
@@ -127,53 +126,6 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
         binding.rvPerson.setLayoutManager(layoutManager);
         binding.rvPerson.setAdapter(adapter);
         ((SimpleItemAnimator) binding.rvPerson.getItemAnimator()).setSupportsChangeAnimations(false);
-    }
-
-    private void initSearchView() {
-//        String[] faceStatus = getContext().getResources().getStringArray(R.array.face_status);
-//        ArrayAdapter<String> faceStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, faceStatus);
-//        binding.spFaceStatus.setAdapter(faceStatusAdapter);
-//        binding.spFaceStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                viewModel.filterFaceStatus.set(position == 0 ? null : (position == 1 ? Boolean.TRUE : Boolean.FALSE));
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {}
-//        });
-//        String[] uploadStatus = getContext().getResources().getStringArray(R.array.upload_status);
-//        ArrayAdapter<String> uploadStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, uploadStatus);
-//        binding.spUploadStatus.setAdapter(uploadStatusAdapter);
-//        binding.spUploadStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                viewModel.filterUploadStatus.set(position == 0 ? null : (position == 1 ? Boolean.TRUE : Boolean.FALSE));
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {}
-//        });
-//        String[] personStatus = getContext().getResources().getStringArray(R.array.person_status);
-//        ArrayAdapter<String> personStatusAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, personStatus);
-//        binding.spPersonStatus.setAdapter(personStatusAdapter);
-//        binding.spPersonStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                viewModel.filterPersonStatus.set(position == 0 ? null : (position == 1 ? "1" : "2"));
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {}
-//        });
-//        String[] personType = getContext().getResources().getStringArray(R.array.person_type);
-//        ArrayAdapter<String> personTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_center, R.id.tv_spinner, personType);
-//        binding.spPersonType.setAdapter(personTypeAdapter);
-//        binding.spPersonType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                viewModel.filterPersonType.set(position == 0 ? null : (position == 1 ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR));
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {}
-//        });
     }
 
     private PersonAdapter.OnItemClickListener adapterListener = (view, position) -> {

@@ -14,9 +14,11 @@ import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.ToastManager;
+import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -105,7 +107,7 @@ public class PersonViewModel extends BaseViewModel {
                 });
     }
 
-    public void changePersonStatus(Person mPerson, boolean enable) {
+    public void changePersonStatus(Person mPerson, boolean status) {
         waitMessage.setValue("正在执行操作，请稍后...");
         Observable.just(mPerson)
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
@@ -113,13 +115,13 @@ public class PersonViewModel extends BaseViewModel {
                 .doOnNext(person -> {
                     person.setUpload(false);
                     person.setUpdateTime(new Date());
-                    person.setStatus(enable ? "1" : "2");
+                    person.setStatus(status ? ValueUtil.PERSON_STATUS_READY : ValueUtil.PERSON_STATUS_DELETE);
                     PersonRepository.getInstance().savePerson(person);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(person -> {
-                    waitMessage.setValue("人员更新成功，正在尝试上传...");
-                    uploadPerson(person);
+                    waitMessage.setValue("人员状态操作成功，正在尝试上传...");
+                    uploadPersonDelete(person);
                 }, throwable -> {
                     waitMessage.setValue("");
                     Log.e("asd", "" + throwable.getMessage());
@@ -127,7 +129,7 @@ public class PersonViewModel extends BaseViewModel {
                 });
     }
 
-    private void uploadPerson(Person person) {
+    private void uploadPersonDelete(Person person) {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             PersonRepository.getInstance().updatePerson(person);
             emitter.onNext(Boolean.TRUE);
@@ -136,8 +138,7 @@ public class PersonViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(result -> {
-                    person.setUpload(true);
-                    PersonRepository.getInstance().savePerson(person);
+                    PersonRepository.getInstance().deletePerson(person);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
@@ -148,7 +149,7 @@ public class PersonViewModel extends BaseViewModel {
                 }, throwable -> {
                     updating.setValue(Boolean.TRUE);
                     waitMessage.setValue("");
-                    resultMessage.setValue("人员操作上传失败，已缓存至本地，将自动尝试续传");
+                    resultMessage.setValue("人员操作上传失败，已缓存至本地，已删除人员将在续传成功或过期后将自动删除");
                 });
     }
 

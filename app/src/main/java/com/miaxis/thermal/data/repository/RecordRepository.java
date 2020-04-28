@@ -54,7 +54,6 @@ public class RecordRepository {
                 record.getTemperature(),
                 record.getType(),
                 record.getFaceType(),
-                record.getAttendance(),
                 mac,
                 file)
                 .execute();

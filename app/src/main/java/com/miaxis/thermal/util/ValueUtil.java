@@ -16,7 +16,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH_N;
+    public static final Sign DEFAULT_SIGN = Sign.XH;
 
     public static final Gson GSON = new Gson();
 
@@ -34,7 +34,7 @@ public class ValueUtil {
     public static final boolean DEFAULT_FORCED_MASK = false;
     public static final boolean DEFAULT_STRANGER_RECORD = false;
     public static final boolean DEFAULT_DEVICE_MODE = true; // t考勤/f闸机
-    public static final boolean DEFAULT_GATE_LIMIT = true;
+    public static final boolean DEFAULT_GATE_LIMIT = false;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
     public static final float DEFAULT_MASK_VERIFY_SCORE = 0.72f;
     public static final int DEFAULT_LIVENESS_SCORE = 80;
@@ -45,6 +45,7 @@ public class ValueUtil {
     public static final int DEFAULT_DORMANCY_INTERVAL = 2;
     public static final int DEFAULT_DORMANCY_TIME = 180;
     public static final float DEFAULT_FEVER_SCORE = 37.2f;
+    public static final float DEFAULT_TEMP_SCORE = 34.0f;
     public static final boolean DEFAULT_HEAT_MAP = false;
     public static final boolean DEFAULT_TEMP_REAL_TIME = false;
     public static final int DEFAULT_HEART_BEAT_INTERVAL = 300;
@@ -63,6 +64,9 @@ public class ValueUtil {
     public static final String PERSON_TYPE_WORKER = "00601";
     public static final String PERSON_TYPE_VISITOR = "00602";
     public static final String PERSON_TYPE_BLACK = "00603";
+
+    public static final String PERSON_STATUS_READY = "1";
+    public static final String PERSON_STATUS_DELETE = "2";
 
     public static boolean isNetException(Throwable throwable) {
         return throwable instanceof SocketTimeoutException

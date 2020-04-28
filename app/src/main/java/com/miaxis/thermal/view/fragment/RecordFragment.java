@@ -26,6 +26,8 @@ import com.miaxis.thermal.data.entity.Record;
 import com.miaxis.thermal.data.entity.RecordSearch;
 import com.miaxis.thermal.databinding.FragmentRecordBinding;
 import com.miaxis.thermal.manager.ExcelManager;
+import com.miaxis.thermal.manager.ToastManager;
+import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.adapter.RecordAdapter;
@@ -37,7 +39,9 @@ import com.miaxis.thermal.view.dialog.PhotoDialogFragment;
 import com.miaxis.thermal.viewModel.RecordViewModel;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding, RecordViewModel> {
@@ -152,6 +156,13 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 00:00:00";
+                if (!TextUtils.equals(binding.tvEndTime.getText().toString(), getString(R.string.fragment_record_search_end_time_value_hint))) {
+                    if (!DateUtil.compareDate(date, binding.tvEndTime.getText().toString())) {
+                        ToastManager.toast("开始时间必须小于结束时间", ToastManager.INFO);
+                        binding.tvStartTime.setText(getString(R.string.fragment_record_search_start_time_value_hint));
+                        return;
+                    }
+                }
                 binding.tvStartTime.setText(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
@@ -163,6 +174,13 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
                 String monthStr = month + 1 > 9 ? "" + (month + 1) : "0" + (month + 1);
                 String dayStr = dayOfMonth > 9 ? "" + dayOfMonth : "0" + dayOfMonth;
                 String date = year + "-" + monthStr + "-" + dayStr + " 23:59:59";
+                if (!TextUtils.equals(binding.tvStartTime.getText().toString(), getString(R.string.fragment_record_search_start_time_value_hint))) {
+                    if (!DateUtil.compareDate(binding.tvStartTime.getText().toString(), date)) {
+                        ToastManager.toast("开始时间必须小于结束时间", ToastManager.INFO);
+                        binding.tvEndTime.setText(getString(R.string.fragment_record_search_end_time_value_hint));
+                        return;
+                    }
+                }
                 binding.tvEndTime.setText(date);
             }, calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)

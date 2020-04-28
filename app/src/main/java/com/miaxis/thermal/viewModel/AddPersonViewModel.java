@@ -89,7 +89,7 @@ public class AddPersonViewModel extends BaseViewModel {
                     .type(type.get() ? ValueUtil.PERSON_TYPE_WORKER : ValueUtil.PERSON_TYPE_VISITOR)
                     .upload(false)
                     .updateTime(new Date())
-                    .status("1")
+                    .status(ValueUtil.PERSON_STATUS_READY)
                     .build();
             emitter.onNext(person);
             emitter.onComplete();
@@ -109,7 +109,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 })
                 .doOnNext(person -> {
                     String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-                    FileUtil.saveBitmap(headerCache, filePath);
+                    FileUtil.saveQualityBitmap(headerCache, filePath);
                     person.setFacePicturePath(filePath);
                     PersonRepository.getInstance().savePerson(person);
                 })
@@ -130,7 +130,7 @@ public class AddPersonViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(person -> {
                     String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-                    FileUtil.saveBitmap(headerCache, filePath);
+                    FileUtil.saveQualityBitmap(headerCache, filePath);
                     FileUtil.deleteImg(person.getFacePicturePath());
                     person.setFacePicturePath(filePath);
                     person.setFaceFeature(featureCache);

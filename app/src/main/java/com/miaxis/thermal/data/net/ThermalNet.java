@@ -47,7 +47,6 @@ public interface ThermalNet {
                                       @Part("temperature") float temperature,
                                       @Part("type") String type,
                                       @Part("faceType") String faceType,
-                                      @Part("attendance") String attendance,
                                       @Part("mac") String mac,
                                       @Part MultipartBody.Part file);
 

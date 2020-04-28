@@ -23,6 +23,7 @@ import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.util.FileUtil;
+import com.miaxis.thermal.util.ValueUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,13 +85,18 @@ public class PersonManager {
         try {
             uploading = true;
             handler.removeMessages(0);
+            PersonRepository.getInstance().clearOverduePerson();
             Person person = PersonRepository.getInstance().findOldestRecord();
             if (person == null) throw new MyException("未找到待上传人员");
             PersonRepository.getInstance().updatePerson(person);
-            Log.e("asd", "人员上传成功");
-            PersonRepository.getInstance().clearOverduePerson();
-            person.setUpload(true);
-            PersonRepository.getInstance().savePerson(person);
+            if (TextUtils.equals(person.getStatus(), ValueUtil.PERSON_STATUS_DELETE)) {
+                Log.e("asd", "人员删除操作上传成功");
+                PersonRepository.getInstance().deletePerson(person);
+            } else {
+                Log.e("asd", "人员上传成功");
+                person.setUpload(true);
+                PersonRepository.getInstance().savePerson(person);
+            }
             handler.sendMessage(handler.obtainMessage(0));
         } catch (Exception e) {
             Log.e("asd", "" + e.getMessage());
@@ -130,6 +136,38 @@ public class PersonManager {
     }
 
     public void handlePersonHeartBeat(Person person) {
+        if (person != null) {
+            if (TextUtils.equals(person.getStatus(), ValueUtil.PERSON_STATUS_DELETE)) {
+                Log.e("asd", "同步删除人员");
+                handleDeletePerson(person);
+            } else {
+                Log.e("asd", "同步新增人员");
+                handleSavePerson(person);
+            }
+        }
+    }
+
+    private void handleDeletePerson(Person person) {
+        try {
+            if (!TextUtils.isEmpty(person.getIdentifyNumber())) {
+                Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
+                if (findPerson != null) {
+                    PersonRepository.getInstance().deletePerson(findPerson);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Config config = ConfigManager.getInstance().getConfig();
+            long timeStamp = person.getTimeStamp();
+            if (timeStamp != 0 && timeStamp > config.getTimeStamp()) {
+                config.setTimeStamp(timeStamp);
+                ConfigManager.getInstance().saveConfigSync(config);
+            }
+        }
+    }
+
+    private void handleSavePerson(Person person) {
         try {
             Bitmap bitmap = null;
             try {
@@ -139,7 +177,7 @@ public class PersonManager {
             }
             if (bitmap != null) {
                 String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + person.getName() + "-" + person.getIdentifyNumber() + "-" + System.currentTimeMillis() + ".jpg";
-                FileUtil.saveBitmap(bitmap, filePath);
+                FileUtil.saveQualityBitmap(bitmap, filePath);
                 person.setFacePicturePath(filePath);
                 PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                 if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
@@ -155,9 +193,7 @@ public class PersonManager {
                 person.setRemarks("图片下载失败");
             }
             person.setUpdateTime(new Date());
-            if (TextUtils.isEmpty(person.getStatus())) {
-                person.setStatus("1");
-            }
+            person.setStatus(ValueUtil.PERSON_STATUS_READY);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
