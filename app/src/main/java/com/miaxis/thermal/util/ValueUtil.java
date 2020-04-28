@@ -20,7 +20,7 @@ public class ValueUtil {
 
     public static final Gson GSON = new Gson();
 
-    public static final String DEFAULT_SERVER_MODE = "0";//0-主机+客户端，1-仅主机，2-仅客户端
+    public static final String DEFAULT_SERVER_MODE = "0";//0-联网版，1-单机版
     public static final String DEFAULT_HOST = "http://47.114.39.63:9008/saasbus/";
     public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attence/person/downPersonListByDeviceMac";
     public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attence/person/updatePerson";
@@ -60,6 +60,9 @@ public class ValueUtil {
     public static final String SUCCESS = "200";
 
     public static final int PAGE_SIZE = 10;
+
+    public static final String WORK_MODE_NET = "0";
+    public static final String WORK_MODE_LOCAL = "1";
 
     public static final String PERSON_TYPE_WORKER = "00601";
     public static final String PERSON_TYPE_VISITOR = "00602";

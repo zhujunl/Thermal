@@ -89,14 +89,10 @@ public class PersonManager {
             Person person = PersonRepository.getInstance().findOldestRecord();
             if (person == null) throw new MyException("未找到待上传人员");
             PersonRepository.getInstance().updatePerson(person);
-            if (TextUtils.equals(person.getStatus(), ValueUtil.PERSON_STATUS_DELETE)) {
-                Log.e("asd", "人员删除操作上传成功");
-                PersonRepository.getInstance().deletePerson(person);
-            } else {
-                Log.e("asd", "人员上传成功");
-                person.setUpload(true);
-                PersonRepository.getInstance().savePerson(person);
-            }
+            Log.e("asd", "人员上传成功");
+            person.setUpload(true);
+            PersonRepository.getInstance().savePerson(person);
+            HeartBeatManager.getInstance().forcedHeartBeat();
             handler.sendMessage(handler.obtainMessage(0));
         } catch (Exception e) {
             Log.e("asd", "" + e.getMessage());

@@ -129,7 +129,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="@string/fragment_config_device_mode" />
+                        android:text="工作模式" />
 
                     <View style="@style/VerticalLine" />
 
@@ -140,29 +140,36 @@
                         android:layout_weight="2"
                         android:orientation="horizontal">
 
-                        <RadioButton
-                            android:id="@+id/rb_mix"
+                        <Space
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="@string/fragment_config_device_mix" />
+                            android:layout_weight="0.5" />
 
                         <RadioButton
-                            android:id="@+id/rb_server"
+                            android:id="@+id/rb_net_work"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="@string/fragment_config_device_server" />
+                            android:text="联网版" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
 
                         <RadioButton
-                            android:id="@+id/rb_client"
+                            android:id="@+id/rb_local_work"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="@string/fragment_config_device_client" />
+                            android:text="单机版" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
 
                     </RadioGroup>
 

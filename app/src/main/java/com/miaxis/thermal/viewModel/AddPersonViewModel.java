@@ -16,6 +16,7 @@ import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.manager.CardManager;
+import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -165,13 +166,20 @@ public class AddPersonViewModel extends BaseViewModel {
                 .subscribe(result -> {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息已上传");
-                    PersonManager.getInstance().startUploadPerson();
                     registerFlag.setValue(Boolean.TRUE);
+                    forcedSync();
                 }, throwable -> {
                     waitMessage.setValue("");
                     resultMessage.setValue("人员信息上传失败，已缓存至本地，将自动尝试续传");
                     registerFlag.setValue(Boolean.TRUE);
                 });
+    }
+
+    private void forcedSync() {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            HeartBeatManager.getInstance().forcedHeartBeat();
+            PersonManager.getInstance().startUploadPerson();
+        });
     }
 
     public void setFeatureCache(String featureCache) {

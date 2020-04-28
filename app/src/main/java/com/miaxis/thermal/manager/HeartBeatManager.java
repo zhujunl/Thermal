@@ -120,4 +120,21 @@ public class HeartBeatManager {
         handler.sendMessage(handler.obtainMessage(MSG_TIME_DELAY_BURST));
     }
 
+    public void forcedHeartBeat() {
+        try {
+            List<Person> personList = PersonRepository.getInstance().downloadPerson();
+            if (personList != null && !personList.isEmpty()) {
+                for (Person person : personList) {
+                    PersonManager.getInstance().handlePersonHeartBeat(person);
+                }
+                Log.e("asd", "人员同步成功：" + personList.size());
+            } else {
+                throw new MyException("服务端待更新人员为为空");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("asd", "强制心跳：" + e.getMessage());
+        }
+    }
+
 }

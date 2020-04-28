@@ -12,6 +12,7 @@ import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PersonSearch;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
+import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.util.DateUtil;
@@ -121,7 +122,7 @@ public class PersonViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(person -> {
                     waitMessage.setValue("人员状态操作成功，正在尝试上传...");
-                    uploadPersonDelete(person);
+                    uploadPerson(person);
                 }, throwable -> {
                     waitMessage.setValue("");
                     Log.e("asd", "" + throwable.getMessage());
@@ -129,7 +130,7 @@ public class PersonViewModel extends BaseViewModel {
                 });
     }
 
-    private void uploadPersonDelete(Person person) {
+    private void uploadPerson(Person person) {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             PersonRepository.getInstance().updatePerson(person);
             emitter.onNext(Boolean.TRUE);
@@ -138,19 +139,28 @@ public class PersonViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .doOnNext(result -> {
-                    PersonRepository.getInstance().deletePerson(person);
+                    person.setUpload(true);
+                    PersonRepository.getInstance().savePerson(person);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     updating.setValue(Boolean.TRUE);
                     waitMessage.setValue("");
                     resultMessage.setValue("人员操作已上传");
-                    PersonManager.getInstance().startUploadPerson();
+                    forcedSync();
                 }, throwable -> {
                     updating.setValue(Boolean.TRUE);
                     waitMessage.setValue("");
                     resultMessage.setValue("人员操作上传失败，已缓存至本地，已删除人员将在续传成功或过期后将自动删除");
                 });
+    }
+
+    private void forcedSync() {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            HeartBeatManager.getInstance().forcedHeartBeat();
+            updating.postValue(Boolean.TRUE);
+            PersonManager.getInstance().startUploadPerson();
+        });
     }
 
     public boolean isLoadAllOver() {

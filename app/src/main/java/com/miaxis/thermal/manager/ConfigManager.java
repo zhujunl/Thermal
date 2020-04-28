@@ -190,4 +190,9 @@ public class ConfigManager {
         return false;
     }
 
+    public static boolean isNetworking() {
+        Config config = getInstance().getConfig();
+        return TextUtils.equals(config.getServerMode(), ValueUtil.WORK_MODE_NET);
+    }
+
 }

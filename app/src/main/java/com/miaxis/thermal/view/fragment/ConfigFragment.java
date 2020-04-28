@@ -59,18 +59,12 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.tvFaceVersion.setText(FaceManager.getInstance().faceVersion());
         String versionName = DeviceUtil.getCurVersion(getContext()) + "_" + Sign.getSignName(ValueUtil.DEFAULT_SIGN);
         binding.tvVersion.setText(versionName);
-        if (TextUtils.equals(config.getServerMode(), "0")) {
-            binding.rbMix.setChecked(true);
-            binding.rbServer.setChecked(false);
-            binding.rbClient.setChecked(false);
-        } else if (TextUtils.equals(config.getServerMode(), "1")) {
-            binding.rbMix.setChecked(false);
-            binding.rbServer.setChecked(true);
-            binding.rbClient.setChecked(false);
-        } else if (TextUtils.equals(config.getServerMode(), "2")) {
-            binding.rbMix.setChecked(false);
-            binding.rbServer.setChecked(false);
-            binding.rbClient.setChecked(true);
+        if (TextUtils.equals(config.getServerMode(), ValueUtil.WORK_MODE_LOCAL)) {
+            binding.rbLocalWork.setChecked(true);
+            binding.rbNetWork.setChecked(false);
+        } else {
+            binding.rbLocalWork.setChecked(false);
+            binding.rbNetWork.setChecked(true);
         }
         binding.etHost.setText(config.getHost());
         binding.etDownloadPersonPath.setText(config.getDownloadPersonPath());
@@ -246,13 +240,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("该版本不支持闸机开门", ToastManager.INFO);
                         return;
                     }
-                    if (binding.rbMix.isChecked()) {
-                        config.setServerMode("0");
-                    } else if (binding.rbServer.isChecked()) {
-                        config.setServerMode("1");
-                    } else if (binding.rbClient.isChecked()) {
-                        config.setServerMode("2");
+                    if (!TextUtils.equals(config.getServerMode(), binding.rbNetWork.isChecked() ? ValueUtil.WORK_MODE_NET : ValueUtil.WORK_MODE_LOCAL)) {
+                        mListener.showResultDialog("请注意，修改工作模式可能会造成数据不同步，单机版下的某些操作将是不可逆的");
                     }
+                    config.setServerMode(binding.rbNetWork.isChecked() ? ValueUtil.WORK_MODE_NET : ValueUtil.WORK_MODE_LOCAL);
                     config.setHost(binding.etHost.getText().toString());
                     config.setDownloadPersonPath(binding.etDownloadPersonPath.getText().toString());
                     config.setUpdatePersonPath(binding.etUpdatePersonPath.getText().toString());
