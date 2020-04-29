@@ -80,7 +80,7 @@ public class HeartBeatManager {
         activeBurstLimit = false;
     }
 
-    private void getPersonData() {
+    private synchronized void getPersonData() {
         try {
             updating = true;
             handler.removeMessages(MSG_TIME_DELAY_BURST);
@@ -120,7 +120,7 @@ public class HeartBeatManager {
         handler.sendMessage(handler.obtainMessage(MSG_TIME_DELAY_BURST));
     }
 
-    public void forcedHeartBeat() {
+    public synchronized void forcedHeartBeat() {
         try {
             List<Person> personList = PersonRepository.getInstance().downloadPerson();
             if (personList != null && !personList.isEmpty()) {

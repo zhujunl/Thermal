@@ -505,7 +505,7 @@
 
                     <TextView
                         style="@style/SettingName"
-                        android:text="陌生人开门限制" />
+                        android:text="开门限制" />
 
                     <View style="@style/VerticalLine" />
 
