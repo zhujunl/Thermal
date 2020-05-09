@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -144,7 +145,8 @@ public class FaceRegisterLandFragment extends BaseViewModelFragment<FragmentFace
 
             roundFrameLayout.addView(binding.rtvCamera);
             FrameLayout.LayoutParams newTextureViewLayoutParams = new FrameLayout.LayoutParams(newWidth, newHeight);
-            newTextureViewLayoutParams.rightMargin = margin * 4;
+//            newTextureViewLayoutParams.rightMargin = margin * 4;
+            newTextureViewLayoutParams.gravity = Gravity.CENTER;
             binding.rtvCamera.setLayoutParams(newTextureViewLayoutParams);
 
             View siblingView = roundFrameLayout != null ? roundFrameLayout : binding.rtvCamera;

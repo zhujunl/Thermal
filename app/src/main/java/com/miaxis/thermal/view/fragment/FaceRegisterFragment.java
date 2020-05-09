@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +144,8 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
             roundFrameLayout.addView(binding.rtvCamera);
             FrameLayout.LayoutParams newTextureViewLayoutParams = new FrameLayout.LayoutParams(newWidth, newHeight);
-            newTextureViewLayoutParams.topMargin = -(newHeight - newWidth) / 2;
+//            newTextureViewLayoutParams.topMargin = -(newHeight - newWidth) / 2;
+            newTextureViewLayoutParams.gravity = Gravity.CENTER;
             binding.rtvCamera.setLayoutParams(newTextureViewLayoutParams);
 
             View siblingView = roundFrameLayout != null ? roundFrameLayout : binding.rtvCamera;

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870CameraStrategy;
+import com.miaxis.thermal.manager.strategy.mr870a.MR870ACameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhCameraStrategy;
@@ -57,6 +58,8 @@ public class CameraManager {
             cameraStrategy = new MR890CameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
             cameraStrategy = new XhcCameraStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+            cameraStrategy = new MR870ACameraStrategy();
         }
     }
 

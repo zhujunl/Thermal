@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 
 import androidx.lifecycle.Observer;
@@ -47,7 +48,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     private boolean feverCache = false;
     private boolean dormancyCache = false;
 
-    public  static AttendanceLandFragment newInstance() {
+    public static AttendanceLandFragment newInstance() {
         return new AttendanceLandFragment();
     }
 
@@ -160,19 +161,26 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     };
 
     private Observer<Boolean> feverObserver = fever -> {
-        if (fever) {
-            binding.ivPanel.setImageResource(R.drawable.background_horizontal_line_board_red);
-            binding.clRoot.setBackgroundResource(R.drawable.background_horizontal_red);
-            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
-            binding.ivFaceBox.setImageResource(R.drawable.face_box_red);
-            feverCache = true;
-        } else if (feverCache) {
-            Log.e("asd", "No fever~~~~~~~~~~~~````");
-            binding.ivPanel.setImageResource(R.drawable.background_horizontal_line_board);
-            binding.clRoot.setBackgroundResource(R.drawable.background_horizontal);
-            binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
-            binding.ivFaceBox.setImageResource(R.drawable.face_box);
-            feverCache = false;
+        Context context = getContext();
+        if (context != null) {
+            if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (fever) {
+                    binding.ivPanel.setImageResource(R.drawable.background_horizontal_line_board_red);
+                    binding.clRoot.setBackgroundResource(R.drawable.background_horizontal_red);
+                    binding.ivHeaderBackground.setImageResource(R.drawable.head_mask_red);
+                    binding.ivFaceBox.setImageResource(R.drawable.face_box_red);
+                    feverCache = true;
+                } else if (feverCache) {
+                    Log.e("asd", "No fever~~~~~~~~~~~~````");
+                    binding.ivPanel.setImageResource(R.drawable.background_horizontal_line_board);
+                    binding.clRoot.setBackgroundResource(R.drawable.background_horizontal);
+                    binding.ivHeaderBackground.setImageResource(R.drawable.head_mask);
+                    binding.ivFaceBox.setImageResource(R.drawable.face_box);
+                    feverCache = false;
+                }
+            } else {
+
+            }
         }
     };
 

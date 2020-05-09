@@ -140,4 +140,7 @@
     <string name="person_type_visitor">访客</string>
     <string name="person_type_black">黑名单</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

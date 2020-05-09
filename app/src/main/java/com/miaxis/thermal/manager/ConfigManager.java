@@ -91,7 +91,6 @@ public class ConfigManager {
             }
             if (ValueUtil.DEFAULT_SIGN == Sign.XH
                     || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                     || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_HORIZONTAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
@@ -100,6 +99,10 @@ public class ConfigManager {
                     || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL);
+            } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_NO_LIMIT);
+                config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_NO_LIMIT);
             }
             ConfigModel.saveConfig(config);
         }
@@ -165,7 +168,8 @@ public class ConfigManager {
     public static boolean isLandCameraDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
@@ -179,7 +183,8 @@ public class ConfigManager {
     public static boolean isNeedPatternMatcherDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH

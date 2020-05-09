@@ -1,7 +1,7 @@
 package com.miaxis.thermal.manager.strategy;
 
 public enum Sign {
-    XH, XH_N, XH_C, MR870, ZH, TPS980P, MR890;
+    XH, XH_N, XH_C, MR870, MR870A, ZH, TPS980P, MR890;
 
     public static String getSignName(Sign sign) {
         switch (sign) {
@@ -13,6 +13,8 @@ public enum Sign {
                 return "XH_C";
             case MR870:
                 return "MR870";
+            case MR870A:
+                return "MR870A";
             case ZH:
                 return "ZH";
             case TPS980P:

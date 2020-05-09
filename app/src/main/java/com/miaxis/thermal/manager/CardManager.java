@@ -51,7 +51,8 @@ public class CardManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             cardStrategy = new DefaultCardStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             cardStrategy = new ZhCardStrategy();

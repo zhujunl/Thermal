@@ -84,9 +84,13 @@ public class FaceRegisterViewModel extends BaseViewModel {
         Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
             Bitmap bitmap;
             if (mBitmap.getWidth() >= mBitmap.getHeight()) {
-                bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getHeight(), mBitmap.getHeight(), null, false);
+                int length = mBitmap.getHeight();
+                int deviation = (mBitmap.getWidth() - mBitmap.getHeight()) / 2;
+                bitmap = Bitmap.createBitmap(mBitmap, deviation, 0, length, length, null, false);
             } else {
-                bitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getWidth(), null, false);
+                int length = mBitmap.getWidth();
+                int deviation = (mBitmap.getHeight() - mBitmap.getWidth()) / 2;
+                bitmap = Bitmap.createBitmap(mBitmap, 0, deviation, length, length, null, false);
             }
             emitter.onNext(bitmap);
             emitter.onComplete();

@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
+import com.miaxis.thermal.manager.strategy.mr870a.MR870AGpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890GpioStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
@@ -57,6 +58,8 @@ public class GpioManager {
             gpioStrategy = new MR890GpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
             gpioStrategy = new XhcGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+            gpioStrategy = new MR870AGpioStrategy();
         }
         initGpio(application);
         resetGpio();
