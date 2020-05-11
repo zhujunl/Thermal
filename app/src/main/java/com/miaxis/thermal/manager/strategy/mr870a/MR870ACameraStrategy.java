@@ -49,7 +49,7 @@ public class MR870ACameraStrategy implements CameraManager.CameraStrategy {
                     openVisibleCamera();
                 }
             } else {
-                textureViewFlip(textureView);
+//                textureViewFlip(textureView);
                 openVisibleCamera();
                 showingCamera = visibleCamera;
                 listener.onCameraOpen(showingCamera.getParameters().getPreviewSize(), "");
@@ -97,7 +97,7 @@ public class MR870ACameraStrategy implements CameraManager.CameraStrategy {
     public boolean faceRectFlip() {
 //        Config config = ConfigManager.getInstance().getConfig();
 //        return !config.isShowCamera();
-        return false;
+        return true;
     }
 
     private void textureViewFlip(TextureView textureView) {
