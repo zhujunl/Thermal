@@ -1,32 +1,13 @@
 package com.miaxis.thermal.manager;
 
 import android.graphics.Bitmap;
-import android.serialport.api.SerialPort;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.miaxis.thermal.manager.strategy.Sign;
-import com.miaxis.thermal.manager.strategy.mr870.MR870TemperatureStrategy;
-import com.miaxis.thermal.manager.strategy.mr870a.MR870ATemperatureStrategy;
-import com.miaxis.thermal.manager.strategy.mr890.MR890TemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhTemperatureStrategy;
-import com.miaxis.thermal.manager.strategy.xhc.XhcTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.xhn.XhnTemperatureStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhTemperatureStrategy;
-import com.miaxis.thermal.util.DataUtils;
 import com.miaxis.thermal.util.ValueUtil;
-
-import org.zz.api.MXFaceInfoEx;
-
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TemperatureManager {
 
@@ -56,20 +37,14 @@ public class TemperatureManager {
     public void init() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH) {
             temperatureStrategy = new XhTemperatureStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870) {
-            temperatureStrategy = new MR870TemperatureStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+        }else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             temperatureStrategy = new ZhTemperatureStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
             temperatureStrategy = new TpsTemperatureStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
             temperatureStrategy = new XhnTemperatureStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
-            temperatureStrategy = new MR890TemperatureStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
-            temperatureStrategy = new XhcTemperatureStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
-            temperatureStrategy = new MR870ATemperatureStrategy();
+        } else {
+            temperatureStrategy = new DefaultTemperatureStrategy();
         }
     }
 
@@ -98,6 +73,26 @@ public class TemperatureManager {
     public interface TemperatureListener {
         void onTemperature(float temperature);
         void onHeatMap(Bitmap bitmap);
+    }
+
+    private static class DefaultTemperatureStrategy implements TemperatureManager.TemperatureStrategy {
+
+        @Override
+        public void open() {
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public void readTemperature(TemperatureManager.TemperatureListener listener) {
+            if (listener != null) {
+                listener.onTemperature(-1f);
+                listener.onHeatMap(null);
+            }
+        }
+
     }
 
 }

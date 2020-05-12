@@ -159,7 +159,15 @@ public class ConfigManager {
 
     public static boolean isCardDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isFingerDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return true;
         }
         return false;

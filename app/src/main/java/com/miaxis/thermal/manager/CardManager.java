@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.manager.strategy.mr870a.MR870ACardStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CardStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhCardStrategy;
@@ -47,17 +48,14 @@ public class CardManager {
     private CardStrategy cardStrategy;
 
     public void init() {
-        if (ValueUtil.DEFAULT_SIGN == Sign.XH
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
-                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
-            cardStrategy = new DefaultCardStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
+        if (ValueUtil.DEFAULT_SIGN == Sign.ZH) {
             cardStrategy = new ZhCardStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             cardStrategy = new MR890CardStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+            cardStrategy = new MR870ACardStrategy();
+        } else {
+            cardStrategy = new DefaultCardStrategy();
         }
     }
 

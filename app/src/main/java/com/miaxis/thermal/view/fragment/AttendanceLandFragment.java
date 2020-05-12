@@ -28,6 +28,7 @@ import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -82,6 +83,10 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             viewModel.initCard.observe(this, initCardObserver);
             viewModel.cardStatus.observe(this, cardStatusObserver);
         }
+        if (ConfigManager.isFingerDevice()) {
+            viewModel.initFinger.observe(this, initFingerObserver);
+            viewModel.fingerStatus.observe(this, fingerStatusObserver);
+        }
     }
 
     @Override
@@ -112,6 +117,9 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.faceDraw.removeObserver(faceDrawObserver);
         if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().release();
+        }
+        if (ConfigManager.isFingerDevice()) {
+            FingerManager.getInstance().release();
         }
         GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
@@ -208,12 +216,22 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         }
     };
 
-    private Observer<Boolean> initCardObserver = aBoolean -> {
-        App.getInstance().getThreadExecutor().execute(() -> CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener));
+    private Observer<Boolean> initCardObserver = result -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener);
+        });
     };
 
     private Observer<Boolean> cardStatusObserver = status -> {
+    };
 
+    private Observer<Boolean> initFingerObserver = result -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            FingerManager.getInstance().initDevice(viewModel.fingerStatusListener);
+        });
+    };
+
+    private Observer<Boolean> fingerStatusObserver = status -> {
     };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

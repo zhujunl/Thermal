@@ -30,6 +30,7 @@ import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.PersonManager;
@@ -47,6 +48,7 @@ import org.zz.api.MXFaceInfoEx;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -72,8 +74,12 @@ public class AttendanceViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> fever = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> faceDormancy = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> heatMapUpdate = new SingleLiveEvent<>();
+
     public MutableLiveData<Boolean> initCard = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> cardStatus = new SingleLiveEvent<>();
+
+    public MutableLiveData<Boolean> initFinger = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> fingerStatus = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -83,8 +89,9 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private volatile boolean lock = false;
     private volatile boolean cardMode = false;
+    private volatile boolean fingerVerify = true;
 
-    private int cardDelay = 6;
+    private AtomicInteger cardDelay = new AtomicInteger(6);
 
     public AttendanceViewModel() {
         handler = new Handler(Looper.getMainLooper()) {
@@ -117,6 +124,9 @@ public class AttendanceViewModel extends BaseViewModel {
         WatchDogManager.getInstance().startFaceFeedDog();
         if (ConfigManager.isCardDevice()) {
             initCard.setValue(Boolean.TRUE);
+        }
+        if (ConfigManager.isFingerDevice()) {
+            initFinger.setValue(Boolean.TRUE);
         }
     }
 
@@ -349,6 +359,7 @@ public class AttendanceViewModel extends BaseViewModel {
         heatMapUpdate.postValue(Boolean.TRUE);
         lock = false;
         cardMode = false;
+        fingerVerify = true;
         FaceManager.getInstance().setNeedNextFeature(true);
         if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().needNextRead(true);
@@ -380,6 +391,7 @@ public class AttendanceViewModel extends BaseViewModel {
             if (cardMode) return;
             Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
                 PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
+                fingerVerify = !(!TextUtils.isEmpty(idCardMessage.getFingerprint0()) && !TextUtils.isEmpty(idCardMessage.getFingerprint1()));
                 emitter.onNext(cardFaceFeature);
                 emitter.onComplete();
             })
@@ -425,7 +437,7 @@ public class AttendanceViewModel extends BaseViewModel {
         hint.set(idCardMessage.getName() + "-请看镜头");
         temperature.set("");
         handler.removeCallbacks(cardVerifyDelayRunnable);
-        cardDelay = 6;
+        cardDelay.set(6);
         handler.post(cardVerifyDelayRunnable);
         headerCache = idCardMessage.getCardBitmap();
         updateHeader.setValue(Boolean.TRUE);
@@ -482,13 +494,78 @@ public class AttendanceViewModel extends BaseViewModel {
     private Runnable cardVerifyDelayRunnable = new Runnable() {
         @Override
         public void run() {
-            cardDelay--;
+            cardDelay.decrementAndGet();
             countDown.set(cardDelay + "S");
-            if (cardDelay == 0) {
-                detectColdDown();
+            if (cardDelay.get() == 0) {
+                if (ConfigManager.isFingerDevice()) {
+                    if (fingerVerify) {
+                        detectColdDown();
+                    } else {
+                        fingerVerify = true;
+                        verifyFinger();
+                    }
+                } else {
+                    detectColdDown();
+                }
             } else {
                 handler.postDelayed(cardVerifyDelayRunnable, 1000);
             }
+        }
+    };
+
+    private void verifyFinger() {
+        hint.set(idCardMessage.getName() + "-请按手指");
+        FingerManager.getInstance().readFinger(fingerReadListener);
+        cardDelay.set(5);
+        countDown.set(cardDelay + "S");
+        handler.postDelayed(cardVerifyDelayRunnable, 1000);
+    }
+
+    public FingerManager.OnFingerStatusListener fingerStatusListener = result -> {
+        if (result) {
+            fingerStatus.postValue(Boolean.TRUE);
+        } else {
+            fingerStatus.postValue(Boolean.FALSE);
+            FingerManager.getInstance().release();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                initFinger.setValue(Boolean.TRUE);
+            }, 10 * 1000);
+        }
+    };
+
+    private FingerManager.OnFingerReadListener fingerReadListener = (feature, image) -> {
+        try {
+            if (idCardMessage == null) {
+                cardMode = false;
+                detectColdDown();
+                return;
+            }
+            if (feature == null) {
+                handler.removeCallbacks(cardVerifyDelayRunnable);
+                countDown.set("");
+                hint.set(idCardMessage.getName() + "-探测失败");
+                detectCold(true);
+                return;
+            }
+            if (!TextUtils.isEmpty(idCardMessage.getFingerprint0()) && !TextUtils.isEmpty(idCardMessage.getFingerprint1())) {
+                boolean result0 = FingerManager.getInstance().matchFeature(feature, Base64.decode(idCardMessage.getFingerprint0(), Base64.NO_WRAP));
+                boolean result1 = FingerManager.getInstance().matchFeature(feature, Base64.decode(idCardMessage.getFingerprint1(), Base64.NO_WRAP));
+                handler.removeCallbacks(cardVerifyDelayRunnable);
+                countDown.set("");
+                if (result0 || result1) {
+                    hint.set(idCardMessage.getName() + "-比对成功");
+                    TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+                    if (ConfigManager.isGateDevice()) {
+                        GpioManager.getInstance().openDoorForGate();
+                    }
+                } else {
+                    hint.set(idCardMessage.getName() + "-比对失败");
+                }
+                detectCold(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            detectColdDown();
         }
     };
 

@@ -188,7 +188,8 @@ public class GpioManager {
     public void openGreenLed() {
         if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return;
         }
         warning = true;
@@ -210,7 +211,8 @@ public class GpioManager {
     public void openRedLed() {
         if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return;
         }
         warning = true;

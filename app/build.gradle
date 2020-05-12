@@ -115,4 +115,6 @@ dependencies {
     implementation files('src/main/libs/nexgo-smartpos-sdk-v2.3.3_20191226-sources.jar')
     implementation files('src/main/libs/poi-3.12-android-a.jar')
     implementation files('src/main/libs/poi-ooxml-schemas-3.12-20150511-a.jar')
+    implementation files('src/main/libs/mxsdtapi.jar')
+    implementation files('src/main/libs/MxMscFingerApi.jar')
 }

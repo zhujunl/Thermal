@@ -97,7 +97,7 @@ public class MR870ACameraStrategy implements CameraManager.CameraStrategy {
     public boolean faceRectFlip() {
 //        Config config = ConfigManager.getInstance().getConfig();
 //        return !config.isShowCamera();
-        return true;
+        return false;
     }
 
     private void textureViewFlip(TextureView textureView) {
