@@ -141,6 +141,7 @@ public class RecordManager {
                 .score(score)
                 .upload(false)
                 .temperature(temperature)
+                .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }
 
@@ -154,6 +155,7 @@ public class RecordManager {
                 .upload(false)
                 .temperature(temperature)
                 .attendance("0")
+                .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }
 

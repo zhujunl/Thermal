@@ -151,6 +151,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
                 .title("确认退出?")
                 .positiveText("确认")
                 .onPositive((dialog, which) -> {
+                    GpioManager.getInstance().setStatusBar(true);
+                    WebServerManager.getInstance().stopServer();
+                    HeartBeatManager.getInstance().stopHeartBeat();
+                    WatchDogManager.getInstance().stopANRWatchDog();
+                    AppDatabase.getInstance().close();
                     finish();
                     System.exit(0);
                 })

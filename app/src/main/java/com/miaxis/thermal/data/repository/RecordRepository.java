@@ -55,6 +55,7 @@ public class RecordRepository {
                 record.getType(),
                 record.getFaceType(),
                 mac,
+                record.getAccess(),
                 file)
                 .execute();
         try {

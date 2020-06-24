@@ -48,6 +48,7 @@ public interface ThermalNet {
                                       @Part("type") String type,
                                       @Part("faceType") String faceType,
                                       @Part("mac") String mac,
+                                      @Part("access") String access,
                                       @Part MultipartBody.Part file);
 
 }

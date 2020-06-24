@@ -1,6 +1,7 @@
 package com.miaxis.thermal.manager.strategy.xhc;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.android.xhapimanager.XHApiManager;
 import com.miaxis.thermal.manager.GpioManager;
@@ -28,6 +29,7 @@ public class XhcGpioStrategy implements GpioManager.GpioStrategy {
         xhApiManager.XHSetGpioValue(2, 0);
         xhApiManager.XHSetGpioValue(3, 0);
         xhApiManager.XHSetGpioValue(4, 0);
+        xhApiManager.XHSetGpioValue(5, 0);
     }
 
     @Override
@@ -52,7 +54,10 @@ public class XhcGpioStrategy implements GpioManager.GpioStrategy {
 
     @Override
     public void openGate(boolean open) {
-        RootCommand("echo " + (open ? 1 : 0) + " > " + GPIO5);
+//        Log.e("asd", "asdddddddddddddddddddddddddddddddddddddddddd");
+        xhApiManager.XHSetGpioValue(5, open ? 1 : 0);
+
+//        RootCommand("echo " + (open ? 1 : 0) + " > " + GPIO5);
     }
 
     public void setGpio(int gpio, int value) {

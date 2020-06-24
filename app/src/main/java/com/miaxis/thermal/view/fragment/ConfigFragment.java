@@ -84,6 +84,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.rbStrangerRecordOff.setChecked(!config.isStrangerRecord());
         binding.rbDeviceModeAttendance.setChecked(config.isDeviceMode());
         binding.rbDeviceModeGate.setChecked(!config.isDeviceMode());
+        binding.rbAccessSignIn.setChecked(config.isAccessSign());
+        binding.rbAccessSignOut.setChecked(!config.isAccessSign());
         binding.rbGateLimitOn.setChecked(config.isGateLimit());
         binding.rbGateLimitOff.setChecked(!config.isGateLimit());
         binding.etRegisterQualityScore.setText(String.valueOf(config.getRegisterQualityScore()));
@@ -254,6 +256,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setForcedMask(binding.rbForcesMaskOpen.isChecked());
                     config.setStrangerRecord(binding.rbStrangerRecordOn.isChecked());
                     config.setDeviceMode(binding.rbDeviceModeAttendance.isChecked());
+                    config.setAccessSign(binding.rbAccessSignIn.isChecked());
                     config.setGateLimit(binding.rbGateLimitOn.isChecked());
                     config.setRegisterQualityScore(Integer.parseInt(binding.etRegisterQualityScore.getText().toString()));
                     config.setQualityScore(Integer.parseInt(binding.etQualityScore.getText().toString()));

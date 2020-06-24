@@ -70,6 +70,7 @@ public class RecordModel {
                             .score(cursor.getFloat(cursor.getColumnIndex("score")))
                             .upload(cursor.getInt(cursor.getColumnIndex("upload")) == 1)
                             .temperature(cursor.getFloat(cursor.getColumnIndex("temperature")))
+                            .access(cursor.getString(cursor.getColumnIndex("access")))
                             .build();
                     recordList.add(build);
                 }

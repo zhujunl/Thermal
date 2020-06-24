@@ -22,6 +22,7 @@ public class Record {
     private boolean upload;
     private float temperature;
     private String attendance;
+    private String access;
 
     public Record() {
     }
@@ -40,6 +41,7 @@ public class Record {
         setUpload(builder.upload);
         setTemperature(builder.temperature);
         setAttendance(builder.attendance);
+        setAccess(builder.access);
     }
 
     public Long getId() {
@@ -146,6 +148,14 @@ public class Record {
         this.attendance = attendance;
     }
 
+    public String getAccess() {
+        return access;
+    }
+
+    public void setAccess(String access) {
+        this.access = access;
+    }
+
     public static final class Builder {
         private Long id;
         private Long personId;
@@ -160,6 +170,7 @@ public class Record {
         private boolean upload;
         private float temperature;
         private String attendance;
+        private String access;
 
         public Builder() {
         }
@@ -226,6 +237,11 @@ public class Record {
 
         public Builder attendance(String val) {
             attendance = val;
+            return this;
+        }
+
+        public Builder access(String val) {
+            access = val;
             return this;
         }
 

@@ -1,4 +1,4 @@
-package com.miaxis.thermal.manager.strategy.tps;
+package com.miaxis.thermal.manager.strategy.tpsc;
 
 import android.app.Application;
 import android.content.Context;
@@ -7,7 +7,7 @@ import com.common.pos.api.util.posutil.TPS980PosUtil;
 import com.common.pos.api.util.posutil.Util;
 import com.miaxis.thermal.manager.GpioManager;
 
-public class TpsGpioStrategy implements GpioManager.GpioStrategy {
+public class TpscGpioStrategy implements GpioManager.GpioStrategy {
 
     private Context context;
 

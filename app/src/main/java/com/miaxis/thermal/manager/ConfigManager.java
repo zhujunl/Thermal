@@ -64,6 +64,7 @@ public class ConfigManager {
                     .forcedMask(ValueUtil.DEFAULT_FORCED_MASK)
                     .strangerRecord(ValueUtil.DEFAULT_STRANGER_RECORD)
                     .deviceMode(ValueUtil.DEFAULT_DEVICE_MODE)
+                    .accessSign(ValueUtil.DEFAULT_ACCESS_SIGN)
                     .gateLimit(ValueUtil.DEFAULT_GATE_LIMIT)
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .maskVerifyScore(ValueUtil.DEFAULT_MASK_VERIFY_SCORE)
@@ -96,7 +97,8 @@ public class ConfigManager {
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
             }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL);
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A
@@ -151,7 +153,9 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
             return true;
         }
         return false;
@@ -182,6 +186,7 @@ public class ConfigManager {
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             return false;
         }
@@ -197,6 +202,7 @@ public class ConfigManager {
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
             return false;
         }

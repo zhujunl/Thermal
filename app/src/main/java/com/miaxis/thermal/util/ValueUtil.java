@@ -16,7 +16,7 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.MR870A;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
 
     public static final Gson GSON = new Gson();
 
@@ -34,6 +34,7 @@ public class ValueUtil {
     public static final boolean DEFAULT_FORCED_MASK = false;
     public static final boolean DEFAULT_STRANGER_RECORD = false;
     public static final boolean DEFAULT_DEVICE_MODE = true; // t考勤/f闸机
+    public static final boolean DEFAULT_ACCESS_SIGN = true; // t考勤/f闸机
     public static final boolean DEFAULT_GATE_LIMIT = false;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
     public static final float DEFAULT_MASK_VERIFY_SCORE = 0.72f;
