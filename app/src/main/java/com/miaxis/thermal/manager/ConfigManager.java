@@ -196,14 +196,14 @@ public class ConfigManager {
     public static boolean isNeedPatternMatcherDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
             return false;
         }
         return false;

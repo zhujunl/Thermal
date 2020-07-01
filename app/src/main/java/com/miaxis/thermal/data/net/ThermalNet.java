@@ -36,6 +36,7 @@ public interface ThermalNet {
                                       @Part("maskFaceFeature") String maskFaceFeature,
                                       @Part("status") String status,
                                       @Part MultipartBody.Part faceFile);
+
     @Multipart
     @POST
     Call<ResponseEntity> uploadRecord(@Url String url,

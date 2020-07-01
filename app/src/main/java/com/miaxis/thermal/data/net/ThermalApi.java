@@ -34,8 +34,15 @@ public class ThermalApi extends BaseAPI {
                                                     String maskFaceFeature,
                                                     String status,
                                                     File file) {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("faceFile", file.getName(), requestBody);
+        MultipartBody.Part fileBody = null;
+        try {
+            if (file != null) {
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                fileBody = MultipartBody.Part.createFormData("faceFile", file.getName(), requestBody);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return getThermalNetSync().updatePerson(url,
                 mac,
                 userName,
@@ -62,8 +69,13 @@ public class ThermalApi extends BaseAPI {
                                                     String mac,
                                                     String access,
                                                     File file) {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        MultipartBody.Part fileBody = null;
+        try {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return getThermalNetSync().uploadRecord(url,
                 identifyNumber,
                 userName,

@@ -32,6 +32,7 @@ import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
 
@@ -86,6 +87,9 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             viewModel.initFinger.observe(this, initFingerObserver);
             viewModel.fingerStatus.observe(this, fingerStatusObserver);
         }
+        binding.clPanel.setOnClickListener(new OnLimitClickHelper(view -> {
+            GpioManager.getInstance().openWhiteLedInTime();
+        }));
     }
 
     @Override
