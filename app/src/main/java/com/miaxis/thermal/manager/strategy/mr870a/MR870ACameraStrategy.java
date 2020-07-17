@@ -185,7 +185,6 @@ public class MR870ACameraStrategy implements CameraManager.CameraStrategy {
             infraredCamera.setParameters(parameters);
             infraredCamera.setDisplayOrientation(180);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
-            GpioManager.getInstance().setInfraredLedForXH(true);
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +200,6 @@ public class MR870ACameraStrategy implements CameraManager.CameraStrategy {
     private void closeInfraredCamera() {
         try {
             if (infraredCamera != null) {
-                GpioManager.getInstance().setInfraredLedForXH(false);
                 XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
                 xhGpioStrategy.setGpio(3, 0);
                 xhGpioStrategy.setGpio(4, 0);

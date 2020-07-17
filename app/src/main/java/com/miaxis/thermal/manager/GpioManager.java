@@ -236,19 +236,19 @@ public class GpioManager {
         });
     }
 
-    public void setInfraredLedForXH(boolean status) {
+    public void setInfraredLedForXhDevice(boolean status) {
         if (gpioStrategy instanceof XhGpioStrategy) {
             XhGpioStrategy xhGpioStrategy = (XhGpioStrategy) gpioStrategy;
             xhGpioStrategy.setGpio(3, status ? 1 : 0);
             xhGpioStrategy.setGpio(4, status ? 1 : 0);
-        }
-    }
-
-    public void setInfraredLedForXHN(boolean status) {
-        if (gpioStrategy instanceof XhnGpioStrategy) {
+        } else if (gpioStrategy instanceof XhnGpioStrategy) {
             XhnGpioStrategy xhnGpioStrategy = (XhnGpioStrategy) gpioStrategy;
             xhnGpioStrategy.setGpio(3, status ? 1 : 0);
             xhnGpioStrategy.setGpio(4, status ? 1 : 0);
+        } else if (gpioStrategy instanceof XhcGpioStrategy) {
+            XhcGpioStrategy xhcGpioStrategy = (XhcGpioStrategy) gpioStrategy;
+            xhcGpioStrategy.setGpio(3, status ? 1 : 0);
+            xhcGpioStrategy.setGpio(4, status ? 1 : 0);
         }
     }
 

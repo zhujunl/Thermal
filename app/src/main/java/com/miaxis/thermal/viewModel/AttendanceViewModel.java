@@ -160,7 +160,7 @@ public class AttendanceViewModel extends BaseViewModel {
                         return;
                     }
                     if (config.isTempRealTime()) {
-                        if (temperature == 0f) {
+                        if (temperature == 0f || temperature == -1f || temperature == -2f) {
                             AttendanceViewModel.this.temperature.set("");
                         } else {
                             AttendanceViewModel.this.temperature.set(temperature + "°C");
@@ -190,6 +190,11 @@ public class AttendanceViewModel extends BaseViewModel {
             faceDraw.postValue(new FaceDraw(faceNum, faceInfoExes));
             if (!lock && faceNum == 0) {
                 hint.set("");
+                temperature.set("");
+                if (heatMapCache != null) {
+                    heatMapCache = null;
+                    heatMapUpdate.postValue(Boolean.TRUE);
+                }
             }
         }
 

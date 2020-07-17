@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -168,6 +169,7 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
 
     private void initTextListener() {
         if (person == null && ConfigManager.isNeedPatternMatcherDevice()) {
+            binding.etNumber.setKeyListener(DigitsKeyListener.getInstance("0123456789xX"));
             binding.etNumber.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -268,13 +270,15 @@ public class AddPersonFragment extends BaseViewModelFragment<FragmentAddPersonBi
                 }
                 return;
             }
-            if (person == null && !PatternUtil.checkMobilePhone(viewModel.phone.get())) {
-                ToastManager.toast("手机号码格式验证不通过", ToastManager.INFO);
-                return;
-            }
-            if (person == null && !PatternUtil.isIDNumber(viewModel.number.get())) {
-                ToastManager.toast("证件号码格式验证不通过", ToastManager.INFO);
-                return;
+            if (person == null && ConfigManager.isNeedPatternMatcherDevice()) {
+                if (!PatternUtil.checkMobilePhone(viewModel.phone.get())) {
+                    ToastManager.toast("手机号码格式验证不通过", ToastManager.INFO);
+                    return;
+                }
+                if (!PatternUtil.isIDNumber(viewModel.number.get())) {
+                    ToastManager.toast("证件号码格式验证不通过", ToastManager.INFO);
+                    return;
+                }
             }
             Date effectTime = DateUtil.DATE_FORMAT.parse(viewModel.effectTime.get());
             Date invalidTime = DateUtil.DATE_FORMAT.parse(viewModel.invalidTime.get());

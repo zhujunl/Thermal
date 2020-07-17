@@ -134,25 +134,35 @@ public class FaceManager {
 
     private void previewDataLoop() {
         try {
-            if (this.lastVisiblePreviewData != null || this.lastInfraredPreviewData != null) {
+            Config config = ConfigManager.getInstance().getConfig();
+            if (dormancy) {
+                Log.e("asd", "休眠中");
+                Thread.sleep(config.getDormancyInterval() * 1000);
+            }
+            byte[] visiblePreviewData = null;
+            byte[] infraredPreviewData = null;
+            if (lastVisiblePreviewData != null) {
+                visiblePreviewData = new byte[lastVisiblePreviewData.length];
+                System.arraycopy(lastVisiblePreviewData, 0, visiblePreviewData, 0, visiblePreviewData.length);
+            }
+            if (lastInfraredPreviewData != null) {
+                infraredPreviewData = new byte[lastInfraredPreviewData.length];
+                System.arraycopy(lastInfraredPreviewData, 0, infraredPreviewData, 0, infraredPreviewData.length);
+            }
+            if (visiblePreviewData != null || infraredPreviewData != null) {
                 WatchDogManager.getInstance().feedFaceDog();
-                Config config = ConfigManager.getInstance().getConfig();
-                if (dormancy) {
-                    Log.e("asd", "休眠中");
-                    Thread.sleep(config.getDormancyInterval() * 1000);
-                }
                 if (config.isLiveness()) {
-                    if (config.isFaceCamera() && lastInfraredPreviewData != null) {
-                        verify(lastInfraredPreviewData, lastInfraredPreviewData);
-                    } else if (lastVisiblePreviewData != null && lastInfraredPreviewData != null) {
-                        verify(lastVisiblePreviewData, lastInfraredPreviewData);
+                    if (config.isFaceCamera() && infraredPreviewData != null) {
+                        verify(infraredPreviewData, infraredPreviewData);
+                    } else if (visiblePreviewData != null && infraredPreviewData != null) {
+                        verify(visiblePreviewData, infraredPreviewData);
                     } else {
                         asyncDetectHandler.sendEmptyMessage(0);
                     }
-                } else if (config.isFaceCamera() && lastInfraredPreviewData != null) {
-                    verify(lastInfraredPreviewData, null);
-                } else if (!config.isFaceCamera() && lastVisiblePreviewData != null) {
-                    verify(lastVisiblePreviewData, null);
+                } else if (config.isFaceCamera() && infraredPreviewData != null) {
+                    verify(infraredPreviewData, null);
+                } else if (!config.isFaceCamera() && visiblePreviewData != null) {
+                    verify(visiblePreviewData, null);
                 }
             }
         } catch (Exception e) {
@@ -223,7 +233,8 @@ public class FaceManager {
         try {
             if (nova && intermediaryData != null) {
                 nova = false;
-                extract(intermediaryData);
+                Intermediary intermediary = new Intermediary(intermediaryData);
+                extract(intermediary);
                 intermediaryData = null;
             }
             Thread.sleep(300);
@@ -388,19 +399,24 @@ public class FaceManager {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
                 if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                    result = detectMask(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                    if (result && mxFaceInfoEx.mask < ConfigManager.getInstance().getConfig().getMaskScore()) {
-                        byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                        if (faceFeature != null) {
-                            byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                            if (maskFaceFeature != null) {
-                                return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                    double pupilDistance = calculationPupilDistance(mxFaceInfoEx);
+                    if (pupilDistance > 35d) {
+                        result = detectMask(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                        if (result && mxFaceInfoEx.mask < ConfigManager.getInstance().getConfig().getMaskScore()) {
+                            byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                            if (faceFeature != null) {
+                                byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                                if (maskFaceFeature != null) {
+                                    return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                                }
+                            } else {
+                                message = "提取特征失败";
                             }
                         } else {
-                            message = "提取特征失败";
+                            message = "检测到口罩";
                         }
                     } else {
-                        message = "检测到口罩";
+                        message = "瞳间距过低";
                     }
                 } else {
                     message = "人脸质量过低";

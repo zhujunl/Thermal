@@ -188,6 +188,9 @@ public class PersonManager {
                 person.setFacePicturePath("");
                 person.setRemarks("图片下载失败");
             }
+            if (person.getEffectiveTime() == null) {
+                person.setEffectiveTime(new Date());
+            }
             person.setUpdateTime(new Date());
             person.setStatus(ValueUtil.PERSON_STATUS_READY);
         } catch (Exception e) {

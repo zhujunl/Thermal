@@ -185,7 +185,7 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
             infraredCamera.setParameters(parameters);
 //            infraredCamera.setDisplayOrientation(90);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
-            GpioManager.getInstance().setInfraredLedForXHN(true);
+            GpioManager.getInstance().setInfraredLedForXhDevice(true);
             infraredCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +201,7 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
     private void closeInfraredCamera() {
         try {
             if (infraredCamera != null) {
-                GpioManager.getInstance().setInfraredLedForXH(false);
+                GpioManager.getInstance().setInfraredLedForXhDevice(false);
                 XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
                 xhGpioStrategy.setGpio(3, 0);
                 xhGpioStrategy.setGpio(4, 0);

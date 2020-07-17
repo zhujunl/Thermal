@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(indices = {@Index(value = {"identifyNumber", "phone"}, unique = true)})
+//@Entity(indices = {@Index(value = {"identifyNumber", "phone"}, unique = true)})
+@Entity(indices = {@Index(value = {"identifyNumber"}, unique = true)})
 public class Person {
 
     @PrimaryKey(autoGenerate = true)

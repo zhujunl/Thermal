@@ -186,7 +186,6 @@
                 android:hint="@string/fragment_add_person_number_hint"
                 android:text="@={viewModel.number}"
                 android:maxLength="18"
-                android:digits="0123456789xX"
                 android:singleLine="true"
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintWidth_percent="0.45"

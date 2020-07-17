@@ -181,7 +181,6 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@null"
-                android:digits="0123456789xX"
                 android:hint="@string/fragment_add_person_number_hint"
                 android:maxLength="18"
                 android:singleLine="true"
