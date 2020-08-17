@@ -88,6 +88,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.rbAccessSignOut.setChecked(!config.isAccessSign());
         binding.rbGateLimitOn.setChecked(config.isGateLimit());
         binding.rbGateLimitOff.setChecked(!config.isGateLimit());
+        binding.rbCardVerifyOn.setChecked(config.isIdCardVerify());
+        binding.rbCardVerifyOff.setChecked(!config.isIdCardVerify());
+        binding.rbCardEntryOn.setChecked(config.isIdCardEntry());
+        binding.rbCardEntryOff.setChecked(!config.isIdCardEntry());
         binding.etRegisterQualityScore.setText(String.valueOf(config.getRegisterQualityScore()));
         binding.etQualityScore.setText(String.valueOf(config.getQualityScore()));
         binding.etVerifyScore.setText(String.valueOf(config.getVerifyScore()));
@@ -258,6 +262,8 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setDeviceMode(binding.rbDeviceModeAttendance.isChecked());
                     config.setAccessSign(binding.rbAccessSignIn.isChecked());
                     config.setGateLimit(binding.rbGateLimitOn.isChecked());
+                    config.setIdCardVerify(binding.rbCardVerifyOn.isChecked());
+                    config.setIdCardEntry(binding.rbCardEntryOn.isChecked());
                     config.setRegisterQualityScore(Integer.parseInt(binding.etRegisterQualityScore.getText().toString()));
                     config.setQualityScore(Integer.parseInt(binding.etQualityScore.getText().toString()));
                     config.setVerifyScore(Float.parseFloat(binding.etVerifyScore.getText().toString()));

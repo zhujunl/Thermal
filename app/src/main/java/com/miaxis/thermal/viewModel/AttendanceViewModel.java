@@ -318,7 +318,7 @@ public class AttendanceViewModel extends BaseViewModel {
             fever.postValue(Boolean.TRUE);
             hint.set("访客人员-温度异常");
             voice = "体温异常";
-        } else  {
+        } else {
             if (!config.isForcedMask() || mask) {
                 hint.set("访客人员-检测成功");
                 voice = temperature > 0 ? "检测成功，体温正常" : "检测成功";
@@ -404,7 +404,11 @@ public class AttendanceViewModel extends BaseViewModel {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(cardFaceFeature -> {
                         if (cardFaceFeature.getFaceFeature() != null || cardFaceFeature.getMaskFaceFeature() != null) {
-                            onIDCardMessage(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
+                            if (ConfigManager.getInstance().getConfig().isIdCardVerify()) {
+                                onIDCardMessage(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
+                            } else {
+                                onIDCardMessageNoVerify(idCardMessage, cardFaceFeature.getFaceFeature(), cardFaceFeature.getMaskFaceFeature());
+                            }
                         } else {
                             toast.setValue(ToastManager.getToastBody("证件照片处理失败", ToastManager.ERROR));
                             CardManager.getInstance().needNextRead(true);
@@ -449,9 +453,38 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setNeedNextFeature(true);
     }
 
+    private void onIDCardMessageNoVerify(IDCardMessage mIdCardMessage, byte[] faceFeature, byte[] maskFaceFeature) {
+        TTSManager.getInstance().stop();
+        idCardMessage = mIdCardMessage;
+        idCardMessage.setCardFeature(faceFeature);
+        idCardMessage.setMaskCardFeature(maskFaceFeature);
+        handler.removeMessages(MSG_VERIFY_LOCK);
+        detectCold(true);
+        cardMode = true;
+        temperature.set("");
+        handler.removeCallbacks(cardVerifyDelayRunnable);
+        headerCache = idCardMessage.getCardBitmap();
+        updateHeader.setValue(Boolean.TRUE);
+        Config config = ConfigManager.getInstance().getConfig();
+        handler.removeCallbacks(cardVerifyDelayRunnable);
+        countDown.set("");
+        hint.set(idCardMessage.getName() + (config.isDeviceMode() ? "-考勤成功" : "-开门成功"));
+        TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+        if (ConfigManager.isGateDevice()) {
+            GpioManager.getInstance().openDoorForGate();
+        }
+        RecordManager.getInstance().handlerIDCardRecordNoVerify(idCardMessage, -1f, true);
+        if (config.isIdCardEntry()) {
+            onIdCardEntry(idCardMessage);
+        }
+    }
+
     private void onCardVerify(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, float temperature, byte[] feature, boolean mask) {
         if (idCardMessage == null) {
             cardMode = false;
+            return;
+        }
+        if (!ConfigManager.getInstance().getConfig().isIdCardVerify()) {
             return;
         }
         Observable.create((ObservableOnSubscribe<Float>) emitter -> {
@@ -462,7 +495,7 @@ public class AttendanceViewModel extends BaseViewModel {
             emitter.onComplete();
         })
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.from(App.getInstance().getThreadExecutor()))
                 .subscribe(score -> {
                     Config config = ConfigManager.getInstance().getConfig();
                     if (score >= config.getVerifyScore()) {
@@ -485,6 +518,10 @@ public class AttendanceViewModel extends BaseViewModel {
                                 GpioManager.getInstance().openDoorForGate();
                             }
                         }
+                        RecordManager.getInstance().handlerIDCardRecord(idCardMessage, mxRGBImage, score, -1f, true);
+                        if (config.isIdCardEntry()) {
+                            onIdCardEntry(idCardMessage);
+                        }
                     } else {
                         hint.set(idCardMessage.getName() + "-比对失败");
                         FaceManager.getInstance().setNeedNextFeature(true);
@@ -494,6 +531,12 @@ public class AttendanceViewModel extends BaseViewModel {
                     Log.e("asd", "" + throwable.getMessage());
                     FaceManager.getInstance().setNeedNextFeature(true);
                 });
+    }
+
+    private void onIdCardEntry(IDCardMessage idCardMessage) {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            PersonManager.getInstance().savePersonFromIdCard(idCardMessage);
+        });
     }
 
     private Runnable cardVerifyDelayRunnable = new Runnable() {

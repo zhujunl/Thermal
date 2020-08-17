@@ -10,6 +10,7 @@ import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870a.MR870ACardStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CardStrategy;
+import com.miaxis.thermal.manager.strategy.tpsc.TpscCardStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhCardStrategy;
 import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
@@ -54,6 +55,8 @@ public class CardManager {
             cardStrategy = new MR890CardStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             cardStrategy = new MR870ACardStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+            cardStrategy = new TpscCardStrategy();
         } else {
             cardStrategy = new DefaultCardStrategy();
         }

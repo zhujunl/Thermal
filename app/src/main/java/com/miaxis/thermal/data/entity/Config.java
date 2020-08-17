@@ -27,6 +27,8 @@ public class Config {
     private boolean deviceMode;
     private boolean accessSign;
     private boolean gateLimit;
+    private boolean idCardEntry;
+    private boolean idCardVerify;
     private int livenessScore;
     private int pupilDistanceMin;
     private int pupilDistanceMax;
@@ -69,6 +71,8 @@ public class Config {
         setDeviceMode(builder.deviceMode);
         setAccessSign(builder.accessSign);
         setGateLimit(builder.gateLimit);
+        setIdCardEntry(builder.idCardEntry);
+        setIdCardVerify(builder.idCardVerify);
         setLivenessScore(builder.livenessScore);
         setPupilDistanceMin(builder.pupilDistanceMin);
         setPupilDistanceMax(builder.pupilDistanceMax);
@@ -248,6 +252,22 @@ public class Config {
         this.gateLimit = gateLimit;
     }
 
+    public boolean isIdCardEntry() {
+        return idCardEntry;
+    }
+
+    public void setIdCardEntry(boolean idCardEntry) {
+        this.idCardEntry = idCardEntry;
+    }
+
+    public boolean isIdCardVerify() {
+        return idCardVerify;
+    }
+
+    public void setIdCardVerify(boolean idCardVerify) {
+        this.idCardVerify = idCardVerify;
+    }
+
     public int getLivenessScore() {
         return livenessScore;
     }
@@ -405,6 +425,8 @@ public class Config {
         private boolean deviceMode;
         private boolean accessSign;
         private boolean gateLimit;
+        private boolean idCardEntry;
+        private boolean idCardVerify;
         private int livenessScore;
         private int pupilDistanceMin;
         private int pupilDistanceMax;
@@ -523,6 +545,16 @@ public class Config {
 
         public Builder gateLimit(boolean val) {
             gateLimit = val;
+            return this;
+        }
+
+        public Builder idCardEntry(boolean val) {
+            idCardEntry = val;
+            return this;
+        }
+
+        public Builder idCardVerify(boolean val) {
+            idCardVerify = val;
             return this;
         }
 

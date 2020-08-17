@@ -142,6 +142,7 @@ public class RecordFragment extends BaseViewModelFragment<FragmentRecordBinding,
     private void initRecycleView() {
         adapter = new RecordAdapter(getContext());
         adapter.setListener(adapterListener);
+        adapter.setHasStableIds(true);
         layoutManager = new LinearLayoutManager(getContext());
         binding.rvRecord.addOnScrollListener(onScrollListener);
         binding.rvRecord.setLayoutManager(layoutManager);

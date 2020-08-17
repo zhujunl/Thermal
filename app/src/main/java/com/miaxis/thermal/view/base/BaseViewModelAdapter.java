@@ -28,6 +28,11 @@ public abstract class BaseViewModelAdapter<T, DB extends ViewDataBinding, VH ext
         return dataList.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     protected abstract int setContentView();
 
     protected abstract VH createViewHolder(View view, DB binding);

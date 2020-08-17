@@ -20,7 +20,7 @@ import com.miaxis.thermal.util.FileUtil;
 
 import java.io.File;
 
-@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 10)
+@Database(entities = {Config.class, Person.class, Record.class, Calibration.class}, version = 12)
 @TypeConverters(value = {StringListConverter.class, DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -57,6 +57,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 .addMigrations(MIGRATION_7_8)
                 .addMigrations(MIGRATION_8_9)
                 .addMigrations(MIGRATION_9_10)
+                .addMigrations(MIGRATION_10_11)
+                .addMigrations(MIGRATION_11_12)
 //                .fallbackToDestructiveMigration()
                 .build();
     }
@@ -111,6 +113,22 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Config ADD COLUMN accessSign INTEGER not null default 1");
             database.execSQL("ALTER TABLE Record ADD COLUMN access TEXT default '0'");
+        }
+    };
+
+    private static Migration MIGRATION_10_11 = new Migration(10, 11) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("DROP INDEX index_Person_identifyNumber_phone");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Person_identifyNumber` ON Person (`identifyNumber`)");
+        }
+    };
+
+    private static Migration MIGRATION_11_12 = new Migration(11, 12) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Config ADD COLUMN idCardEntry INTEGER not null default 0");
+            database.execSQL("ALTER TABLE Config ADD COLUMN idCardVerify INTEGER not null default 1");
         }
     };
 

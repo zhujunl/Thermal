@@ -9,6 +9,7 @@ import com.miaxis.thermal.manager.strategy.Sign;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,13 +17,14 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.XH_C;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
 
     public static final Gson GSON = new Gson();
 
     public static final String DEFAULT_SERVER_MODE = "0";//0-联网版，1-单机版
 //    public static final String DEFAULT_HOST = "http://47.114.39.63:9008/saasbus/";
-    public static final String DEFAULT_HOST = "http://115.236.80.98:8085/saasbus/";
+    public static final String DEFAULT_HOST = "http://183.129.171.153:9221/saasbus/";
+//    public static final String DEFAULT_HOST = "http://115.236.80.98:8085/saasbus/";
     public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attence/person/downPersonListByDeviceMac";
     public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attence/person/updatePerson";
     public static final String DEFAULT_UPLOAD_RECORD_PATH = "api/v1/attence/record/uploadRecordFromApp";
@@ -39,6 +41,8 @@ public class ValueUtil {
     public static final boolean DEFAULT_DEVICE_MODE = false; // t考勤/f闸机
     public static final boolean DEFAULT_ACCESS_SIGN = true; // t进/f出
     public static final boolean DEFAULT_GATE_LIMIT = false;
+    public static final boolean DEFAULT_ID_CARD_ENTRY = false;
+    public static final boolean DEFAULT_ID_CARD_VERIFY = true;
     public static final float DEFAULT_VERIFY_SCORE = 0.76f;
     public static final float DEFAULT_MASK_VERIFY_SCORE = 0.73f;
     public static final int DEFAULT_LIVENESS_SCORE = 80;
@@ -151,6 +155,33 @@ public class ValueUtil {
                 return App.getInstance().getString(R.string.person_type_black);
         }
         return "";
+    }
+
+    public static String getAccessSignName(String accessSign) {
+        if (TextUtils.isEmpty(accessSign)) return "";
+        switch (accessSign) {
+            case "0":
+                return "进";
+            case "1":
+                return "出";
+        }
+        return "";
+    }
+
+    private static final char[] encodeTable = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6',
+            '7', '8', '9'};
+
+    public static String getRandomString(int len) {
+        String returnStr = "";
+        char[] ch = new char[len];
+        Random rd = new Random();
+        for (int i = 0; i < len; i++) {
+            ch[i] = (char) (rd.nextInt(9) + 65);
+            ch[i] = encodeTable[rd.nextInt(36)];
+        }
+        returnStr = new String(ch);
+        return returnStr;
     }
 
 }

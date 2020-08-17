@@ -66,6 +66,8 @@ public class ConfigManager {
                     .deviceMode(ValueUtil.DEFAULT_DEVICE_MODE)
                     .accessSign(ValueUtil.DEFAULT_ACCESS_SIGN)
                     .gateLimit(ValueUtil.DEFAULT_GATE_LIMIT)
+                    .idCardEntry(ValueUtil.DEFAULT_ID_CARD_ENTRY)
+                    .idCardVerify(ValueUtil.DEFAULT_ID_CARD_VERIFY)
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .maskVerifyScore(ValueUtil.DEFAULT_MASK_VERIFY_SCORE)
                     .livenessScore(ValueUtil.DEFAULT_LIVENESS_SCORE)
@@ -97,12 +99,12 @@ public class ConfigManager {
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_HORIZONTAL);
             }  else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                     || ValueUtil.DEFAULT_SIGN == Sign.ZH
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_VERTICAL);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL);
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A
-                    || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_NO_LIMIT);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_NO_LIMIT);
             }
@@ -164,7 +166,8 @@ public class ConfigManager {
     public static boolean isCardDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
             return true;
         }
         return false;

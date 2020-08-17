@@ -71,9 +71,14 @@ public class PersonRepository {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getUpdatePersonPath();
         String mac = ConfigManager.getInstance().getMacAddress();
-        File faceFile = TextUtils.isEmpty(person.getFacePicturePath())
-                ? null
-                : new File(person.getFacePicturePath());
+        File faceFile = null;
+        try {
+            faceFile = TextUtils.isEmpty(person.getFacePicturePath())
+                    ? null
+                    : new File(person.getFacePicturePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Response<ResponseEntity> execute = ThermalApi.updatePerson(url,
                 mac,
                 person.getName(),

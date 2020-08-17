@@ -14,7 +14,6 @@ import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.GpioManager;
-import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
 
 import java.io.IOException;
 import java.util.List;
@@ -202,9 +201,6 @@ public class XhcCameraStrategy implements CameraManager.CameraStrategy {
         try {
             if (infraredCamera != null) {
                 GpioManager.getInstance().setInfraredLedForXhDevice(false);
-                XhGpioStrategy xhGpioStrategy = new XhGpioStrategy();
-                xhGpioStrategy.setGpio(3, 0);
-                xhGpioStrategy.setGpio(4, 0);
                 infraredCamera.setPreviewCallback(null);
                 infraredCamera.stopPreview();
                 infraredCamera.release();

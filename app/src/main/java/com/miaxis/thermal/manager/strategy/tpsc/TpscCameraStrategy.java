@@ -105,8 +105,6 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
-            //预览画面镜像
-            parameters.set("preview-flip", "flip-h");
             //对焦模式设置
             List<String> supportedFocusModes = parameters.getSupportedFocusModes();
             if (supportedFocusModes != null && supportedFocusModes.size() > 0) {
@@ -119,7 +117,7 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
                 }
             }
             visibleCamera.setParameters(parameters);
-            visibleCamera.setDisplayOrientation(270);
+//            visibleCamera.setDisplayOrientation(270);
             visibleCamera.setPreviewCallback(visiblePreviewCallback);
             visibleCamera.startPreview();
         } catch (Exception e) {
@@ -159,8 +157,6 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
             List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
-            //预览画面镜像
-            parameters.set("preview-flip", "flip-h");
             //对焦模式设置
             List<String> supportedFocusModes = parameters.getSupportedFocusModes();
             if (supportedFocusModes != null && supportedFocusModes.size() > 0) {
@@ -173,7 +169,7 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
                 }
             }
             infraredCamera.setParameters(parameters);
-            infraredCamera.setDisplayOrientation(90);
+//            infraredCamera.setDisplayOrientation(90);
             infraredCamera.setPreviewCallback(infraredPreviewCallback);
             infraredCamera.startPreview();
         } catch (Exception e) {

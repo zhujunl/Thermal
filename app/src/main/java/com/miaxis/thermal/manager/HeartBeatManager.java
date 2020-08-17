@@ -62,8 +62,10 @@ public class HeartBeatManager {
     }
 
     public void stopHeartBeat() {
-        handler.removeMessages(MSG_TIME_DELAY_BURST);
-        handlerThread.quitSafely();
+        if (handler != null) {
+            handler.removeMessages(MSG_TIME_DELAY_BURST);
+            handlerThread.quitSafely();
+        }
     }
 
     public void heartBeatLimitBurst() {

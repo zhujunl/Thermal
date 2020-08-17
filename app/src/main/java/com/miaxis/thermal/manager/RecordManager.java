@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.miaxis.thermal.app.App;
+import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.MxRGBImage;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.Record;
@@ -17,6 +18,7 @@ import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.RecordRepository;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
+import com.miaxis.thermal.util.ValueUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,6 +94,39 @@ public class RecordManager {
         handler.sendMessage(handler.obtainMessage(0));
     }
 
+    public void handlerIDCardRecordNoVerify(IDCardMessage idCardMessage, float temperature, boolean attendance) {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                Record record = makeIDCardRecord(idCardMessage, -1, "", temperature);
+                record.setAttendance(attendance ? "1" : "0");
+                RecordRepository.getInstance().saveRecord(record);
+                startUploadRecord();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
+            }
+        });
+    }
+
+    public void handlerIDCardRecord(IDCardMessage idCardMessage, MxRGBImage mxRGBImage, float score, float temperature, boolean attendance) {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + idCardMessage.getName() + "-" + idCardMessage.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                byte[] fileImage = FaceManager.getInstance().imageEncode(mxRGBImage.getRgbImage(), mxRGBImage.getWidth(), mxRGBImage.getHeight());
+                Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+                FileUtil.saveBitmap(bitmap, filePath);
+                bitmap.recycle();
+                Record record = makeIDCardRecord(idCardMessage, score, filePath, temperature);
+                record.setAttendance(attendance ? "1" : "0");
+                RecordRepository.getInstance().saveRecord(record);
+                startUploadRecord();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
+            }
+        });
+    }
+
     public void handlerFaceRecord(Person person, MxRGBImage mxRGBImage, float score, float temperature, boolean attendance) {
         App.getInstance().getThreadExecutor().execute(() -> {
             try {
@@ -127,6 +162,22 @@ public class RecordManager {
                 Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
             }
         });
+    }
+
+    private Record makeIDCardRecord(IDCardMessage idCardMessage, float score, String facePicture, float temperature) {
+        return new Record.Builder()
+                .personId(0L)
+                .identifyNumber(idCardMessage.getCardNumber())
+                .phone(idCardMessage.getCardNumber())
+                .name(idCardMessage.getName())
+                .type(ValueUtil.PERSON_TYPE_VISITOR)
+                .verifyTime(new Date())
+                .verifyPicturePath(facePicture)
+                .score(score)
+                .upload(false)
+                .temperature(temperature)
+                .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
+                .build();
     }
 
     private Record makeFaceRecord(Person person, float score, String facePicture, float temperature) {

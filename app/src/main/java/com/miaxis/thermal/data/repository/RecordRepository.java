@@ -44,7 +44,12 @@ public class RecordRepository {
         Config config = ConfigManager.getInstance().getConfig();
         String url = config.getHost() + config.getUploadRecordPath();
         String mac = ConfigManager.getInstance().getMacAddress();
-        File file = new File(record.getVerifyPicturePath());
+        File file = null;
+        try {
+            file = new File(record.getVerifyPicturePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Response<ResponseEntity> execute = ThermalApi.uploadRecord(url,
                 record.getIdentifyNumber(),
                 record.getName(),

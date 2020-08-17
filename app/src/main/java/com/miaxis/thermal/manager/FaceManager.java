@@ -136,7 +136,6 @@ public class FaceManager {
         try {
             Config config = ConfigManager.getInstance().getConfig();
             if (dormancy) {
-                Log.e("asd", "休眠中");
                 Thread.sleep(config.getDormancyInterval() * 1000);
             }
             byte[] visiblePreviewData = null;
@@ -149,8 +148,9 @@ public class FaceManager {
                 infraredPreviewData = new byte[lastInfraredPreviewData.length];
                 System.arraycopy(lastInfraredPreviewData, 0, infraredPreviewData, 0, infraredPreviewData.length);
             }
+            lastVisiblePreviewData = null;
+            lastInfraredPreviewData = null;
             if (visiblePreviewData != null || infraredPreviewData != null) {
-                WatchDogManager.getInstance().feedFaceDog();
                 if (config.isLiveness()) {
                     if (config.isFaceCamera() && infraredPreviewData != null) {
                         verify(infraredPreviewData, infraredPreviewData);
@@ -177,6 +177,7 @@ public class FaceManager {
         if (cameraPreviewSize == null) {
             throw new MyException("未获取到摄像头尺寸信息");
         }
+        WatchDogManager.getInstance().feedFaceDog();
         byte[] zoomedRgbData = cameraPreviewConvert(detectData,
                 cameraPreviewSize.getWidth(),
                 cameraPreviewSize.getHeight(),
@@ -247,14 +248,14 @@ public class FaceManager {
 
     private void extract(Intermediary intermediary) throws Exception {
         if (needNextFeature) {
-            Config config = ConfigManager.getInstance().getConfig();
-            if (intermediary.mxFaceInfoEx.quality > config.getQualityScore()) {
-                double pupilDistance = calculationPupilDistance(intermediary.mxFaceInfoEx);
-                if (pupilDistance >= config.getPupilDistanceMin()) {
-                    if (pupilDistance <= config.getPupilDistanceMax()) {
-                        boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
-                        if (result) {
-                            boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
+            boolean result = detectMask(intermediary.data, zoomWidth, zoomHeight, intermediary.mxFaceInfoEx);
+            if (result) {
+                boolean mask = intermediary.mxFaceInfoEx.mask > ConfigManager.getInstance().getConfig().getMaskScore();
+                Config config = ConfigManager.getInstance().getConfig();
+                if (intermediary.mxFaceInfoEx.quality > (mask ? config.getQualityScore() / 2 : config.getQualityScore())) {
+                    double pupilDistance = calculationPupilDistance(intermediary.mxFaceInfoEx);
+                    if (pupilDistance >= config.getPupilDistanceMin()) {
+                        if (pupilDistance <= config.getPupilDistanceMax()) {
                             byte[] feature = null;
                             if (intermediary.liveness == null) {
                                 if (mask) {
@@ -291,23 +292,23 @@ public class FaceManager {
                                 }
                             }
                         } else {
-                            //是否戴口罩检测失败，直接丢弃
-                            Log.e("asd", "检测是否戴口罩失败");
+                            if (faceHandleListener != null) {
+                                faceHandleListener.onFaceIntercept(-6, "最大瞳距阈值拦截");
+                            }
                         }
                     } else {
                         if (faceHandleListener != null) {
-                            faceHandleListener.onFaceIntercept(-6, "最大瞳距阈值拦截");
+                            faceHandleListener.onFaceIntercept(-2, "最小瞳距阈值拦截");
                         }
                     }
                 } else {
                     if (faceHandleListener != null) {
-                        faceHandleListener.onFaceIntercept(-2, "最小瞳距阈值拦截");
+                        faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
                     }
                 }
             } else {
-                if (faceHandleListener != null) {
-                    faceHandleListener.onFaceIntercept(-1, "质量阈值拦截");
-                }
+                //是否戴口罩检测失败，直接丢弃
+                Log.e("asd", "检测是否戴口罩失败");
             }
         }
     }
@@ -811,6 +812,7 @@ public class FaceManager {
 
     /**
      * 获取人脸算法版本信息
+     *
      * @return 版本信息
      */
     public String faceVersion() {

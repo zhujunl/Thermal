@@ -16,12 +16,14 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
 import com.miaxis.thermal.data.entity.Config;
+import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
+import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
@@ -180,8 +182,8 @@ public class PersonManager {
                     person.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
                     person.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
                 } else {
-                    person.setFaceFeature(null);
-                    person.setMaskFaceFeature(null);
+//                    person.setFaceFeature(null);
+//                    person.setMaskFaceFeature(null);
                     person.setRemarks("图片处理失败，" + photoFaceFeature.getMessage());
                 }
             } else {
@@ -203,6 +205,40 @@ public class PersonManager {
                 config.setTimeStamp(timeStamp);
                 ConfigManager.getInstance().saveConfigSync(config);
             }
+        }
+    }
+
+    public void savePersonFromIdCard(IDCardMessage idCardMessage) {
+        if (idCardMessage.getCardFeature() == null || idCardMessage.getMaskCardFeature() == null) {
+            return;
+        }
+        try {
+            Person findPerson = PersonRepository.getInstance().findPerson(idCardMessage.getCardNumber());
+            if (findPerson == null) {
+                String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + idCardMessage.getName() + "-" + idCardMessage.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                FileUtil.saveQualityBitmap(idCardMessage.getCardBitmap(), filePath);
+                Person person = new Person.Builder()
+                        .identifyNumber(idCardMessage.getCardNumber())
+                        .phone(ValueUtil.getRandomString(10) + System.currentTimeMillis())
+                        .name(idCardMessage.getName())
+                        .type(ValueUtil.PERSON_TYPE_VISITOR)
+                        .effectiveTime(new Date())
+                        .invalidTime(DateUtil.getNextYear())
+                        .updateTime(new Date())
+                        .faceFeature(Base64.encodeToString(idCardMessage.getCardFeature(), Base64.NO_WRAP))
+                        .maskFaceFeature(Base64.encodeToString(idCardMessage.getMaskCardFeature(), Base64.NO_WRAP))
+                        .facePicturePath(filePath)
+                        .timeStamp(0)
+                        .remarks("")
+                        .upload(false)
+                        .status(ValueUtil.PERSON_STATUS_READY)
+                        .build();
+                PersonRepository.getInstance().savePerson(person);
+                loadPersonDataFromCache();
+                startUploadPerson();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -269,6 +305,7 @@ public class PersonManager {
                 bestMatchPerson = person;
             }
         }
+        Log.e("asd", "比对最高分数：" + maxScore);
         if (!mask && maxScore > ConfigManager.getInstance().getConfig().getVerifyScore() && bestMatchPerson != null) {
             return new MatchPerson(bestMatchPerson, maxScore, mask);
         } else if (mask && maxScore > ConfigManager.getInstance().getConfig().getMaskVerifyScore() && bestMatchPerson != null) {
@@ -280,6 +317,7 @@ public class PersonManager {
 
     public interface OnPersonMatchResultListener {
         void onMatchFailed();
+
         void onMatchSuccess(MatchPerson matchPerson, Overdue overdue);
     }
 

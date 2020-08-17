@@ -64,6 +64,14 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+    public static Date getNextYear() {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
+        return calendar.getTime();
+    }
+
     public static String getWeekStr() {
         int week = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         switch (week) {

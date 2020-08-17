@@ -114,11 +114,13 @@ public class ExcelManager {
         cellPhone.setCellValue(record.getPhone());
         XSSFCell cellType = row.createCell(4);
         cellType.setCellValue(ValueUtil.getPersonTypeName(record.getType()));
-        XSSFCell cellVerifyTime = row.createCell(5);
+        XSSFCell cellAccess = row.createCell(5);
+        cellAccess.setCellValue(ValueUtil.getAccessSignName(record.getAccess()));
+        XSSFCell cellVerifyTime = row.createCell(6);
         cellVerifyTime.setCellValue(DateUtil.DATE_FORMAT.format(record.getVerifyTime()));
-        XSSFCell cellScore = row.createCell(6);
+        XSSFCell cellScore = row.createCell(7);
         cellScore.setCellValue(String.format(Locale.CHINA, "%.2f", record.getScore()));
-        XSSFCell cellTemperature = row.createCell(7);
+        XSSFCell cellTemperature = row.createCell(8);
         if (record.getTemperature() == -1f) {
             cellTemperature.setCellValue("无");
         } else if (record.getTemperature() == -2f) {
@@ -126,7 +128,7 @@ public class ExcelManager {
         } else {
             cellTemperature.setCellValue(String.format(Locale.CHINA, "%.2f", record.getTemperature()));
         }
-        XSSFCell cellVerifyPicturePath = row.createCell(8);
+        XSSFCell cellVerifyPicturePath = row.createCell(9);
         cellVerifyPicturePath.setCellValue(record.getVerifyPicturePath());
     }
 
@@ -136,10 +138,11 @@ public class ExcelManager {
         sheet.setColumnWidth(2, 256 * 20 + 184);
         sheet.setColumnWidth(3, 256 * 15 + 184);
         sheet.setColumnWidth(4, 256 * 10 + 184);
-        sheet.setColumnWidth(5, 256 * 20 + 184);
-        sheet.setColumnWidth(6, 256 * 10 + 184);
+        sheet.setColumnWidth(5, 256 * 10 + 184);
+        sheet.setColumnWidth(6, 256 * 20 + 184);
         sheet.setColumnWidth(7, 256 * 10 + 184);
-        sheet.setColumnWidth(8, 256 * 90 + 184);
+        sheet.setColumnWidth(8, 256 * 10 + 184);
+        sheet.setColumnWidth(9, 256 * 90 + 184);
         XSSFCell cellId = row.createCell(0);
         cellId.setCellValue("ID");
         XSSFCell cellName = row.createCell(1);
@@ -150,13 +153,15 @@ public class ExcelManager {
         cellPhone.setCellValue("手机号码");
         XSSFCell cellType = row.createCell(4);
         cellType.setCellValue("人员类型");
-        XSSFCell cellVerifyTime = row.createCell(5);
+        XSSFCell cellAccess = row.createCell(5);
+        cellAccess.setCellValue("进出标记");
+        XSSFCell cellVerifyTime = row.createCell(6);
         cellVerifyTime.setCellValue("日志时间");
-        XSSFCell cellScore = row.createCell(6);
+        XSSFCell cellScore = row.createCell(7);
         cellScore.setCellValue("人脸分数");
-        XSSFCell cellTemperature = row.createCell(7);
+        XSSFCell cellTemperature = row.createCell(8);
         cellTemperature.setCellValue("体温");
-        XSSFCell cellVerifyPicturePath = row.createCell(8);
+        XSSFCell cellVerifyPicturePath = row.createCell(9);
         cellVerifyPicturePath.setCellValue("图片路径");
     }
 
