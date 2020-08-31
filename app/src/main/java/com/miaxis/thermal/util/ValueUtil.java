@@ -23,8 +23,8 @@ public class ValueUtil {
 
     public static final String DEFAULT_SERVER_MODE = "0";//0-联网版，1-单机版
 //    public static final String DEFAULT_HOST = "http://47.114.39.63:9008/saasbus/";
-    public static final String DEFAULT_HOST = "http://183.129.171.153:9221/saasbus/";
-//    public static final String DEFAULT_HOST = "http://115.236.80.98:8085/saasbus/";
+//    public static final String DEFAULT_HOST = "http://183.129.171.153:9221/saasbus/";
+    public static final String DEFAULT_HOST = "http://115.236.80.98:8085/saasbus/";
     public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attence/person/downPersonListByDeviceMac";
     public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attence/person/updatePerson";
     public static final String DEFAULT_UPLOAD_RECORD_PATH = "api/v1/attence/record/uploadRecordFromApp";

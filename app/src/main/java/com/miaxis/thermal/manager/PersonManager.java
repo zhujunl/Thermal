@@ -182,8 +182,8 @@ public class PersonManager {
                     person.setFaceFeature(Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP));
                     person.setMaskFaceFeature(Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP));
                 } else {
-//                    person.setFaceFeature(null);
-//                    person.setMaskFaceFeature(null);
+                    person.setFaceFeature(null);
+                    person.setMaskFaceFeature(null);
                     person.setRemarks("图片处理失败，" + photoFaceFeature.getMessage());
                 }
             } else {

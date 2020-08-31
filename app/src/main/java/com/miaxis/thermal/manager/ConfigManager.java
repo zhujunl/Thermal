@@ -166,8 +166,7 @@ public class ConfigManager {
     public static boolean isCardDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870A
-                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             return true;
         }
         return false;
