@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.manager.strategy.mr860dz.MR860DZCameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr870.MR870CameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr870a.MR870ACameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CameraStrategy;
@@ -63,6 +64,8 @@ public class CameraManager {
             cameraStrategy = new XhcCameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             cameraStrategy = new MR870ACameraStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
+            cameraStrategy = new MR860DZCameraStrategy();
         }
     }
 
@@ -111,6 +114,14 @@ public class CameraManager {
             return cameraStrategy.faceRectFlip();
         }
         return false;
+    }
+
+    public void releaseForMR860DZ() {
+        if (cameraStrategy != null) {
+            if (cameraStrategy instanceof MR860DZCameraStrategy) {
+                ((MR860DZCameraStrategy) cameraStrategy).release();
+            }
+        }
     }
 
     public interface CameraStrategy {

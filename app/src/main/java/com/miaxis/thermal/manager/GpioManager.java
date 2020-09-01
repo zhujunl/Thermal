@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.manager.strategy.Sign;
+import com.miaxis.thermal.manager.strategy.mr860dz.MR860DZGpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr870a.MR870AGpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890GpioStrategy;
@@ -63,6 +64,8 @@ public class GpioManager {
             gpioStrategy = new XhcGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             gpioStrategy = new MR870AGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
+            gpioStrategy = new MR860DZGpioStrategy();
         }
         initGpio(application);
         resetGpio();

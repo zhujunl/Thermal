@@ -104,7 +104,8 @@ public class ConfigManager {
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_VERTICAL);
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A
                     || ValueUtil.DEFAULT_SIGN == Sign.XH_C
-                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_NO_LIMIT);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_NO_LIMIT);
             }
@@ -157,7 +158,8 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
-                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             return true;
         }
         return false;
@@ -189,7 +191,8 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
-                || ValueUtil.DEFAULT_SIGN == Sign.MR890) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR890
+                || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             return false;
         }
         return false;
@@ -205,8 +208,16 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
-                || ValueUtil.DEFAULT_SIGN == Sign.XH_C) {
+                || ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             return false;
+        }
+        return false;
+    }
+
+    public static boolean isHumanBodySensorDevice() {
+        if (ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
+            return true;
         }
         return false;
     }

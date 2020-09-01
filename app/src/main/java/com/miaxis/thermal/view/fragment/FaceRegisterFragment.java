@@ -18,6 +18,7 @@ import com.miaxis.thermal.R;
 import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.databinding.FragmentFaceRegisterBinding;
 import com.miaxis.thermal.manager.CameraManager;
+import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
@@ -85,6 +86,9 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
     public void onDestroyView() {
         super.onDestroyView();
         CameraManager.getInstance().closeCamera();
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            CameraManager.getInstance().releaseForMR860DZ();
+        }
         GpioManager.getInstance().closeWhiteLed();
     }
 

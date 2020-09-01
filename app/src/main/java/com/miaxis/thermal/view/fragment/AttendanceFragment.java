@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,7 @@ import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.dialog.AdvertisementDialogFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
 
 import java.text.DateFormat;
@@ -46,8 +49,12 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
     private static DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
+    private AdvertisementDialogFragment advertisementDialogFragment;
+    private Handler handler;
+
     private boolean feverCache = false;
     private boolean dormancyCache = false;
+    private final Byte cameraOpenLock = (byte) 0x91;
 
     public static AttendanceFragment newInstance() {
         return new AttendanceFragment();
@@ -87,6 +94,11 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             viewModel.initFinger.observe(this, initFingerObserver);
             viewModel.fingerStatus.observe(this, fingerStatusObserver);
         }
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            viewModel.humanDetect.observe(this, humanDetectObserver);
+            viewModel.startHumanDetect();
+        }
+        handler = new Handler(Looper.getMainLooper());
         binding.clPanel.setOnClickListener(new OnLimitClickHelper(view -> {
             GpioManager.getInstance().openWhiteLedInTime();
         }));
@@ -100,6 +112,7 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             mListener.backToStack(null);
         });
         initTimeReceiver();
+        initAdvertisementDialog();
         AmapManager.getInstance().startLocation(App.getInstance());
         AmapManager.getInstance().setListener(weather -> {
             viewModel.weather.set(weather);
@@ -114,8 +127,12 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        handler = null;
         binding.tvCamera.setDrawingCacheEnabled(false);
         CameraManager.getInstance().closeCamera();
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            CameraManager.getInstance().releaseForMR860DZ();
+        }
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
         if (ConfigManager.isCardDevice()) {
@@ -123,6 +140,9 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         }
         if (ConfigManager.isFingerDevice()) {
             FingerManager.getInstance().release();
+        }
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            viewModel.stopHumanDetect();
         }
         GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
@@ -237,6 +257,20 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     private Observer<Boolean> fingerStatusObserver = status -> {
     };
 
+    private Observer<Boolean> humanDetectObserver = status -> {
+        Log.e("asd", "HumanDetectInMain!!!!!!:" + status);
+        synchronized (cameraOpenLock) {
+            if (status) {
+                CameraManager.getInstance().openCamera(binding.tvCamera, cameraListener);
+                FaceManager.getInstance().interruptDormancy();
+            } else {
+                viewModel.stopFaceDetect();
+                CameraManager.getInstance().closeCamera();
+            }
+            controlAdvertisementDialog(!status);
+        }
+    };
+
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.width = fixWidth;
@@ -268,4 +302,29 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         viewModel.time.set(time);
         viewModel.week.set(week);
     }
+
+    private void initAdvertisementDialog() {
+        advertisementDialogFragment = AdvertisementDialogFragment.newInstance();
+        advertisementDialogFragment.setOnClickListener(v -> {
+            advertisementDialogFragment.dismiss();
+            FaceManager.getInstance().interruptDormancy();
+        });
+    }
+
+    private void controlAdvertisementDialog(boolean show) {
+        try {
+            if (show && !advertisementDialogFragment.isVisible()) {
+                advertisementDialogFragment.show(getChildFragmentManager(), "AdvertisementDialogFragment");
+            } else if (advertisementDialogFragment.isVisible()) {
+                if (handler != null) {
+                    handler.postDelayed(() -> {
+                        advertisementDialogFragment.dismiss();
+                    }, 500);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

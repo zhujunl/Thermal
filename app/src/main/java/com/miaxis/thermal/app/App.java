@@ -17,6 +17,7 @@ import com.miaxis.thermal.manager.CrashExceptionManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
+import com.miaxis.thermal.manager.HumanSensorManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
@@ -66,6 +67,7 @@ public class App extends Application {
             CardManager.getInstance().init();
             FingerManager.getInstance().init();
             GpioManager.getInstance().init(this);
+            HumanSensorManager.getInstance().init(this);
             int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.LICENCE_PATH);
             listener.onInit(result == FaceManager.INIT_SUCCESS, FaceManager.getFaceInitResultDetail(result));
 //            listener.onInit(true, "");

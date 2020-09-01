@@ -95,6 +95,8 @@ dependencies {
     implementation 'me.jessyan:autosize:1.1.2'
     //SerialPort for xhn temperature
     implementation 'com.github.licheedev.Android-SerialPort-API:serialport:1.0.1'
+    //Banner
+    implementation 'com.youth.banner:banner:1.4.10'
     //Multidex
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation project(path: ':serialport')
@@ -117,4 +119,6 @@ dependencies {
     implementation files('src/main/libs/poi-ooxml-schemas-3.12-20150511-a.jar')
     implementation files('src/main/libs/mxsdtapi.jar')
     implementation files('src/main/libs/MxMscFingerApi.jar')
+    implementation files('src/main/libs/FxSDK.jar')
+    implementation files('src/main/libs/sdkapi.jar')
 }

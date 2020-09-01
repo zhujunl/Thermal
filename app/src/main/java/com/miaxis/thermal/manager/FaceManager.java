@@ -22,6 +22,8 @@ import org.zz.api.MXFaceInfoEx;
 import org.zz.jni.mxImageTool;
 
 import java.io.ByteArrayOutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FaceManager {
 
@@ -73,7 +75,8 @@ public class FaceManager {
 
     private String errorMessage = "";
 
-    private volatile boolean dormancy = false;
+    private volatile AtomicBoolean dormancy = new AtomicBoolean(false);
+//    private volatile boolean dormancy = false;
     private long lastVerifyTime = 0;
 
     public interface OnFaceHandleListener {
@@ -132,10 +135,18 @@ public class FaceManager {
         this.dormancyListener = dormancyListener;
     }
 
+    public synchronized void interruptDormancy() {
+        lastVerifyTime = System.currentTimeMillis();
+        dormancy.set(false);
+        if (dormancyListener != null) {
+            dormancyListener.onDormancy(false);
+        }
+    }
+
     private void previewDataLoop() {
         try {
             Config config = ConfigManager.getInstance().getConfig();
-            if (dormancy) {
+            if (dormancy.get()) {
                 Thread.sleep(config.getDormancyInterval() * 1000);
             }
             byte[] visiblePreviewData = null;
@@ -195,10 +206,11 @@ public class FaceManager {
         boolean result = faceDetect(zoomedRgbData, zoomWidth, zoomHeight, faceNum, faceBuffer);
         if (result) {
             lastVerifyTime = System.currentTimeMillis();
-            dormancy = false;
+            dormancy.set(false);
             if (dormancyListener != null) {
                 dormancyListener.onDormancy(false);
             }
+            HumanSensorManager.getInstance().faceDetect();
             if (faceHandleListener != null) {
                 faceHandleListener.onFaceDetect(faceNum[0], faceBuffer);
             }
@@ -222,7 +234,7 @@ public class FaceManager {
             }
             long timeDifference = System.currentTimeMillis() - lastVerifyTime;
             if (timeDifference >= ConfigManager.getInstance().getConfig().getDormancyTime() * 1000) {
-                dormancy = true;
+                dormancy.set(true);
                 if (dormancyListener != null) {
                     dormancyListener.onDormancy(true);
                 }

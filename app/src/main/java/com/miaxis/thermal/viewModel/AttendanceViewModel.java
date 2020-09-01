@@ -33,6 +33,7 @@ import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
+import com.miaxis.thermal.manager.HumanSensorManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
@@ -80,6 +81,8 @@ public class AttendanceViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> initFinger = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> fingerStatus = new SingleLiveEvent<>();
+
+    public MutableLiveData<Boolean> humanDetect = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -615,6 +618,19 @@ public class AttendanceViewModel extends BaseViewModel {
             e.printStackTrace();
             detectColdDown();
         }
+    };
+
+    public void startHumanDetect() {
+        HumanSensorManager.getInstance().setStatusListener(humanSensorStatusListener);
+        HumanSensorManager.getInstance().startHumanDetect();
+    }
+
+    public void stopHumanDetect() {
+        HumanSensorManager.getInstance().stopHumanDetect();
+    }
+
+    public HumanSensorManager.OnHumanSensorStatusListener humanSensorStatusListener = status -> {
+        humanDetect.postValue(status);
     };
 
 }
