@@ -105,6 +105,7 @@ public class ConfigManager {
             } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A
                     || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                     || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                    || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
                     || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_NO_LIMIT);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_NO_LIMIT);
@@ -159,6 +160,7 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
                 || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             return true;
         }
@@ -168,7 +170,8 @@ public class ConfigManager {
     public static boolean isCardDevice() {
         if (ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F) {
             return true;
         }
         return false;
@@ -191,6 +194,7 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             return false;
@@ -207,6 +211,7 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                 || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {

@@ -9,6 +9,7 @@ public enum Sign {
     ZH,
     TPS980P,
     TPS980P_C,
+    TPS980P_F,
     MR890,
     MR860DZ;
 
@@ -30,6 +31,8 @@ public enum Sign {
                 return "TPS980P";
             case TPS980P_C:
                 return "TPS980P_C";
+            case TPS980P_F:
+                return "TPS980P_F";
             case MR890:
                 return "MR890";
             case MR860DZ:

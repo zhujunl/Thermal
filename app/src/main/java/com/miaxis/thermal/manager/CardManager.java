@@ -1,32 +1,14 @@
 package com.miaxis.thermal.manager;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import com.miaxis.thermal.data.entity.IDCardMessage;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.mr870a.MR870ACardStrategy;
-import com.miaxis.thermal.manager.strategy.mr890.MR890CameraStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890CardStrategy;
-import com.miaxis.thermal.manager.strategy.tpsc.TpscCardStrategy;
+import com.miaxis.thermal.manager.strategy.tpsf.TpsfCardStrategy;
 import com.miaxis.thermal.manager.strategy.zh.ZhCardStrategy;
-import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
-import com.zkteco.android.IDReader.WLTService;
-import com.zkteco.android.biometric.core.device.ParameterHelper;
-import com.zkteco.android.biometric.core.device.TransportType;
-import com.zkteco.android.biometric.module.idcard.IDCardReader;
-import com.zkteco.android.biometric.module.idcard.IDCardReaderFactory;
-import com.zkteco.android.biometric.module.idcard.exception.IDCardReaderException;
-import com.zkteco.android.biometric.module.idcard.meta.IDCardInfo;
-import com.zkteco.android.biometric.module.idcard.meta.IDPRPCardInfo;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class CardManager {
@@ -55,8 +37,8 @@ public class CardManager {
             cardStrategy = new MR890CardStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
             cardStrategy = new MR870ACardStrategy();
-        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
-            cardStrategy = new TpscCardStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F) {
+            cardStrategy = new TpsfCardStrategy();
         } else {
             cardStrategy = new DefaultCardStrategy();
         }

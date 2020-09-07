@@ -1,4 +1,4 @@
-package com.miaxis.thermal.manager.strategy.tpsc;
+package com.miaxis.thermal.manager.strategy.tpsf;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -9,7 +9,7 @@ import com.miaxis.thermal.manager.CardManager;
 import com.zz.impl.IDCardDeviceImpl;
 import com.zz.impl.IDCardInterfaceService;
 
-public class TpscCardStrategy implements CardManager.CardStrategy {
+public class TpsfCardStrategy implements CardManager.CardStrategy {
 
     private static final String SERIAL_PORT = "/dev/ttyS0";
     private static final int BAUD_RATE = 115200;
