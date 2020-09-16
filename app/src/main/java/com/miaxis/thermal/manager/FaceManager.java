@@ -168,7 +168,7 @@ public class FaceManager {
                     } else if (visiblePreviewData != null && infraredPreviewData != null) {
                         verify(visiblePreviewData, infraredPreviewData);
                     } else {
-                        asyncDetectHandler.sendEmptyMessage(0);
+                        asyncDetectHandler.sendEmptyMessageDelayed(0, 50);
                     }
                 } else if (config.isFaceCamera() && infraredPreviewData != null) {
                     verify(infraredPreviewData, null);
@@ -179,7 +179,7 @@ public class FaceManager {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            asyncDetectHandler.sendEmptyMessage(0);
+            asyncDetectHandler.sendEmptyMessageDelayed(0, 50);
         }
     }
 

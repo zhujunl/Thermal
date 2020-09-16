@@ -12,6 +12,8 @@ import com.github.anrwatchdog.ANRWatchDog;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.view.activity.MainActivity;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class WatchDogManager {
 
     private WatchDogManager() {
@@ -61,7 +63,7 @@ public class WatchDogManager {
     class WatchDog extends Thread {
 
         private boolean running;
-        private long food = 0L;
+        private volatile AtomicLong food = new AtomicLong(0L);
 
         WatchDog() {
             super("FaceWatchDog");
@@ -73,16 +75,17 @@ public class WatchDogManager {
         }
 
         void feedDog() {
-            this.food = System.currentTimeMillis();
+            this.food.set(System.currentTimeMillis());
         }
 
         @Override
         public void run() {
             super.run();
             try {
-                this.food = System.currentTimeMillis();
+                this.food.set(System.currentTimeMillis());
                 while (this.running) {
-                    long interval = System.currentTimeMillis() - this.food;
+                    long interval = System.currentTimeMillis() - this.food.get();
+//                    Log.e("asd", "" + interval);
                     if (interval > 20 * 1000) {
                         onNeedHandleError("看门狗检测一段时间内未收到相应，开始重新启动应用");
                     }
