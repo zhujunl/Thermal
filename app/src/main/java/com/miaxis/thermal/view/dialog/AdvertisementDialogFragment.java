@@ -18,11 +18,13 @@ import com.miaxis.thermal.R;
 import com.miaxis.thermal.bridge.GlideImageLoader;
 import com.miaxis.thermal.databinding.FragmentAdvertisementDialogBinding;
 import com.miaxis.thermal.view.base.BaseViewModelDialogFragment;
+import com.miaxis.thermal.view.custom.ComboCustom;
 import com.miaxis.thermal.viewModel.AdvertisementDialogViewModel;
 
 public class AdvertisementDialogFragment extends BaseViewModelDialogFragment<FragmentAdvertisementDialogBinding, AdvertisementDialogViewModel> {
 
     private View.OnClickListener clickListener;
+    private ComboCustom.OnPwdConfirmListener comboListener;
 
     public static AdvertisementDialogFragment newInstance() {
         return new AdvertisementDialogFragment();
@@ -58,6 +60,8 @@ public class AdvertisementDialogFragment extends BaseViewModelDialogFragment<Fra
         binding.banner.setImageLoader(new GlideImageLoader());
         binding.banner.setImages(viewModel.getAdvertisementList());
         binding.banner.setOnClickListener(clickListener);
+        binding.ccCombo.setNeedPassword(true);
+        binding.ccCombo.setListener(comboListener);
     }
 
     @Override
@@ -90,4 +94,7 @@ public class AdvertisementDialogFragment extends BaseViewModelDialogFragment<Fra
         clickListener = listener;
     }
 
+    public void setComboListener(ComboCustom.OnPwdConfirmListener comboListener) {
+        this.comboListener = comboListener;
+    }
 }

@@ -102,6 +102,11 @@ public class MR860DZCameraStrategy implements CameraManager.CameraStrategy {
         return false;
     }
 
+    @Override
+    public void release() {
+        surfaceTexture = null;
+    }
+
     private void resetRetryTime() {
         this.retryTime = 0;
     }
@@ -212,10 +217,6 @@ public class MR860DZCameraStrategy implements CameraManager.CameraStrategy {
                 }
             });
         }
-    }
-
-    public void release() {
-        surfaceTexture = null;
     }
 
     private TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {

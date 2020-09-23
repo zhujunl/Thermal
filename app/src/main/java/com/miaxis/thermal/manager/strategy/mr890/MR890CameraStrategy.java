@@ -32,6 +32,8 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
 
     private Camera showingCamera;
 
+    private SurfaceTexture surfaceTexture = null;
+
     private int retryTime = 0;
 
     @Override
@@ -56,7 +58,12 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
                     openInfraredCamera();
                 }
             }
-            textureView.setSurfaceTextureListener(textureListener);
+            if (surfaceTexture == null) {
+                textureView.setSurfaceTextureListener(textureListener);
+            } else {
+                showingCamera.setPreviewTexture(surfaceTexture);
+            }
+//            textureView.setSurfaceTextureListener(textureListener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onCameraOpen(null, "");
@@ -95,6 +102,11 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
     @Override
     public boolean faceRectFlip() {
         return true;
+    }
+
+    @Override
+    public void release() {
+        surfaceTexture = null;
     }
 
     private void resetRetryTime() {
@@ -207,9 +219,10 @@ public class MR890CameraStrategy implements CameraManager.CameraStrategy {
 
     private TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
+        public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
             if (showingCamera != null) {
                 try {
+                    surfaceTexture = st;
                     showingCamera.setPreviewTexture(surfaceTexture);
                 } catch (IOException e) {
                     e.printStackTrace();

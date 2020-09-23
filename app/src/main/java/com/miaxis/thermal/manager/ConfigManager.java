@@ -85,6 +85,9 @@ public class ConfigManager {
                     .flashTime(ValueUtil.DEFAULT_FLASH_TIME)
                     .devicePassword(ValueUtil.DEFAULT_DEVICE_PASSWORD)
                     .timeStamp(ValueUtil.DEFAULT_TIME_STAMP)
+                    .timingSwitch(ValueUtil.DEFAULT_TIMING_SWITCH)
+                    .switchStartTime(ValueUtil.DEFAULT_SWITCH_START_TIME)
+                    .switchEndTime(ValueUtil.DEFAULT_SWITCH_END_TIME)
                     .build();
             if (ValueUtil.DEFAULT_SIGN == Sign.ZH
                     || ValueUtil.DEFAULT_SIGN == Sign.MR890) {

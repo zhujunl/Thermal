@@ -67,6 +67,10 @@ public class ValueUtil {
     public static final String DEFAULT_DEVICE_PASSWORD = "666666";
     public static final long DEFAULT_TIME_STAMP = 0;
 
+    public static final boolean DEFAULT_TIMING_SWITCH = false;
+    public static final String DEFAULT_SWITCH_START_TIME = "08:00";
+    public static final String DEFAULT_SWITCH_END_TIME = "18:00";
+
     public static final String SUCCESS = "200";
 
     public static final int PAGE_SIZE = 10;

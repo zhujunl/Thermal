@@ -119,11 +119,9 @@ public class CameraManager {
         return false;
     }
 
-    public void releaseForMR860DZ() {
+    public void release() {
         if (cameraStrategy != null) {
-            if (cameraStrategy instanceof MR860DZCameraStrategy) {
-                ((MR860DZCameraStrategy) cameraStrategy).release();
-            }
+            cameraStrategy.release();
         }
     }
 
@@ -135,6 +133,7 @@ public class CameraManager {
         Size getPreviewSize();
         int getOrientation();
         boolean faceRectFlip();
+        void release();
     }
 
     public interface OnCameraOpenListener {

@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.bridge.GlideApp;
+import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.data.entity.FaceDraw;
 import com.miaxis.thermal.databinding.FragmentAttendanceLandBinding;
 import com.miaxis.thermal.manager.AmapManager;
@@ -30,26 +33,35 @@ import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
+import com.miaxis.thermal.manager.TimingSwitchManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
+import com.miaxis.thermal.view.custom.ComboCustom;
+import com.miaxis.thermal.view.dialog.AdvertisementDialogFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttendanceLandBinding, AttendanceViewModel> {
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
     private static DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
+    private AdvertisementDialogFragment advertisementDialogFragment;
+    private Handler handler;
+
     private boolean feverCache = false;
     private boolean dormancyCache = false;
+
+    private ReentrantLock cameraOpenReentrantLock = new ReentrantLock();
 
     public static AttendanceLandFragment newInstance() {
         return new AttendanceLandFragment();
@@ -89,6 +101,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             viewModel.initFinger.observe(this, initFingerObserver);
             viewModel.fingerStatus.observe(this, fingerStatusObserver);
         }
+        handler = new Handler(Looper.getMainLooper());
         binding.clPanel.setOnClickListener(new OnLimitClickHelper(view -> {
             GpioManager.getInstance().openWhiteLedInTime();
         }));
@@ -102,10 +115,18 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             mListener.backToStack(null);
         });
         initTimeReceiver();
+        initAdvertisementDialog();
         AmapManager.getInstance().startLocation(App.getInstance());
         AmapManager.getInstance().setListener(weather -> {
             viewModel.weather.set(weather);
         });
+        Config config = ConfigManager.getInstance().getConfig();
+        if (config.isTimingSwitch()) {
+            viewModel.timingSwitch.observe(this, timingSwitchObserver);
+            handler.postDelayed(() -> {
+                viewModel.startTimingSwitch();
+            }, 5000);
+        }
     }
 
     @Override
@@ -118,6 +139,11 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         super.onDestroyView();
         binding.tvCamera.setDrawingCacheEnabled(false);
         CameraManager.getInstance().closeCamera();
+        CameraManager.getInstance().release();
+        Config config = ConfigManager.getInstance().getConfig();
+        if (config.isTimingSwitch()) {
+            viewModel.stopTimingSwitch();
+        }
         viewModel.stopFaceDetect();
         viewModel.faceDraw.removeObserver(faceDrawObserver);
         if (ConfigManager.isCardDevice()) {
@@ -227,8 +253,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         });
     };
 
-    private Observer<Boolean> cardStatusObserver = status -> {
-    };
+    private Observer<Boolean> cardStatusObserver = status -> {};
 
     private Observer<Boolean> initFingerObserver = result -> {
         App.getInstance().getThreadExecutor().execute(() -> {
@@ -236,8 +261,9 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         });
     };
 
-    private Observer<Boolean> fingerStatusObserver = status -> {
-    };
+    private Observer<Boolean> fingerStatusObserver = status -> {};
+
+    private Observer<Boolean> timingSwitchObserver = this::controlCameraOpen;
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -256,9 +282,11 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
     private BroadcastReceiver timeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
-                onTimeEvent();//每一分钟更新时间
-            }
+            App.getInstance().getThreadExecutor().execute(() -> {
+                if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+                    onTimeEvent();//每一分钟更新时间
+                }
+            });
         }
     };
 
@@ -269,6 +297,56 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         viewModel.date.set(date);
         viewModel.time.set(time);
         viewModel.week.set(week);
+    }
+
+    private void initAdvertisementDialog() {
+        advertisementDialogFragment = AdvertisementDialogFragment.newInstance();
+        advertisementDialogFragment.setOnClickListener(v -> {
+//            advertisementDialogFragment.dismiss();
+//            FaceManager.getInstance().interruptDormancy();
+        });
+        advertisementDialogFragment.setComboListener(() -> {
+            advertisementDialogFragment.dismiss();
+            mListener.backToStack(null);
+        });
+    }
+
+    private void controlCameraOpen(boolean status) {
+        if (cameraOpenReentrantLock.isLocked()) return;
+        try {
+            cameraOpenReentrantLock.lock();
+            if (status) {
+                CameraManager.getInstance().openCamera(binding.tvCamera, cameraListener);
+            } else {
+                viewModel.stopFaceDetect();
+                CameraManager.getInstance().closeCamera();
+            }
+            controlAdvertisementDialog(!status);
+        } finally {
+            if (handler != null) {
+                handler.postDelayed(() -> {
+                    if (cameraOpenReentrantLock.isLocked()) {
+                        cameraOpenReentrantLock.unlock();
+                    }
+                }, 700);
+            }
+        }
+    }
+
+    private void controlAdvertisementDialog(boolean show) {
+        try {
+            if (show && !advertisementDialogFragment.isVisible()) {
+                advertisementDialogFragment.show(getChildFragmentManager(), "AdvertisementDialogFragment");
+            } else if (advertisementDialogFragment.isVisible()) {
+                if (handler != null) {
+                    handler.postDelayed(() -> {
+                        advertisementDialogFragment.dismiss();
+                    }, 500);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

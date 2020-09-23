@@ -86,9 +86,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
     public void onDestroyView() {
         super.onDestroyView();
         CameraManager.getInstance().closeCamera();
-        if (ConfigManager.isHumanBodySensorDevice()) {
-            CameraManager.getInstance().releaseForMR860DZ();
-        }
+        CameraManager.getInstance().release();
         GpioManager.getInstance().closeWhiteLed();
     }
 

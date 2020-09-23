@@ -1,9 +1,12 @@
 package com.miaxis.thermal.view.fragment;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
@@ -118,6 +121,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         binding.etFailedVerifyCold.setText(String.valueOf(config.getFailedVerifyCold()));
         binding.etFlashTime.setText(String.valueOf(config.getFlashTime()));
         binding.etDevicePassword.setText(config.getDevicePassword());
+        binding.rbTimingSwitchOn.setChecked(config.isTimingSwitch());
+        binding.rbTimingSwitchOff.setChecked(!config.isTimingSwitch());
+        binding.tvSwitchStartTime.setText(config.getSwitchStartTime());
+        binding.tvSwitchEndTime.setText(config.getSwitchEndTime());
         binding.ivBack.setOnClickListener(v -> mListener.backToStack(null));
         binding.tvCalibration.setOnClickListener(new OnLimitClickHelper(view -> {
             if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
@@ -142,6 +149,12 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     mListener.showResultDialog(message);
                 }
             });
+        }));
+        binding.tvSwitchStartTime.setOnClickListener(new OnLimitClickHelper(view -> {
+            selectTime(binding.tvSwitchStartTime);
+        }));
+        binding.tvSwitchEndTime.setOnClickListener(new OnLimitClickHelper(view -> {
+            selectTime(binding.tvSwitchEndTime);
         }));
     }
 
@@ -262,6 +275,10 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;
                     }
+                    if (TextUtils.equals(binding.tvSwitchStartTime.getText().toString(), binding.tvSwitchEndTime.getText().toString())) {
+                        ToastManager.toast("工作时间起止时间不能相等", ToastManager.INFO);
+                        return;
+                    }
                     if (binding.rbDeviceModeGate.isChecked() && !ConfigManager.isGateDevice()) {
                         ToastManager.toast("该版本不支持闸机开门", ToastManager.INFO);
                         return;
@@ -305,6 +322,9 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     config.setFailedVerifyCold(Integer.parseInt(binding.etFailedVerifyCold.getText().toString()));
                     config.setFlashTime(Integer.parseInt(binding.etFlashTime.getText().toString()));
                     config.setDevicePassword(binding.etDevicePassword.getText().toString());
+                    config.setTimingSwitch(binding.rbTimingSwitchOn.isChecked());
+                    config.setSwitchStartTime(binding.tvSwitchStartTime.getText().toString());
+                    config.setSwitchEndTime(binding.tvSwitchEndTime.getText().toString());
                     viewModel.saveConfig(config);
                 }
             } catch (Exception e) {
@@ -338,6 +358,30 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent,1);
+    }
+
+    private void selectTime(TextView textView) {
+        try {
+            String[] split = textView.getText().toString().split(":");
+            int h = Integer.parseInt(split[0]);
+            int m = Integer.parseInt(split[1]);
+            TimePickerDialog d = new TimePickerDialog(getContext(), (view, hourOfDay, minute) -> {
+                String h1 = hourOfDay + "";
+                String m1 = minute + "";
+                if (hourOfDay < 10) {
+                    h1 = "0" + h1;
+                }
+                if (minute < 10) {
+                    m1 = "0" + m1;
+                }
+                String time = h1 + ":" + m1;
+                textView.setText(time);
+            }, h, m, true);
+            d.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastManager.toast("设置出现错误，请重试", ToastManager.ERROR);
+        }
     }
 
 }

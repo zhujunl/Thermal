@@ -33,6 +33,8 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
 
     private Camera showingCamera;
 
+    private SurfaceTexture surfaceTexture = null;
+
     private int retryTime = 0;
 
     @Override
@@ -58,7 +60,12 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
                     openInfraredCamera();
                 }
             }
-            textureView.setSurfaceTextureListener(textureListener);
+            if (surfaceTexture == null) {
+                textureView.setSurfaceTextureListener(textureListener);
+            } else {
+                showingCamera.setPreviewTexture(surfaceTexture);
+            }
+//            textureView.setSurfaceTextureListener(textureListener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onCameraOpen(null, "");
@@ -98,6 +105,11 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
 //        Config config = ConfigManager.getInstance().getConfig();
 //        return !config.isShowCamera();
         return true;
+    }
+
+    @Override
+    public void release() {
+        surfaceTexture = null;
     }
 
     private void textureViewFlip(TextureView textureView) {
@@ -223,9 +235,10 @@ public class XhnCameraStrategy implements CameraManager.CameraStrategy {
 
     private TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
+        public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
             if (showingCamera != null) {
                 try {
+                    surfaceTexture = st;
                     showingCamera.setPreviewTexture(surfaceTexture);
                 } catch (IOException e) {
                     e.printStackTrace();

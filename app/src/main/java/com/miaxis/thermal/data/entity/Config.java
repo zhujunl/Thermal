@@ -46,6 +46,9 @@ public class Config {
     private int flashTime;
     private String devicePassword;
     private long timeStamp;
+    private boolean timingSwitch;
+    private String switchStartTime;
+    private String switchEndTime;
 
     public Config() {
     }
@@ -90,6 +93,9 @@ public class Config {
         setFlashTime(builder.flashTime);
         setDevicePassword(builder.devicePassword);
         setTimeStamp(builder.timeStamp);
+        setTimingSwitch(builder.timingSwitch);
+        setSwitchStartTime(builder.switchStartTime);
+        setSwitchEndTime(builder.switchEndTime);
     }
 
     public Long getId() {
@@ -404,6 +410,30 @@ public class Config {
         this.timeStamp = timeStamp;
     }
 
+    public boolean isTimingSwitch() {
+        return timingSwitch;
+    }
+
+    public void setTimingSwitch(boolean timingSwitch) {
+        this.timingSwitch = timingSwitch;
+    }
+
+    public String getSwitchStartTime() {
+        return switchStartTime;
+    }
+
+    public void setSwitchStartTime(String switchStartTime) {
+        this.switchStartTime = switchStartTime;
+    }
+
+    public String getSwitchEndTime() {
+        return switchEndTime;
+    }
+
+    public void setSwitchEndTime(String switchEndTime) {
+        this.switchEndTime = switchEndTime;
+    }
+
     public static final class Builder {
         private Long id;
         private String serverMode;
@@ -444,6 +474,9 @@ public class Config {
         private int flashTime;
         private String devicePassword;
         private long timeStamp;
+        private boolean timingSwitch;
+        private String switchStartTime;
+        private String switchEndTime;
 
         public Builder() {
         }
@@ -640,6 +673,21 @@ public class Config {
 
         public Builder timeStamp(long val) {
             timeStamp = val;
+            return this;
+        }
+
+        public Builder timingSwitch(boolean val) {
+            timingSwitch = val;
+            return this;
+        }
+
+        public Builder switchStartTime(String val) {
+            switchStartTime = val;
+            return this;
+        }
+
+        public Builder switchEndTime(String val) {
+            switchEndTime = val;
             return this;
         }
 

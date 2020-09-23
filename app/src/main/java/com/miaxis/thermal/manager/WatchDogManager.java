@@ -85,7 +85,7 @@ public class WatchDogManager {
                 this.food.set(System.currentTimeMillis());
                 while (this.running) {
                     long interval = System.currentTimeMillis() - this.food.get();
-                    Log.e("asd", "" + interval);
+//                    Log.e("asd", "" + interval);
                     if (interval > 20 * 1000) {
                         onNeedHandleError("看门狗检测一段时间内未收到相应，开始重新启动应用");
                     }

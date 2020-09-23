@@ -38,6 +38,7 @@ import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
 import com.miaxis.thermal.manager.TemperatureManager;
+import com.miaxis.thermal.manager.TimingSwitchManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.WatchDogManager;
 import com.miaxis.thermal.manager.strategy.Sign;
@@ -83,6 +84,7 @@ public class AttendanceViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> fingerStatus = new SingleLiveEvent<>();
 
     public MutableLiveData<Boolean> humanDetect = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> timingSwitch = new SingleLiveEvent<>();
 
     public Bitmap headerCache;
     private IDCardMessage idCardMessage;
@@ -634,6 +636,19 @@ public class AttendanceViewModel extends BaseViewModel {
 
     public HumanSensorManager.OnHumanSensorStatusListener humanSensorStatusListener = status -> {
         humanDetect.postValue(status);
+    };
+
+    public void startTimingSwitch() {
+        TimingSwitchManager.getInstance().setListener(timingSwitchStatusListener);
+        TimingSwitchManager.getInstance().startTimingSwitch();
+    }
+
+    public void stopTimingSwitch() {
+        TimingSwitchManager.getInstance().stopTimingSwitch();
+    }
+
+    public TimingSwitchManager.OnTimingSwitchStatusListener timingSwitchStatusListener = status -> {
+        timingSwitch.postValue(status);
     };
 
 }

@@ -1313,6 +1313,84 @@
 
                 <LinearLayout style="@style/SettingItem">
 
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="工作时间限制" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_timing_switch_on"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_open" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                        <RadioButton
+                            android:id="@+id/rb_timing_switch_off"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/fragment_config_close" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView
+                        style="@style/SettingName"
+                        android:text="工作时间起止" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView
+                        android:id="@+id/tv_switch_start_time"
+                        style="@style/SettingBody"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView
+                        android:id="@+id/tv_switch_end_time"
+                        style="@style/SettingBody"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:singleLine="true"
+                        android:textColor="@color/dark" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
                     <TextView style="@style/SettingName"
                         android:text="系统设置" />
 
