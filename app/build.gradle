@@ -7,8 +7,8 @@ android {
         applicationId "com.miaxis.thermal"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "1.0.9"
+        versionCode 9
+        versionName "1.0.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -99,6 +99,8 @@ dependencies {
     implementation 'com.youth.banner:banner:1.4.10'
     //Multidex
     implementation 'androidx.multidex:multidex:2.0.1'
+    //FileDownloader
+    implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation project(path: ':serialport')
     implementation project(path: ':opencv')
     implementation(name: 'fsdktemp', ext: 'aar')

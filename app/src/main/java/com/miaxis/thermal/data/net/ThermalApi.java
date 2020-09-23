@@ -1,6 +1,7 @@
 package com.miaxis.thermal.data.net;
 
 import com.miaxis.thermal.data.dto.PersonDto;
+import com.miaxis.thermal.data.dto.UpdateDto;
 
 import java.io.File;
 import java.util.List;
@@ -88,6 +89,10 @@ public class ThermalApi extends BaseAPI {
                 mac,
                 access,
                 fileBody);
+    }
+
+    public static Call<ResponseEntity<UpdateDto>> updateApp(String versionName) {
+        return getThermalNetSync().getAppByVersionName(versionName);
     }
 
 }

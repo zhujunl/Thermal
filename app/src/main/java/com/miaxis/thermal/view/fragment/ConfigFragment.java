@@ -1,5 +1,7 @@
 package com.miaxis.thermal.view.fragment;
 
+import android.content.Intent;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -16,6 +18,7 @@ import com.miaxis.thermal.data.entity.Config;
 import com.miaxis.thermal.databinding.FragmentConfigBinding;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.ToastManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DeviceUtil;
@@ -122,6 +125,23 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
             } else {
                 ToastManager.toast("该版本未开放校准功能", ToastManager.INFO);
             }
+        }));
+        binding.tvSystemSetting.setOnClickListener(new OnLimitClickHelper(view -> {
+            GpioManager.getInstance().setStatusBar(true);
+            jumpToSystemSetting();
+        }));
+        binding.tvFileBrowser.setOnClickListener(new OnLimitClickHelper(view -> {
+            GpioManager.getInstance().setStatusBar(true);
+            jumpToFileBrowser();
+        }));
+        binding.tvUpdate.setOnClickListener(new OnLimitClickHelper(view -> {
+            mListener.showWaitDialog("正在检查更新，请稍后...");
+            mListener.updateApp((result, message) -> {
+                mListener.dismissWaitDialog();
+                if (!result) {
+                    mListener.showResultDialog(message);
+                }
+            });
         }));
     }
 
@@ -298,8 +318,26 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
         mListener.backToStack(null);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        GpioManager.getInstance().setStatusBar(false);
+    }
+
     private Observer<Boolean> clearTimeStamp = result -> {
         binding.tvTimeStamp.setText("0");
     };
+
+    private void jumpToSystemSetting() {
+        Intent intent =  new Intent(Settings.ACTION_SETTINGS);
+        startActivity(intent);
+    }
+
+    private void jumpToFileBrowser() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent,1);
+    }
 
 }

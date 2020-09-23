@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.data.net.ThermalApi;
 import com.miaxis.thermal.manager.CalibrationManager;
@@ -61,6 +62,7 @@ public class App extends Application {
             CalibrationManager.getInstance().checkCalibration();
             WatchDogManager.getInstance().init(this);
             CrashExceptionManager.getInstance().init(this);
+            FileDownloader.setup(this);
             TTSManager.getInstance().init(getApplicationContext());
             CameraManager.getInstance().init();
             TemperatureManager.getInstance().init();

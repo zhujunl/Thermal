@@ -1311,6 +1311,38 @@
 
                 </LinearLayout>
 
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView style="@style/SettingName"
+                        android:text="系统设置" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView style="@style/SettingBody"
+                        android:id="@+id/tv_system_setting"
+                        android:text="跳转安卓系统设置"
+                        android:textColor="@color/main_color"
+                        android:background="@color/whitesmoke"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/SettingItem">
+
+                    <TextView style="@style/SettingName"
+                        android:text="文件管理" />
+
+                    <View style="@style/VerticalLine" />
+
+                    <TextView style="@style/SettingBody"
+                        android:id="@+id/tv_file_browser"
+                        android:text="跳转安卓文件管理"
+                        android:textColor="@color/main_color"
+                        android:background="@color/whitesmoke"
+                        android:singleLine="true" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </ScrollView>

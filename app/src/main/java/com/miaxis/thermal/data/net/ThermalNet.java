@@ -1,6 +1,7 @@
 package com.miaxis.thermal.data.net;
 
 import com.miaxis.thermal.data.dto.PersonDto;
+import com.miaxis.thermal.data.dto.UpdateDto;
 
 import java.util.List;
 
@@ -51,5 +52,9 @@ public interface ThermalNet {
                                       @Part("mac") String mac,
                                       @Part("access") String access,
                                       @Part MultipartBody.Part file);
+
+    @FormUrlEncoded
+    @POST("api/v1/app/getAppByVersionName")
+    Call<ResponseEntity<UpdateDto>> getAppByVersionName(@Field("versionName") String versionName);
 
 }

@@ -153,7 +153,7 @@ public class AttendanceViewModel extends BaseViewModel {
                         toast.postValue(ToastManager.getToastBody("读温错误", ToastManager.INFO));
                     }
                     if (temperature == -1f) {
-                        hint.set("检测到人脸");
+                        hint.set("");
                     }
                     Log.e("asd", "温度" + temperature);
                     Config config = ConfigManager.getInstance().getConfig();
@@ -378,6 +378,9 @@ public class AttendanceViewModel extends BaseViewModel {
         if (mxRGBImage == null || mxFaceInfoEx == null) return;
         App.getInstance().getThreadExecutor().execute(() -> {
             try {
+                if (headerCache != null) {
+                    headerCache.recycle();
+                }
                 headerCache = FaceManager.getInstance().tailoringFace(mxRGBImage, mxFaceInfoEx);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -20,12 +20,15 @@ import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.base.OnFragmentInteractionListener;
 import com.miaxis.thermal.view.dialog.DialogHelper;
 import com.miaxis.thermal.view.fragment.PreludeFragment;
+import com.miaxis.thermal.view.presenter.UpdatePresenter;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements OnFragmentInteractionListener {
 
     private MaterialDialog waitDialog;
     private MaterialDialog resultDialog;
     private MaterialDialog quitDialog;
+
+    private UpdatePresenter updatePresenter;
 
     private String root;
 
@@ -36,6 +39,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     protected void initData() {
+        updatePresenter = new UpdatePresenter(this);
     }
 
     @Override
@@ -140,6 +144,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     @Override
     public void exitApp() {
         quitDialog.show();
+    }
+
+    @Override
+    public void updateApp(UpdatePresenter.OnCheckUpdateResultListener listener) {
+        if (updatePresenter != null) {
+            updatePresenter.checkUpdate(listener);
+        }
     }
 
     /** OnFragmentInteractionListener方法区 **/

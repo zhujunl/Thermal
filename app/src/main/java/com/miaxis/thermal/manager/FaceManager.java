@@ -120,6 +120,7 @@ public class FaceManager {
     }
 
     public void setLastVisiblePreviewData(byte[] lastVisiblePreviewData) {
+        WatchDogManager.getInstance().feedFaceDog();
         this.lastVisiblePreviewData = lastVisiblePreviewData;
     }
 
@@ -188,7 +189,7 @@ public class FaceManager {
         if (cameraPreviewSize == null) {
             throw new MyException("未获取到摄像头尺寸信息");
         }
-        WatchDogManager.getInstance().feedFaceDog();
+//        WatchDogManager.getInstance().feedFaceDog();
         byte[] zoomedRgbData = cameraPreviewConvert(detectData,
                 cameraPreviewSize.getWidth(),
                 cameraPreviewSize.getHeight(),
@@ -250,11 +251,11 @@ public class FaceManager {
                 extract(intermediary);
                 intermediaryData = null;
             }
-            Thread.sleep(300);
+//            Thread.sleep(300);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            asyncExtractHandler.sendEmptyMessage(0);
+            asyncExtractHandler.sendEmptyMessageDelayed(0, 300);
         }
     }
 

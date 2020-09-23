@@ -18,9 +18,9 @@ public enum Sign {
             case XH:
                 return "XH";
             case XH_N:
-                return "XH_N";
+                return "XHN";
             case XH_C:
-                return "XH_C";
+                return "XHC";
             case MR870:
                 return "MR870";
             case MR870A:
@@ -30,9 +30,9 @@ public enum Sign {
             case TPS980P:
                 return "TPS980P";
             case TPS980P_C:
-                return "TPS980P_C";
+                return "TPS980PC";
             case TPS980P_F:
-                return "TPS980P_F";
+                return "TPS980PF";
             case MR890:
                 return "MR890";
             case MR860DZ:
