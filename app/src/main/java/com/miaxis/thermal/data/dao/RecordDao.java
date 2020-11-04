@@ -35,4 +35,7 @@ public interface RecordDao {
     @Query("select * from Record where Record.verifyTime >= :startTime and Record.verifyTime <= :endTime")
     List<Record> searchRecordInTime(long startTime, long endTime);
 
+    @Query("select * from Record order by Record.id asc limit :pageSize")
+    List<Record> loadOldestRecord(int pageSize);
+
 }

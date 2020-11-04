@@ -378,4 +378,14 @@ public class FileUtil {
         return image;
     }
 
+    public static Bitmap copyBitmap(Bitmap bitmap) {
+        Bitmap copy = null;
+        try {
+            copy = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return copy;
+    }
+
 }

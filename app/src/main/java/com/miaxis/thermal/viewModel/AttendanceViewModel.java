@@ -44,6 +44,7 @@ import com.miaxis.thermal.manager.WatchDogManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.manager.strategy.xhn.XhnTempForward;
 import com.miaxis.thermal.util.DateUtil;
+import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
 import org.zz.api.MXFaceInfoEx;
@@ -456,8 +457,17 @@ public class AttendanceViewModel extends BaseViewModel {
         handler.removeCallbacks(cardVerifyDelayRunnable);
         cardDelay.set(6);
         handler.post(cardVerifyDelayRunnable);
-        headerCache = idCardMessage.getCardBitmap();
-        updateHeader.setValue(Boolean.TRUE);
+//        App.getInstance().getThreadExecutor().execute(() -> {
+//            try {
+//                headerCache = FileUtil.copyBitmap(idCardMessage.getCardBitmap());
+//                updateHeader.postValue(Boolean.TRUE);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        headerCache = idCardMessage.getCardBitmap();
+//        updateHeader.setValue(Boolean.TRUE);
+        TTSManager.getInstance().playVoiceMessageFlush("请看镜头");
         FaceManager.getInstance().setNeedNextFeature(true);
     }
 
@@ -471,13 +481,21 @@ public class AttendanceViewModel extends BaseViewModel {
         cardMode = true;
         temperature.set("");
         handler.removeCallbacks(cardVerifyDelayRunnable);
-        headerCache = idCardMessage.getCardBitmap();
-        updateHeader.setValue(Boolean.TRUE);
+//        App.getInstance().getThreadExecutor().execute(() -> {
+//            try {
+//                headerCache = FileUtil.copyBitmap(idCardMessage.getCardBitmap());
+//                updateHeader.postValue(Boolean.TRUE);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        headerCache = idCardMessage.getCardBitmap();
+//        updateHeader.setValue(Boolean.TRUE);
         Config config = ConfigManager.getInstance().getConfig();
         handler.removeCallbacks(cardVerifyDelayRunnable);
         countDown.set("");
         hint.set(idCardMessage.getName() + (config.isDeviceMode() ? "-考勤成功" : "-开门成功"));
-        TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+        TTSManager.getInstance().playVoiceMessageFlush(config.isDeviceMode() ? "-考勤成功" : "-开门成功");
         if (ConfigManager.isGateDevice()) {
             GpioManager.getInstance().openDoorForGate();
         }
@@ -510,8 +528,8 @@ public class AttendanceViewModel extends BaseViewModel {
                         handler.removeCallbacks(cardVerifyDelayRunnable);
                         countDown.set("");
                         if (!config.isForcedMask() || mask) {
-                            hint.set(idCardMessage.getName() + "-比对成功");
-                            TTSManager.getInstance().playVoiceMessageFlush("比对成功");
+                            hint.set(idCardMessage.getName() + (config.isDeviceMode() ? "-考勤成功" : "-开门成功"));
+                            TTSManager.getInstance().playVoiceMessageFlush(config.isDeviceMode() ? "-考勤成功" : "-开门成功");
                         } else {
                             hint.set(idCardMessage.getName() + "-请戴口罩");
                             TTSManager.getInstance().playVoiceMessageFlush("请戴口罩");
@@ -526,10 +544,10 @@ public class AttendanceViewModel extends BaseViewModel {
                                 GpioManager.getInstance().openDoorForGate();
                             }
                         }
-                        RecordManager.getInstance().handlerIDCardRecord(idCardMessage, mxRGBImage, score, -1f, true);
                         if (config.isIdCardEntry()) {
                             onIdCardEntry(idCardMessage);
                         }
+                        RecordManager.getInstance().handlerIDCardRecord(idCardMessage, mxRGBImage, score, -1f, true);
                     } else {
                         hint.set(idCardMessage.getName() + "-比对失败");
                         FaceManager.getInstance().setNeedNextFeature(true);

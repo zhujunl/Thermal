@@ -217,6 +217,7 @@ public class PersonManager {
             if (findPerson == null) {
                 String filePath = FileUtil.FACE_STOREHOUSE_PATH + File.separator + idCardMessage.getName() + "-" + idCardMessage.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
                 FileUtil.saveQualityBitmap(idCardMessage.getCardBitmap(), filePath);
+                idCardMessage.getCardBitmap().recycle();
                 Person person = new Person.Builder()
                         .identifyNumber(idCardMessage.getCardNumber())
                         .phone(ValueUtil.getRandomString(10) + System.currentTimeMillis())

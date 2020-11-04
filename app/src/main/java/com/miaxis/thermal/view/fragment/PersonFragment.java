@@ -121,7 +121,7 @@ public class PersonFragment extends BaseViewModelFragment<FragmentPersonBinding,
     private void initRecycleView() {
         adapter = new PersonAdapter(getContext());
         adapter.setListener(adapterListener);
-        adapter.setHasStableIds(true);
+//        adapter.setHasStableIds(true);
         layoutManager = new LinearLayoutManager(getContext());
         binding.rvPerson.addOnScrollListener(onScrollListener);
         binding.rvPerson.setLayoutManager(layoutManager);

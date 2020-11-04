@@ -80,8 +80,9 @@ public class RecordManager {
             record.setUpload(true);
             RecordRepository.getInstance().saveRecord(record);
             handler.sendMessage(handler.obtainMessage(0));
+            RecordRepository.getInstance().clearRecordWithThreshold();
         } catch (Exception e) {
-            Log.e("asd", "" + e.getMessage());
+            Log.e("asd", "UploadRecord" + e.getMessage());
             handler.sendMessageDelayed(handler.obtainMessage(0), 30 * 60 * 1000);
         } finally {
             uploading = false;
@@ -97,7 +98,9 @@ public class RecordManager {
     public void handlerIDCardRecordNoVerify(IDCardMessage idCardMessage, float temperature, boolean attendance) {
         App.getInstance().getThreadExecutor().execute(() -> {
             try {
-                Record record = makeIDCardRecord(idCardMessage, -1, "", temperature);
+                String filePath = FileUtil.FACE_IMAGE_PATH + File.separator + idCardMessage.getName() + "-" + idCardMessage.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
+                FileUtil.saveBitmap(idCardMessage.getCardBitmap(), filePath);
+                Record record = makeIDCardRecord(idCardMessage, -1, filePath, temperature);
                 record.setAttendance(attendance ? "1" : "0");
                 RecordRepository.getInstance().saveRecord(record);
                 startUploadRecord();

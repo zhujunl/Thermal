@@ -47,6 +47,10 @@ public class RecordModel {
         return AppDatabase.getInstance().recordDao().searchRecordInTime(startTime.getTime(), endTime.getTime());
     }
 
+    public static List<Record> loadOldestRecord(int pageSize) {
+        return AppDatabase.getInstance().recordDao().loadOldestRecord(pageSize);
+    }
+
     public static List<Record> searchRecord(RecordSearch recordSearch, boolean count) {
         List<Object> args = new ArrayList<>();
         String sqlStr = makeRecordSearchSql(recordSearch, args, false);

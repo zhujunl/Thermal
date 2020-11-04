@@ -101,7 +101,8 @@ public class FaceManager {
         Size previewSize = CameraManager.getInstance().getPreviewSize();
         zoomWidth = previewSize.getWidth();
         zoomHeight = previewSize.getHeight();
-        lastVerifyTime = System.currentTimeMillis();
+//        lastVerifyTime = System.currentTimeMillis();
+        interruptDormancy();
         asyncDetectHandler.sendEmptyMessage(0);
         asyncExtractHandler.sendEmptyMessage(0);
     }
@@ -413,8 +414,9 @@ public class FaceManager {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
                 if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                    double pupilDistance = calculationPupilDistance(mxFaceInfoEx);
-                    if (pupilDistance > 35d) {
+                    //TODO:身份证照片瞳距过低
+//                    double pupilDistance = calculationPupilDistance(mxFaceInfoEx);
+//                    if (pupilDistance > 35d) {
                         result = detectMask(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
                         if (result && mxFaceInfoEx.mask < ConfigManager.getInstance().getConfig().getMaskScore()) {
                             byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
@@ -429,9 +431,9 @@ public class FaceManager {
                         } else {
                             message = "检测到口罩";
                         }
-                    } else {
-                        message = "瞳间距过低";
-                    }
+//                    } else {
+//                        message = "瞳间距过低";
+//                    }
                 } else {
                     message = "人脸质量过低";
                 }
