@@ -73,9 +73,10 @@ public class PersonRepository {
         String mac = ConfigManager.getInstance().getMacAddress();
         File faceFile = null;
         try {
-            faceFile = TextUtils.isEmpty(person.getFacePicturePath())
-                    ? null
-                    : new File(person.getFacePicturePath());
+            faceFile = new File(person.getFacePicturePath());
+            if (!faceFile.exists()) {
+                faceFile = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

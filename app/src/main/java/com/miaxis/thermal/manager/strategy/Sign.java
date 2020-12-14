@@ -11,7 +11,8 @@ public enum Sign {
     TPS980P_C,
     TPS980P_F,
     MR890,
-    MR860DZ;
+    MR860DZ,
+    PAD;
 
     public static String getSignName(Sign sign) {
         switch (sign) {
@@ -37,6 +38,8 @@ public enum Sign {
                 return "MR890";
             case MR860DZ:
                 return "MR860DZ";
+            case PAD:
+                return "PAD";
         }
         return "error";
     }

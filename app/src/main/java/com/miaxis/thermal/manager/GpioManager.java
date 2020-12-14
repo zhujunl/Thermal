@@ -13,6 +13,8 @@ import com.miaxis.thermal.manager.strategy.mr860dz.MR860DZGpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr870.MR870GpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr870a.MR870AGpioStrategy;
 import com.miaxis.thermal.manager.strategy.mr890.MR890GpioStrategy;
+import com.miaxis.thermal.manager.strategy.pad.PadCameraStrategy;
+import com.miaxis.thermal.manager.strategy.pad.PadGpioStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.tpsc.TpscGpioStrategy;
@@ -69,6 +71,8 @@ public class GpioManager {
             gpioStrategy = new MR870AGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
             gpioStrategy = new MR860DZGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.PAD) {
+            gpioStrategy = new PadGpioStrategy();
         }
         initGpio(application);
         resetGpio();

@@ -287,12 +287,24 @@ public class FileUtil {
     public static void deleteImg(String path) {
         try {
             File f = new File(path);
-            if (!f.delete()) {
+            if (!deleteFileSafely(f)) {
                 Log.e("asd", "删除失败" + path);
             }
         } catch (Exception e) {
             Log.e("asd", "删除失败 路径：" + path + "\r\n" + e.getMessage());
         }
+    }
+
+    public static boolean deleteFileSafely(File file) {
+        if (file != null) {
+            String tmpPath = file.getParent() + File.separator + System.currentTimeMillis();
+            File tmp = new File(tmpPath);
+            file.renameTo(tmp);
+            boolean result = tmp.delete();
+//            System.gc();
+            return result;
+        }
+        return false;
     }
 
     public static String pathToBase64(String path) {
@@ -346,7 +358,7 @@ public class FileUtil {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
-                file.delete();
+                deleteFileSafely(file);
             }
         }
     }

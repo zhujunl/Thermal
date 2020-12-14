@@ -257,7 +257,7 @@
             android:gravity="center"
             android:text="@{viewModel.weather}"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_face_sign"
             app:layout_constraintTop_toBottomOf="@id/iv_panel" />

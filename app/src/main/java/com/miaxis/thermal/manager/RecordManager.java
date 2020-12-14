@@ -73,14 +73,15 @@ public class RecordManager {
         try {
             uploading = true;
             handler.removeMessages(0);
+            RecordRepository.getInstance().clearRecordWithThreshold();
             Record record = RecordRepository.getInstance().findOldestRecord();
             if (record == null) throw new MyException("未找到待上传日志");
             RecordRepository.getInstance().uploadRecord(record);
             Log.e("asd", "日志上传成功");
             record.setUpload(true);
             RecordRepository.getInstance().saveRecord(record);
+            uploading = false;
             handler.sendMessage(handler.obtainMessage(0));
-            RecordRepository.getInstance().clearRecordWithThreshold();
         } catch (Exception e) {
             Log.e("asd", "UploadRecord" + e.getMessage());
             handler.sendMessageDelayed(handler.obtainMessage(0), 30 * 60 * 1000);

@@ -104,8 +104,12 @@ public class AttendanceViewModel extends BaseViewModel {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if (msg.what == MSG_VERIFY_LOCK) {
-                    detectColdDown();
+                try {
+                    if (msg.what == MSG_VERIFY_LOCK) {
+                        detectColdDown();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         };
@@ -219,7 +223,7 @@ public class AttendanceViewModel extends BaseViewModel {
                         hint.set(getString(R.string.please_stay_away_from_the_screen));
                         break;
                     case -4:
-                        hint.set(getString(R.string.live_detection_failed));
+                        hint.set(ConfigManager.getHintMessageBySign(code));
                         break;
                 }
             }

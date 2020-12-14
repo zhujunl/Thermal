@@ -270,7 +270,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                         return;
                     }
                     if (TextUtils.isEmpty(binding.etRecordClearThreshold.getText().toString())
-                            || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) < 2000
+                            || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) < 20
                             || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) > 20000) {
                         ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
                         return;

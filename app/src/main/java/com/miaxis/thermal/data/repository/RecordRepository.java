@@ -47,6 +47,9 @@ public class RecordRepository {
         File file = null;
         try {
             file = new File(record.getVerifyPicturePath());
+            if (!file.exists()) {
+                file = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,7 +129,7 @@ public class RecordRepository {
         if (recordCount > config.getRecordClearThreshold()) {
             int clearSize = config.getRecordClearThreshold() / 2;
             int loopSize = 10;
-            for (int i = loopSize; i < clearSize; i += loopSize) {
+            for (int i = loopSize; i <= clearSize; i += loopSize) {
                 List<Record> recordList = RecordModel.loadOldestRecord(loopSize);
                 deleteRecordList(recordList);
             }

@@ -3,19 +3,15 @@ package com.miaxis.thermal.view.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.miaxis.thermal.BR;
 import com.miaxis.thermal.R;
-import com.miaxis.thermal.bridge.GlideImageLoader;
 import com.miaxis.thermal.databinding.FragmentAdvertisementDialogBinding;
 import com.miaxis.thermal.view.base.BaseViewModelDialogFragment;
 import com.miaxis.thermal.view.custom.ComboCustom;
@@ -57,25 +53,25 @@ public class AdvertisementDialogFragment extends BaseViewModelDialogFragment<Fra
     @Override
     protected void initView() {
 //        binding.banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
-        binding.banner.setImageLoader(new GlideImageLoader());
-        binding.banner.setImages(viewModel.getAdvertisementList());
-        binding.banner.setOnClickListener(clickListener);
+//        binding.banner.setImageLoader(new GlideImageLoader());
+//        binding.banner.setImages(viewModel.getAdvertisementList());
+//        binding.banner.setOnClickListener(clickListener);
         binding.ccCombo.setNeedPassword(true);
         binding.ccCombo.setListener(comboListener);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        binding.banner.start();
-        binding.banner.startAutoPlay();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        binding.banner.start();
+//        binding.banner.startAutoPlay();
+//    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        binding.banner.stopAutoPlay();
-    }
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        binding.banner.stopAutoPlay();
+//    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

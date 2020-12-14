@@ -12,10 +12,20 @@
         android:layout_height="match_parent"
         tools:context=".view.dialog.AdvertisementDialogFragment">
 
-        <com.youth.banner.Banner
-            android:id="@+id/banner"
+<!--        <com.youth.banner.Banner-->
+<!--            android:id="@+id/banner"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+        <ImageView
+            android:id="@+id/iv_background"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:src="@drawable/background_miaxis"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

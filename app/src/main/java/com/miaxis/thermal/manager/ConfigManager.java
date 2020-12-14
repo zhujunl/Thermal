@@ -109,7 +109,8 @@ public class ConfigManager {
                     || ValueUtil.DEFAULT_SIGN == Sign.XH_C
                     || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                     || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
-                    || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
+                    || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ
+                    || ValueUtil.DEFAULT_SIGN == Sign.PAD) {
                 config.setPupilDistanceMin(ValueUtil.DEFAULT_PUPIL_DISTANCE_MIN_NO_LIMIT);
                 config.setPupilDistanceMax(ValueUtil.DEFAULT_PUPIL_DISTANCE_MAX_NO_LIMIT);
             }
@@ -138,7 +139,10 @@ public class ConfigManager {
     }
 
     public String getMacAddress() {
-        if (config != null && !TextUtils.isEmpty(config.getMac())) {
+        if (config == null) {
+            checkConfig();
+        }
+        if (!TextUtils.isEmpty(config.getMac())) {
             return config.getMac();
         }
         String macFromHardware = DeviceUtil.getMacFromHardware();
@@ -191,7 +195,8 @@ public class ConfigManager {
         if (ValueUtil.DEFAULT_SIGN == Sign.XH
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_N
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
-                || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR870A
+                || ValueUtil.DEFAULT_SIGN == Sign.PAD) {
             return true;
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.ZH
@@ -217,7 +222,8 @@ public class ConfigManager {
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.XH_C
-                || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ) {
+                || ValueUtil.DEFAULT_SIGN == Sign.MR860DZ
+                || ValueUtil.DEFAULT_SIGN == Sign.PAD) {
             return false;
         }
         return false;
@@ -233,6 +239,19 @@ public class ConfigManager {
     public static boolean isNetworking() {
         Config config = getInstance().getConfig();
         return TextUtils.equals(config.getServerMode(), ValueUtil.WORK_MODE_NET);
+    }
+
+    public static String getHintMessageBySign(int code) {
+//        switch (code) {
+//            case -4:
+                if (ValueUtil.DEFAULT_SIGN == Sign.XH_C
+                        || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C) {
+                    return "认证失败";
+                } else {
+                    return "活体检测失败";
+                }
+//        }
+//        return "活体检测失败";
     }
 
 }
