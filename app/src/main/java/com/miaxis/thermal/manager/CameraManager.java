@@ -19,6 +19,8 @@ import com.miaxis.thermal.manager.strategy.pad.PadCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tpsc.TpscCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tpsf.TpsfCameraStrategy;
+import com.miaxis.thermal.manager.strategy.tpsm.TpsmCameraStrategy;
+import com.miaxis.thermal.manager.strategy.tpst.TpstCameraStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhCameraStrategy;
 import com.miaxis.thermal.manager.strategy.xhc.XhcCameraStrategy;
 import com.miaxis.thermal.manager.strategy.xhn.XhnCameraStrategy;
@@ -60,6 +62,10 @@ public class CameraManager {
             cameraStrategy = new TpscCameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F) {
             cameraStrategy = new TpsfCameraStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_M) {
+            cameraStrategy = new TpsmCameraStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_T) {
+            cameraStrategy = new TpstCameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
             cameraStrategy = new XhnCameraStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {

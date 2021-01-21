@@ -34,6 +34,7 @@ import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
 import com.miaxis.thermal.manager.HumanSensorManager;
+import com.miaxis.thermal.manager.ICCardManager;
 import com.miaxis.thermal.manager.PersonManager;
 import com.miaxis.thermal.manager.RecordManager;
 import com.miaxis.thermal.manager.TTSManager;
@@ -83,6 +84,9 @@ public class AttendanceViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> initFinger = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> fingerStatus = new SingleLiveEvent<>();
+
+    public MutableLiveData<Boolean> initICCard = new SingleLiveEvent<>();
+    public MutableLiveData<Boolean> icCardStatus = new SingleLiveEvent<>();
 
     public MutableLiveData<Boolean> humanDetect = new SingleLiveEvent<>();
     public MutableLiveData<Boolean> timingSwitch = new SingleLiveEvent<>();
@@ -137,6 +141,9 @@ public class AttendanceViewModel extends BaseViewModel {
         }
         if (ConfigManager.isFingerDevice()) {
             initFinger.setValue(Boolean.TRUE);
+        }
+        if (ConfigManager.isICCardDevice()) {
+            initICCard.setValue(Boolean.TRUE);
         }
     }
 
@@ -354,7 +361,12 @@ public class AttendanceViewModel extends BaseViewModel {
 
     private void detectCold(boolean result) {
         lock = true;
-        CardManager.getInstance().needNextRead(false);
+        if (ConfigManager.isCardDevice()) {
+            CardManager.getInstance().needNextRead(false);
+        }
+        if (ConfigManager.isICCardDevice()) {
+            ICCardManager.getInstance().needNextRead(false);
+        }
         handler.removeMessages(MSG_VERIFY_LOCK);
         Message message = handler.obtainMessage(MSG_VERIFY_LOCK);
         handler.sendMessageDelayed(message, result
@@ -378,6 +390,9 @@ public class AttendanceViewModel extends BaseViewModel {
         FaceManager.getInstance().setNeedNextFeature(true);
         if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().needNextRead(true);
+        }
+        if (ConfigManager.isICCardDevice()) {
+            ICCardManager.getInstance().needNextRead(true);
         }
     }
 
@@ -435,7 +450,7 @@ public class AttendanceViewModel extends BaseViewModel {
         }
     };
 
-    public CardManager.OnCardStatusListener statusListener = result -> {
+    public CardManager.OnCardStatusListener cardStatusListener = result -> {
         if (result) {
             cardStatus.postValue(Boolean.TRUE);
             CardManager.getInstance().startReadCard(cardListener);
@@ -644,6 +659,36 @@ public class AttendanceViewModel extends BaseViewModel {
         } catch (Exception e) {
             e.printStackTrace();
             detectColdDown();
+        }
+    };
+
+    private ICCardManager.OnCardReadListener icCardListener = cardCode -> {
+        List<Person> personList = PersonManager.getInstance().getPersonList();
+        if (personList != null) {
+            for (Person person : personList) {
+                if (TextUtils.equals(person.getCardCode(), cardCode)) {
+                    detectCold(true);
+                    Config config = ConfigManager.getInstance().getConfig();
+                    hint.set(person.getName() + (config.isDeviceMode() ? "-考勤成功" : "-开门成功"));
+                    TTSManager.getInstance().playVoiceMessageFlush(config.isDeviceMode() ? "-考勤成功" : "-开门成功");
+                    if (ConfigManager.isGateDevice()) {
+                        GpioManager.getInstance().openDoorForGate();
+                    }
+                }
+            }
+        }
+    };
+
+    public ICCardManager.OnCardStatusListener icCardStatusListener = result -> {
+        if (result) {
+            icCardStatus.postValue(Boolean.TRUE);
+            ICCardManager.getInstance().startReadCard(icCardListener);
+        } else {
+            icCardStatus.postValue(Boolean.FALSE);
+            ICCardManager.getInstance().release();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                initICCard.setValue(Boolean.TRUE);
+            }, 10 * 1000);
         }
     };
 

@@ -21,6 +21,7 @@ public class PersonDto implements Mapper<Person> {
     private String faceFeature;
     private String maskFaceFeature;
     private String status;
+    private String memberId;
 
     public PersonDto() {
     }
@@ -38,6 +39,7 @@ public class PersonDto implements Mapper<Person> {
         setFaceFeature(builder.faceFeature);
         setMaskFaceFeature(builder.maskFaceFeature);
         setStatus(builder.status);
+        setMemberId(builder.memberId);
     }
 
     public long getId() {
@@ -136,6 +138,14 @@ public class PersonDto implements Mapper<Person> {
         this.status = status;
     }
 
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
     @Override
     public Person transform() throws MyException {
         try {
@@ -156,6 +166,7 @@ public class PersonDto implements Mapper<Person> {
                     .identifyNumber(identifyNumber)
                     .phone(userPhone)
                     .name(userName)
+                    .cardCode(memberId)
                     .type(userType)
                     .effectiveTime(effectiveDate)
                     .invalidTime(invalidDate)
@@ -185,6 +196,7 @@ public class PersonDto implements Mapper<Person> {
         private String faceFeature;
         private String maskFaceFeature;
         private String status;
+        private String memberId;
 
         public Builder() {
         }
@@ -246,6 +258,11 @@ public class PersonDto implements Mapper<Person> {
 
         public Builder status(String val) {
             status = val;
+            return this;
+        }
+
+        public Builder memberId(String val) {
+            memberId = val;
             return this;
         }
 

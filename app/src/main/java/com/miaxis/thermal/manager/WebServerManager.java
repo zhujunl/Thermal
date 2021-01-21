@@ -424,6 +424,7 @@ public class WebServerManager {
                         .identifyNumber(record.getIdentifyNumber())
                         .userName(record.getName())
                         .userPhone(record.getPhone())
+                        .memberId(record.getCardCode())
                         .verifyTime(DateUtil.DATE_FORMAT.format(record.getVerifyTime()))
                         .score(record.getScore())
                         .temperature(record.getTemperature())

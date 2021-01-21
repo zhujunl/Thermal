@@ -14,6 +14,7 @@ public class Record {
     private String identifyNumber;
     private String phone;
     private String name;
+    private String cardCode;
     private String type;
     private String faceType;
     private Date verifyTime;
@@ -33,6 +34,7 @@ public class Record {
         setIdentifyNumber(builder.identifyNumber);
         setPhone(builder.phone);
         setName(builder.name);
+        setCardCode(builder.cardCode);
         setType(builder.type);
         setFaceType(builder.faceType);
         setVerifyTime(builder.verifyTime);
@@ -82,6 +84,14 @@ public class Record {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCardCode() {
+        return cardCode;
+    }
+
+    public void setCardCode(String cardCode) {
+        this.cardCode = cardCode;
     }
 
     public String getType() {
@@ -162,6 +172,7 @@ public class Record {
         private String identifyNumber;
         private String phone;
         private String name;
+        private String cardCode;
         private String type;
         private String faceType;
         private Date verifyTime;
@@ -197,6 +208,11 @@ public class Record {
 
         public Builder name(String val) {
             name = val;
+            return this;
+        }
+
+        public Builder cardCode(String val) {
+            cardCode = val;
             return this;
         }
 

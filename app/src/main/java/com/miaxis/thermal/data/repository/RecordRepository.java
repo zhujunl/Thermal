@@ -57,6 +57,7 @@ public class RecordRepository {
                 record.getIdentifyNumber(),
                 record.getName(),
                 record.getPhone(),
+                record.getCardCode(),
                 DateUtil.DATE_FORMAT.format(record.getVerifyTime()),
                 record.getScore() * 100,
                 record.getTemperature(),

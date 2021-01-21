@@ -68,13 +68,16 @@ public class RecordModel {
                             .identifyNumber(cursor.getString(cursor.getColumnIndex("identifyNumber")))
                             .phone(cursor.getString(cursor.getColumnIndex("phone")))
                             .name(cursor.getString(cursor.getColumnIndex("name")))
+                            .cardCode(cursor.getString(cursor.getColumnIndex("cardCode")))
                             .type(cursor.getString(cursor.getColumnIndex("type")))
+                            .faceType(cursor.getString(cursor.getColumnIndex("faceType")))
                             .verifyTime(date)
                             .verifyPicturePath(cursor.getString(cursor.getColumnIndex("verifyPicturePath")))
                             .score(cursor.getFloat(cursor.getColumnIndex("score")))
                             .upload(cursor.getInt(cursor.getColumnIndex("upload")) == 1)
                             .temperature(cursor.getFloat(cursor.getColumnIndex("temperature")))
                             .access(cursor.getString(cursor.getColumnIndex("access")))
+                            .attendance(cursor.getString(cursor.getColumnIndex("attendance")))
                             .build();
                     recordList.add(build);
                 }

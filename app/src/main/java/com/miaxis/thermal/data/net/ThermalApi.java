@@ -62,6 +62,7 @@ public class ThermalApi extends BaseAPI {
                                                     String identifyNumber,
                                                     String userName,
                                                     String userPhone,
+                                                    String memberId,
                                                     String verifyTime,
                                                     float score,
                                                     float temperature,
@@ -72,8 +73,10 @@ public class ThermalApi extends BaseAPI {
                                                     File file) {
         MultipartBody.Part fileBody = null;
         try {
-            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+            if (file != null) {
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,6 +84,7 @@ public class ThermalApi extends BaseAPI {
                 identifyNumber,
                 userName,
                 userPhone,
+                memberId,
                 verifyTime,
                 score,
                 temperature,

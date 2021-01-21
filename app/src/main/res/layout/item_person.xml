@@ -88,7 +88,7 @@
                 android:layout_height="0dp"
                 android:text="@string/item_person_phone_hint"
                 android:gravity="center|start"
-                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintHeight_percent="0.16"
                 app:layout_constraintStart_toEndOf="@id/iv_header"
                 app:layout_constraintTop_toBottomOf="@id/tv_name_hint"
                 app:layout_constraintEnd_toStartOf="@id/tv_phone"/>
@@ -128,14 +128,36 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint"/>
 
             <TextView
+                android:id="@+id/tv_card_code_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="卡&#12288;&#12288;号："
+                android:gravity="center|start"
+                app:layout_constraintHeight_percent="0.16"
+                app:layout_constraintStart_toEndOf="@id/iv_header"
+                app:layout_constraintTop_toBottomOf="@id/tv_phone_hint"/>
+
+            <TextView
+                android:id="@+id/tv_card_code"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@{item.cardCode}"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/tv_card_code_hint"
+                app:layout_constraintTop_toTopOf="@id/tv_card_code_hint"
+                app:layout_constraintEnd_toStartOf="@id/cl_tool"
+                app:layout_constraintBottom_toBottomOf="@id/tv_card_code_hint"/>
+
+            <TextView
                 android:id="@+id/tv_term_of_validity"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:text="@string/item_person_expire_time_hint"
                 android:gravity="center|start"
                 app:layout_constraintStart_toEndOf="@id/iv_header"
-                app:layout_constraintTop_toBottomOf="@id/tv_phone_hint"
-                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintTop_toBottomOf="@id/tv_card_code_hint"
+                app:layout_constraintHeight_percent="0.16"
                 app:layout_constraintEnd_toStartOf="@id/tv_effect_time"/>
 
             <TextView
@@ -181,7 +203,7 @@
                 android:gravity="center|start"
                 app:layout_constraintStart_toEndOf="@id/iv_header"
                 app:layout_constraintTop_toBottomOf="@id/tv_term_of_validity"
-                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintHeight_percent="0.16"
                 app:layout_constraintEnd_toStartOf="@id/tv_update_time"/>
 
             <TextView
@@ -226,7 +248,7 @@
                 android:gravity="center|start"
                 app:layout_constraintStart_toEndOf="@id/iv_header"
                 app:layout_constraintTop_toBottomOf="@id/tv_update_time_hint"
-                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintHeight_percent="0.16"
                 app:layout_constraintEnd_toStartOf="@id/tv_status"/>
 
             <TextView

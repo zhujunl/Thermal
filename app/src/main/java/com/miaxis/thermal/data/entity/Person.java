@@ -17,6 +17,7 @@ public class Person {
     private String phone;
     private String name;
     private String type;
+    private String cardCode;
     private Date effectiveTime;
     private Date invalidTime;
     private Date updateTime;
@@ -37,6 +38,7 @@ public class Person {
         setPhone(builder.phone);
         setName(builder.name);
         setType(builder.type);
+        setCardCode(builder.cardCode);
         setEffectiveTime(builder.effectiveTime);
         setInvalidTime(builder.invalidTime);
         setUpdateTime(builder.updateTime);
@@ -87,6 +89,14 @@ public class Person {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getCardCode() {
+        return cardCode;
+    }
+
+    public void setCardCode(String cardCode) {
+        this.cardCode = cardCode;
     }
 
     public Date getEffectiveTime() {
@@ -175,6 +185,7 @@ public class Person {
         private String phone;
         private String name;
         private String type;
+        private String cardCode;
         private Date effectiveTime;
         private Date invalidTime;
         private Date updateTime;
@@ -211,6 +222,11 @@ public class Person {
 
         public Builder type(String val) {
             type = val;
+            return this;
+        }
+
+        public Builder cardCode(String val) {
+            cardCode = val;
             return this;
         }
 

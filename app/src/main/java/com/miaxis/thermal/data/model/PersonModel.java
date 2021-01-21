@@ -69,6 +69,7 @@ public class PersonModel {
                             .identifyNumber(cursor.getString(cursor.getColumnIndex("identifyNumber")))
                             .phone(cursor.getString(cursor.getColumnIndex("phone")))
                             .name(cursor.getString(cursor.getColumnIndex("name")))
+                            .cardCode(cursor.getString(cursor.getColumnIndex("cardCode")))
                             .type(cursor.getString(cursor.getColumnIndex("type")))
                             .effectiveTime(effectiveTime)
                             .invalidTime(invalidTime)

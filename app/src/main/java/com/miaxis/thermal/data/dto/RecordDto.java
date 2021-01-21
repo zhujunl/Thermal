@@ -5,6 +5,7 @@ public class RecordDto {
     private String identifyNumber;
     private String userName;
     private String userPhone;
+    private String memberId;
     private String verifyTime;
     private float score;
     private float temperature;
@@ -19,6 +20,7 @@ public class RecordDto {
         setIdentifyNumber(builder.identifyNumber);
         setUserName(builder.userName);
         setUserPhone(builder.userPhone);
+        setMemberId(builder.memberId);
         setVerifyTime(builder.verifyTime);
         setScore(builder.score);
         setTemperature(builder.temperature);
@@ -49,6 +51,14 @@ public class RecordDto {
 
     public void setUserPhone(String userPhone) {
         this.userPhone = userPhone;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
     public String getVerifyTime() {
@@ -103,6 +113,7 @@ public class RecordDto {
         private String identifyNumber;
         private String userName;
         private String userPhone;
+        private String memberId;
         private String verifyTime;
         private float score;
         private float temperature;
@@ -125,6 +136,11 @@ public class RecordDto {
 
         public Builder userPhone(String val) {
             userPhone = val;
+            return this;
+        }
+
+        public Builder memberId(String val) {
+            memberId = val;
             return this;
         }
 

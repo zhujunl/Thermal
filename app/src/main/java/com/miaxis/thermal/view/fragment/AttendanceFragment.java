@@ -32,6 +32,7 @@ import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
+import com.miaxis.thermal.manager.ICCardManager;
 import com.miaxis.thermal.manager.TimingSwitchManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -98,6 +99,10 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             viewModel.initFinger.observe(this, initFingerObserver);
             viewModel.fingerStatus.observe(this, fingerStatusObserver);
         }
+        if (ConfigManager.isICCardDevice()) {
+            viewModel.initICCard.observe(this, initICCardObserver);
+            viewModel.icCardStatus.observe(this, icCardStatusObserver);
+        }
         if (ConfigManager.isHumanBodySensorDevice()) {
             viewModel.humanDetect.observe(this, humanDetectObserver);
             viewModel.startHumanDetect();
@@ -153,6 +158,9 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
         }
         if (ConfigManager.isFingerDevice()) {
             FingerManager.getInstance().release();
+        }
+        if (ConfigManager.isICCardDevice()) {
+            ICCardManager.getInstance().release();
         }
         if (ConfigManager.isHumanBodySensorDevice()) {
             viewModel.stopHumanDetect();
@@ -254,7 +262,7 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
 
     private Observer<Boolean> initCardObserver = result -> {
         App.getInstance().getThreadExecutor().execute(() -> {
-            CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener);
+            CardManager.getInstance().initDevice(App.getInstance(), viewModel.cardStatusListener);
         });
     };
 
@@ -267,6 +275,14 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
     };
 
     private Observer<Boolean> fingerStatusObserver = status -> {};
+
+    private Observer<Boolean> initICCardObserver = result -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            ICCardManager.getInstance().initDevice(App.getInstance(), viewModel.icCardStatusListener);
+        });
+    };
+
+    private Observer<Boolean> icCardStatusObserver = status -> {};
 
     private Observer<Boolean> timingSwitchObserver = this::controlCameraOpen;
 

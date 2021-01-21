@@ -19,6 +19,8 @@ import com.miaxis.thermal.manager.strategy.tps.TpsCameraStrategy;
 import com.miaxis.thermal.manager.strategy.tps.TpsGpioStrategy;
 import com.miaxis.thermal.manager.strategy.tpsc.TpscGpioStrategy;
 import com.miaxis.thermal.manager.strategy.tpsf.TpsfGpioStrategy;
+import com.miaxis.thermal.manager.strategy.tpsm.TpsmGpioStrategy;
+import com.miaxis.thermal.manager.strategy.tpst.TpstGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xh.XhGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xhc.XhcGpioStrategy;
 import com.miaxis.thermal.manager.strategy.xhn.XhnGpioStrategy;
@@ -61,6 +63,10 @@ public class GpioManager {
             gpioStrategy = new TpscGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F) {
             gpioStrategy = new TpsfGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_M) {
+            gpioStrategy = new TpsmGpioStrategy();
+        } else if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P_T) {
+            gpioStrategy = new TpstGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.XH_N) {
             gpioStrategy = new XhnGpioStrategy();
         } else if (ValueUtil.DEFAULT_SIGN == Sign.MR890) {
@@ -202,6 +208,8 @@ public class GpioManager {
         if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_M
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_T
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {
@@ -227,6 +235,8 @@ public class GpioManager {
         if (ValueUtil.DEFAULT_SIGN == Sign.TPS980P
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_C
                 || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_F
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_M
+                || ValueUtil.DEFAULT_SIGN == Sign.TPS980P_T
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870
                 || ValueUtil.DEFAULT_SIGN == Sign.MR890
                 || ValueUtil.DEFAULT_SIGN == Sign.MR870A) {

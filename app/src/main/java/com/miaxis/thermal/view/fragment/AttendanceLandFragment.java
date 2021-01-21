@@ -33,6 +33,7 @@ import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
 import com.miaxis.thermal.manager.FingerManager;
 import com.miaxis.thermal.manager.GpioManager;
+import com.miaxis.thermal.manager.ICCardManager;
 import com.miaxis.thermal.manager.TimingSwitchManager;
 import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
@@ -101,6 +102,14 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
             viewModel.initFinger.observe(this, initFingerObserver);
             viewModel.fingerStatus.observe(this, fingerStatusObserver);
         }
+        if (ConfigManager.isICCardDevice()) {
+            viewModel.initICCard.observe(this, initICCardObserver);
+            viewModel.icCardStatus.observe(this, icCardStatusObserver);
+        }
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            viewModel.humanDetect.observe(this, humanDetectObserver);
+            viewModel.startHumanDetect();
+        }
         handler = new Handler(Looper.getMainLooper());
         binding.clPanel.setOnClickListener(new OnLimitClickHelper(view -> {
             GpioManager.getInstance().openWhiteLedInTime();
@@ -151,6 +160,12 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
         }
         if (ConfigManager.isFingerDevice()) {
             FingerManager.getInstance().release();
+        }
+        if (ConfigManager.isICCardDevice()) {
+            ICCardManager.getInstance().release();
+        }
+        if (ConfigManager.isHumanBodySensorDevice()) {
+            viewModel.stopHumanDetect();
         }
         GpioManager.getInstance().resetGpio();
         GpioManager.getInstance().clearLedThread();
@@ -249,7 +264,7 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
 
     private Observer<Boolean> initCardObserver = result -> {
         App.getInstance().getThreadExecutor().execute(() -> {
-            CardManager.getInstance().initDevice(App.getInstance(), viewModel.statusListener);
+            CardManager.getInstance().initDevice(App.getInstance(), viewModel.cardStatusListener);
         });
     };
 
@@ -263,7 +278,26 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
 
     private Observer<Boolean> fingerStatusObserver = status -> {};
 
+    private Observer<Boolean> initICCardObserver = result -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            ICCardManager.getInstance().initDevice(App.getInstance(), viewModel.icCardStatusListener);
+        });
+    };
+
+    private Observer<Boolean> icCardStatusObserver = status -> {};
+
     private Observer<Boolean> timingSwitchObserver = this::controlCameraOpen;
+
+    private Observer<Boolean> humanDetectObserver = status -> {
+        Log.e("asd", "HumanDetectInMain!!!!!!:" + status);
+        Config config = ConfigManager.getInstance().getConfig();
+        if (config.isTimingSwitch()) {
+            if (!TimingSwitchManager.getInstance().isInSwitchTime()) {
+                return;
+            }
+        }
+        controlCameraOpen(status);
+    };
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();

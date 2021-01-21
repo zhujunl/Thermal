@@ -44,6 +44,7 @@ public interface ThermalNet {
                                       @Part("identifyNumber") String identifyNumber,
                                       @Part("userName") String userName,
                                       @Part("userPhone") String userPhone,
+                                      @Part("memberId") String memberId,
                                       @Part("verifyTime") String verifyTime,
                                       @Part("score") float score,
                                       @Part("temperature") float temperature,

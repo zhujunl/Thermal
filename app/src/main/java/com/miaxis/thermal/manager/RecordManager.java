@@ -180,6 +180,7 @@ public class RecordManager {
                 .score(score)
                 .upload(false)
                 .temperature(temperature)
+                .faceType("1")
                 .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }
@@ -190,12 +191,30 @@ public class RecordManager {
                 .identifyNumber(person.getIdentifyNumber())
                 .phone(person.getPhone())
                 .name(person.getName())
+                .cardCode(person.getCardCode())
                 .type(person.getType())
                 .verifyTime(new Date())
                 .verifyPicturePath(facePicture)
                 .score(score)
                 .upload(false)
                 .temperature(temperature)
+                .faceType("0")
+                .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
+                .build();
+    }
+
+    private Record makeICRecord(Person person, float temperature) {
+        return new Record.Builder()
+                .personId(person.getId())
+                .identifyNumber(person.getIdentifyNumber())
+                .phone(person.getPhone())
+                .name(person.getName())
+                .cardCode(person.getCardCode())
+                .type(person.getType())
+                .verifyTime(new Date())
+                .upload(false)
+                .temperature(temperature)
+                .faceType("2")
                 .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }
@@ -210,6 +229,7 @@ public class RecordManager {
                 .upload(false)
                 .temperature(temperature)
                 .attendance("0")
+                .faceType("3")
                 .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }
