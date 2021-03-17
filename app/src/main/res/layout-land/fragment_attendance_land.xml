@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:viewadapter="http://schemas.android.com/tools">
 
     <data>
 
@@ -274,6 +275,23 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_panel" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_barcode"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/icon_bar_code"
+            android:layout_margin="20dp"
+            android:backgroundTint="#00367a"
+            android:scaleType="center"
+            android:visibility="gone"
+            app:backgroundTint="#00367a"
+            app:fabCustomSize="100dp"
+            app:fabSize="normal"
+            app:maxImageSize="50dp"
+            app:layout_constraintEnd_toEndOf="@id/fl_camera_root"
+            app:layout_constraintBottom_toBottomOf="@id/fl_camera_root"
+            viewadapter:isInvisible="@{!viewModel.hintLock}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

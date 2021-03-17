@@ -133,6 +133,15 @@ public class PersonManager {
                 });
     }
 
+    public Person findPersonByIdentifyNumber(String identifyNumber) {
+        for (Person person : personList) {
+            if (TextUtils.equals(identifyNumber, person.getIdentifyNumber())) {
+                return person;
+            }
+        }
+        return null;
+    }
+
     public void handlePersonHeartBeat(Person person) {
         if (person != null) {
             if (TextUtils.equals(person.getStatus(), ValueUtil.PERSON_STATUS_DELETE)) {

@@ -136,6 +136,14 @@ public class AttendanceLandFragment extends BaseViewModelFragment<FragmentAttend
                 viewModel.startTimingSwitch();
             }, 5000);
         }
+        if (ConfigManager.isNeedBarcode()) {
+            viewModel.hintLock.set(false);
+            binding.fabBarcode.setOnClickListener(new OnLimitClickHelper(view -> {
+                viewModel.barcodeScanMode();
+            }));
+        } else {
+            binding.fabBarcode.setVisibility(View.GONE);
+        }
     }
 
     @Override

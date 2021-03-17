@@ -7,8 +7,8 @@ android {
         applicationId "com.miaxis.thermal"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 15
-        versionName "1.0.16"
+        versionCode 16
+        versionName "1.0.17"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -51,6 +51,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation files('src\\main\\libs\\tpsICCardSdk.jar')
+    implementation files('src\\main\\libs\\PosUtil.jar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -102,6 +103,8 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     //FileDownloader
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
+    //Barcode Scan
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
     implementation project(path: ':serialport')
     implementation project(path: ':opencv')
     implementation(name: 'fsdktemp', ext: 'aar')

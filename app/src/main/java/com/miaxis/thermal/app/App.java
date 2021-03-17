@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.miaxis.thermal.data.dao.AppDatabase;
 import com.miaxis.thermal.data.net.ThermalApi;
+import com.miaxis.thermal.manager.BarcodeManager;
 import com.miaxis.thermal.manager.CalibrationManager;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
@@ -70,6 +71,9 @@ public class App extends Application {
             FingerManager.getInstance().init();
             GpioManager.getInstance().init(this);
             HumanSensorManager.getInstance().init(this);
+            if (ConfigManager.isNeedBarcode()) {
+                BarcodeManager.getInstance().init();
+            }
             int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.LICENCE_PATH);
             listener.onInit(result == FaceManager.INIT_SUCCESS, FaceManager.getFaceInitResultDetail(result));
 //            listener.onInit(true, "");

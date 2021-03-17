@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 
@@ -27,6 +28,8 @@ import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
 import com.miaxis.thermal.data.repository.PersonRepository;
+import com.miaxis.thermal.manager.BarcodeManager;
+import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.CardManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
@@ -72,6 +75,8 @@ public class AttendanceViewModel extends BaseViewModel {
     public ObservableField<String> hint = new ObservableField<>();
     public ObservableField<String> temperature = new ObservableField<>();
     public ObservableField<String> countDown = new ObservableField<>();
+    public ObservableBoolean hintLock = new ObservableBoolean(true);
+
     public MutableLiveData<FaceDraw> faceDraw = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> updateHeader = new SingleLiveEvent<>();
@@ -100,8 +105,10 @@ public class AttendanceViewModel extends BaseViewModel {
     private volatile boolean lock = false;
     private volatile boolean cardMode = false;
     private volatile boolean fingerVerify = true;
+    private volatile boolean barcodeScan = false;
 
-    private AtomicInteger cardDelay = new AtomicInteger(6);
+    private final AtomicInteger cardDelay = new AtomicInteger(6);
+    private final AtomicInteger barcodeDelay = new AtomicInteger(6);
 
     public AttendanceViewModel() {
         handler = new Handler(Looper.getMainLooper()) {
@@ -145,6 +152,9 @@ public class AttendanceViewModel extends BaseViewModel {
         if (ConfigManager.isICCardDevice()) {
             initICCard.setValue(Boolean.TRUE);
         }
+        if (ConfigManager.isNeedBarcode()) {
+            hintLock.set(false);
+        }
     }
 
     public void stopFaceDetect() {
@@ -156,7 +166,7 @@ public class AttendanceViewModel extends BaseViewModel {
         handler.removeMessages(MSG_VERIFY_LOCK);
     }
 
-    private FaceManager.OnFaceHandleListener faceHandleListener = new FaceManager.OnFaceHandleListener() {
+    private final FaceManager.OnFaceHandleListener faceHandleListener = new FaceManager.OnFaceHandleListener() {
         @Override
         public void onFeatureExtract(MxRGBImage mxRGBImage, MXFaceInfoEx mxFaceInfoEx, byte[] feature, boolean mask) {
             hint.set("测量温度中");
@@ -280,9 +290,7 @@ public class AttendanceViewModel extends BaseViewModel {
             return false;
         } else {
             if (overdue == PersonManager.Overdue.effective) {
-                if (!config.isForcedMask() || mask) {
-                    return true;
-                }
+                return !config.isForcedMask() || mask;
             }
             return false;
         }
@@ -360,6 +368,9 @@ public class AttendanceViewModel extends BaseViewModel {
     }
 
     private void detectCold(boolean result) {
+        if (ConfigManager.isNeedBarcode()) {
+            hintLock.set(true);
+        }
         lock = true;
         if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().needNextRead(false);
@@ -375,6 +386,9 @@ public class AttendanceViewModel extends BaseViewModel {
     }
 
     private void detectColdDown() {
+        if (ConfigManager.isNeedBarcode()) {
+            hintLock.set(false);
+        }
         hint.set("");
         temperature.set("");
         countDown.set("");
@@ -387,6 +401,7 @@ public class AttendanceViewModel extends BaseViewModel {
         lock = false;
         cardMode = false;
         fingerVerify = true;
+        barcodeScan = false;
         FaceManager.getInstance().setNeedNextFeature(true);
         if (ConfigManager.isCardDevice()) {
             CardManager.getInstance().needNextRead(true);
@@ -413,15 +428,16 @@ public class AttendanceViewModel extends BaseViewModel {
         });
     }
 
-    private FaceManager.OnDormancyListener dormancyListener = dormancy -> {
+    private final FaceManager.OnDormancyListener dormancyListener = dormancy -> {
         faceDormancy.postValue(dormancy);
     };
 
-    private CardManager.OnCardReadListener cardListener = idCardMessage -> {
+    private final CardManager.OnCardReadListener cardListener = idCardMessage -> {
         if (idCardMessage != null) {
             if (lock) return;
             //如果已经在人证核验模式下，直接返回
             if (cardMode) return;
+            if (barcodeScan) return;
             Observable.create((ObservableOnSubscribe<PhotoFaceFeature>) emitter -> {
                 PhotoFaceFeature cardFaceFeature = FaceManager.getInstance().getCardFaceFeatureByBitmapPosting(idCardMessage.getCardBitmap());
                 fingerVerify = !(!TextUtils.isEmpty(idCardMessage.getFingerprint0()) && !TextUtils.isEmpty(idCardMessage.getFingerprint1()));
@@ -584,7 +600,7 @@ public class AttendanceViewModel extends BaseViewModel {
         });
     }
 
-    private Runnable cardVerifyDelayRunnable = new Runnable() {
+    private final Runnable cardVerifyDelayRunnable = new Runnable() {
         @Override
         public void run() {
             cardDelay.decrementAndGet();
@@ -626,7 +642,7 @@ public class AttendanceViewModel extends BaseViewModel {
         }
     };
 
-    private FingerManager.OnFingerReadListener fingerReadListener = (feature, image) -> {
+    private final FingerManager.OnFingerReadListener fingerReadListener = (feature, image) -> {
         try {
             if (idCardMessage == null) {
                 cardMode = false;
@@ -662,7 +678,7 @@ public class AttendanceViewModel extends BaseViewModel {
         }
     };
 
-    private ICCardManager.OnCardReadListener icCardListener = cardCode -> {
+    private final ICCardManager.OnCardReadListener icCardListener = cardCode -> {
         List<Person> personList = PersonManager.getInstance().getPersonList();
         if (personList != null) {
             for (Person person : personList) {
@@ -716,6 +732,69 @@ public class AttendanceViewModel extends BaseViewModel {
 
     public TimingSwitchManager.OnTimingSwitchStatusListener timingSwitchStatusListener = status -> {
         timingSwitch.postValue(status);
+    };
+
+    public void barcodeScanMode() {
+        if (!cardMode && !lock) {
+            TTSManager.getInstance().stop();
+            if (!barcodeScan) {
+                handler.removeMessages(MSG_VERIFY_LOCK);
+                lock = true;
+                barcodeScan = true;
+                hint.set("请扫码");
+                temperature.set("");
+                barcodeDelay.set(6);
+                handler.removeCallbacks(barcodeScanDelayRunnable);
+                handler.post(barcodeScanDelayRunnable);
+                startBarcodeScan();
+            }
+        }
+    }
+
+    private void startBarcodeScan() {
+        TTSManager.getInstance().playVoiceMessageFlush("请扫码");
+        WatchDogManager.getInstance().stopFaceFeedDog();
+        BarcodeManager.getInstance().setListener(barcodeScanListener);
+        BarcodeManager.getInstance().startLoop();
+    }
+
+    private void stopBarcodeScan() {
+        BarcodeManager.getInstance().stopLoop();
+        BarcodeManager.getInstance().setListener(null);
+        WatchDogManager.getInstance().stopFaceFeedDog();
+    }
+
+    private final Runnable barcodeScanDelayRunnable = new Runnable() {
+        @Override
+        public void run() {
+            barcodeDelay.decrementAndGet();
+            countDown.set(barcodeDelay + "S");
+            if (barcodeDelay.get() <= 0) {
+                stopBarcodeScan();
+                detectColdDown();
+            } else {
+                handler.postDelayed(barcodeScanDelayRunnable, 1000);
+            }
+        }
+    };
+
+    private final BarcodeManager.OnBarcodeScanListener barcodeScanListener = barcode -> {
+        Person person = PersonManager.getInstance().findPersonByIdentifyNumber(barcode);
+        if (person != null) {
+            detectCold(true);
+            countDown.set("");
+            barcodeDelay.set(0);
+            handler.removeCallbacks(barcodeScanDelayRunnable);
+            stopBarcodeScan();
+            hint.set(person.getName() + "扫码成功");
+            TTSManager.getInstance().playVoiceMessageFlush("扫码成功");
+            if (ConfigManager.isGateDevice()) {
+                GpioManager.getInstance().openDoorForGate();
+            }
+            RecordManager.getInstance().handlerBarcodeRecord(person);
+        } else {
+            hint.set("未找到对应人员");
+        }
     };
 
 }

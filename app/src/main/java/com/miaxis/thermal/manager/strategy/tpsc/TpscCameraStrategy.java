@@ -2,6 +2,7 @@ package com.miaxis.thermal.manager.strategy.tpsc;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.util.Log;
 import android.util.Size;
 import android.view.TextureView;
 
@@ -9,9 +10,11 @@ import androidx.annotation.NonNull;
 
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.entity.Config;
+import com.miaxis.thermal.manager.BarcodeManager;
 import com.miaxis.thermal.manager.CameraManager;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.FaceManager;
+import com.uuzuche.lib_zxing.camera.AutoFocusCallback;
 
 import java.io.IOException;
 import java.util.List;
@@ -126,8 +129,13 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
                 } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_FIXED)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_FIXED);
                 }
             }
+            String flatten = parameters.flatten();
+            parameters.set("focus-distances", "Infinity");
+            boolean smoothZoomSupported = parameters.isSmoothZoomSupported();
             visibleCamera.setParameters(parameters);
 //            visibleCamera.setDisplayOrientation(270);
             visibleCamera.setPreviewCallback(visiblePreviewCallback);
@@ -242,8 +250,18 @@ public class TpscCameraStrategy implements CameraManager.CameraStrategy {
         }
     };
 
-    private Camera.PreviewCallback visiblePreviewCallback = (data, camera) -> FaceManager.getInstance().setLastVisiblePreviewData(data);
+    private Camera.PreviewCallback visiblePreviewCallback = (data, camera) -> {
+        if (BarcodeManager.getInstance().isDetectLoop()) {
+            BarcodeManager.getInstance().feedVisibleFrame(data);
+        } else {
+            FaceManager.getInstance().setLastVisiblePreviewData(data);
+        }
+    };
 
-    private Camera.PreviewCallback infraredPreviewCallback = (data, camera) -> FaceManager.getInstance().setLastInfraredPreviewData(data);
+    private Camera.PreviewCallback infraredPreviewCallback = (data, camera) -> {
+        if (!BarcodeManager.getInstance().isDetectLoop()) {
+            FaceManager.getInstance().setLastInfraredPreviewData(data);
+        }
+    };
 
 }

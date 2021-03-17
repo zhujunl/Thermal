@@ -17,17 +17,17 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.TPS980P_T;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P_FA;
 
     public static final Gson GSON = new Gson();
 
     public static final String DEFAULT_SERVER_MODE = "0";//0-联网版，1-单机版
 //    public static final String DEFAULT_HOST = "http://47.114.39.63:9008/saasbus/";
-//    public static final String DEFAULT_HOST = "http://183.129.171.153:9221/saasbus/";
+    public static final String DEFAULT_HOST = "http://183.129.171.153:9221/saasbus/";
 //    public static final String DEFAULT_HOST = "http://115.236.80.98:8085/saasbus/";
 //    public static final String DEFAULT_HOST = "http://192.168.5.210:8086/attence/";
 //    public static final String DEFAULT_HOST = "https://www.miaxisatd.com/";
-    public static final String DEFAULT_HOST = "http://192.168.6.32:9000/";
+//    public static final String DEFAULT_HOST = "http://192.168.6.32:9000/";
     public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attence/person/downPersonListByDeviceMac";
 //    public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attendance/person/downPersonListByDeviceMac";
     public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attence/person/updatePerson";

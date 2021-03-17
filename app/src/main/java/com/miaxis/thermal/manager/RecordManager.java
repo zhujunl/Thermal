@@ -112,6 +112,20 @@ public class RecordManager {
         });
     }
 
+    public void handlerBarcodeRecord(Person person) {
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                Record record = makeBarcodeRecord(person);
+                record.setAttendance("1");
+                RecordRepository.getInstance().saveRecord(record);
+                startUploadRecord();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("asd", "保存日志失败，handlerRecord抛出信息：" + e.getMessage());
+            }
+        });
+    }
+
     public void handlerIDCardRecord(IDCardMessage idCardMessage, MxRGBImage mxRGBImage, float score, float temperature, boolean attendance) {
         App.getInstance().getThreadExecutor().execute(() -> {
             try {
@@ -230,6 +244,21 @@ public class RecordManager {
                 .temperature(temperature)
                 .attendance("0")
                 .faceType("3")
+                .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
+                .build();
+    }
+
+    private Record makeBarcodeRecord(Person person) {
+        return new Record.Builder()
+                .personId(person.getId())
+                .identifyNumber(person.getIdentifyNumber())
+                .phone(person.getPhone())
+                .name(person.getName())
+                .cardCode(person.getCardCode())
+                .type(person.getType())
+                .verifyTime(new Date())
+                .upload(false)
+                .faceType("4")
                 .access(ConfigManager.getInstance().getConfig().isAccessSign() ? "0" : "1")
                 .build();
     }

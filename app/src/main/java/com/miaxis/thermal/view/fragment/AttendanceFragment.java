@@ -38,6 +38,7 @@ import com.miaxis.thermal.manager.strategy.Sign;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.ValueUtil;
 import com.miaxis.thermal.view.auxiliary.OnLimitClickHelper;
+import com.miaxis.thermal.view.auxiliary.OnLimitClickListener;
 import com.miaxis.thermal.view.base.BaseViewModelFragment;
 import com.miaxis.thermal.view.dialog.AdvertisementDialogFragment;
 import com.miaxis.thermal.viewModel.AttendanceViewModel;
@@ -132,6 +133,14 @@ public class AttendanceFragment extends BaseViewModelFragment<FragmentAttendance
             handler.postDelayed(() -> {
                 viewModel.startTimingSwitch();
             }, 5000);
+        }
+        if (ConfigManager.isNeedBarcode()) {
+            viewModel.hintLock.set(false);
+            binding.fabBarcode.setOnClickListener(new OnLimitClickHelper(view -> {
+                viewModel.barcodeScanMode();
+            }));
+        } else {
+            binding.fabBarcode.setVisibility(View.GONE);
         }
     }
 

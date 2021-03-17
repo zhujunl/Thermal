@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:viewadapter="http://schemas.android.com/tools">
 
     <data>
 
@@ -260,6 +261,23 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_barcode"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/icon_bar_code"
+            android:layout_margin="20dp"
+            android:backgroundTint="#1d477b"
+            android:scaleType="center"
+            android:visibility="gone"
+            app:backgroundTint="#1d477b"
+            app:fabCustomSize="100dp"
+            app:fabSize="normal"
+            app:maxImageSize="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cl_panel"
+            viewadapter:isInvisible="@{!viewModel.hintLock}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
