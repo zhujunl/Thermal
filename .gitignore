@@ -22,5 +22,3 @@
 /app/src/main/jniLibs
 /app/libs
 /app/build
-/serialport
-/opencv
