@@ -17,7 +17,12 @@ import retrofit2.HttpException;
 
 public class ValueUtil {
 
-    public static final Sign DEFAULT_SIGN = Sign.TPS980P_FA;
+//    public static final Sign DEFAULT_SIGN = Sign.TPS980P_FA;
+    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
+//    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
+//    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
+//    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
+//    public static final Sign DEFAULT_SIGN = Sign.TPS980P_C;
 
     public static final Gson GSON = new Gson();
 

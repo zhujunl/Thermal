@@ -1,6 +1,11 @@
 package com.miaxis.thermal.view.activity;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
@@ -8,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.thermal.R;
 import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.data.dao.AppDatabase;
+import com.miaxis.thermal.data.websocket.JWebSocketClientService;
 import com.miaxis.thermal.databinding.ActivityMainBinding;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.manager.HeartBeatManager;
@@ -27,10 +33,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
     private MaterialDialog waitDialog;
     private MaterialDialog resultDialog;
     private MaterialDialog quitDialog;
-
+    private JWebSocketClientService jWebSocketClientService;
     private UpdatePresenter updatePresenter;
 
     private String root;
+
+    ServiceConnection wsServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            JWebSocketClientService.JWebSocketClientBinder binder = (JWebSocketClientService.JWebSocketClientBinder) service;
+            jWebSocketClientService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            jWebSocketClientService = null;
+        }
+    };
 
     @Override
     protected int setContentView() {
@@ -44,6 +63,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     protected void initView() {
+        new Thread(() -> {
+            SystemClock.sleep(5000);
+            Intent intentWS = new Intent(getApplicationContext(), JWebSocketClientService.class);
+            startService(intentWS);
+            bindService(intentWS, wsServiceConnection, BIND_AUTO_CREATE);
+        }).start();
+
         initDialog();
         replaceFragment(PreludeFragment.newInstance());
     }
@@ -57,6 +83,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
             HeartBeatManager.getInstance().stopHeartBeat();
             WatchDogManager.getInstance().stopANRWatchDog();
             AppDatabase.getInstance().close();
+            if (null != wsServiceConnection) {
+                unbindService(wsServiceConnection);
+            }
+            if (null != jWebSocketClientService) {
+                jWebSocketClientService.closeConnect();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

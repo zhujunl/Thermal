@@ -85,6 +85,10 @@
 <!--                <category android:name="android.intent.category.DEFAULT" />-->
             </intent-filter>
         </activity>
+
+        <service android:name=".data.websocket.JWebSocketClientService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

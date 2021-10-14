@@ -7,8 +7,8 @@ android {
         applicationId "com.miaxis.thermal"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 16
-        versionName "1.0.17"
+        versionCode 17
+        versionName "1.0.18"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -43,6 +43,7 @@ android {
             dirs 'src/main/libs'
         }
     }
+    ndkVersion "21.1.6352462"
 }
 
 dependencies {
