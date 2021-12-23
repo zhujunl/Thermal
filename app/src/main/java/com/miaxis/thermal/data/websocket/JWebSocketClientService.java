@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.miaxis.thermal.app.App;
 import com.miaxis.thermal.manager.ConfigManager;
 import com.miaxis.thermal.manager.GpioManager;
 import com.miaxis.thermal.util.DeviceUtil;
@@ -26,9 +27,8 @@ public class JWebSocketClientService  extends Service {
     public JWebSocketClient client;
     private final JWebSocketClientBinder mBinder = new JWebSocketClientBinder();
     private static final int GRAY_SERVICE_ID = 1001;
-    private static final long CLOSE_RECON_TIME = 1000;//连接断开或者连接错误立即重连
+    private static final long CLOSE_RECON_TIME = 3000;//连接断开或者连接错误立即重连
 
-    private String deviceId;
     private String sendDevice;
     private String leaveDevice;
 
@@ -69,7 +69,7 @@ public class JWebSocketClientService  extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        deviceId = DeviceUtil.getMacFromHardware();
+        String deviceId = DeviceUtil.getMacFromHardware();
         sendDevice = "join-" + deviceId;
         leaveDevice = "leave-" + deviceId;
         //初始化WebSocket
@@ -79,71 +79,73 @@ public class JWebSocketClientService  extends Service {
     }
 
     private void initSocketClient() {
-        if (TextUtils.isEmpty(ConfigManager.getInstance().getConfig().getHost())) {
-            return;
-        }
+        try {
+            if (TextUtils.isEmpty(ConfigManager.getInstance().getConfig().getHost())) {
+                return;
+            }
 
-        URI uri = URI.create("ws://" + URI.create(ConfigManager.getInstance().getConfig().getHost()).getHost() + ":6001");
-        client = new JWebSocketClient(uri) {
-            @Override
-            public void onMessage(String message) {
-                //message就是接收到的消息
-                Log.i(TAG, "WebSocketService收到的消息：" + message);
-                if (message.equals("pong")) {
-                    //alive
-                } else {
-                    try {
-                        JSONObject jsonObject1 = new JSONObject(message);
-                        String order = (String) jsonObject1.get("action");
-                        if (order.equals("1")) {
-                            GpioManager.getInstance().openDoorForGate();
+            URI uri = URI.create("ws://" + URI.create(ConfigManager.getInstance().getConfig().getHost()).getHost() + ":9234");
+            Log.i(TAG, uri.toString());
+            client = new JWebSocketClient(uri) {
+                @Override
+                public void onMessage(String message) {
+                    //message就是接收到的消息
+                    Log.i(TAG, "WebSocketService收到的消息：" + message);
+                    if (message.equals("pong")) {
+                        //alive
+                    } else {
+                        try {
+                            JSONObject jsonObject1 = new JSONObject(message);
+                            String order = (String) jsonObject1.get("action");
+                            if (order.equals("1")) {
+                                GpioManager.getInstance().openDoorForGate();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+
                 }
 
-            }
+                @Override
+                public void onOpen(ServerHandshake handShakeData) {//在webSocket连接开启时调用
+                    Log.i(TAG, "WebSocket 连接成功");
+                    sendMsg(sendDevice);
+                }
 
-            @Override
-            public void onOpen(ServerHandshake handShakeData) {//在webSocket连接开启时调用
-                Log.i(TAG, "WebSocket 连接成功");
-                sendMsg(sendDevice);
-            }
+                @Override
+                public void onClose(int code, String reason, boolean remote) {//在连接断开时调用
+                    Log.e(TAG, "onClose() 连接断开_reason：" + reason);
+                    sendMsg(leaveDevice);
+                    mHandler.removeCallbacks(heartBeatRunnable);
+                    mHandler.postDelayed(heartBeatRunnable, CLOSE_RECON_TIME);//开启心跳检测
+                }
 
-            @Override
-            public void onClose(int code, String reason, boolean remote) {//在连接断开时调用
-                Log.e(TAG, "onClose() 连接断开_reason：" + reason);
-                sendMsg(leaveDevice);
-                mHandler.removeCallbacks(heartBeatRunnable);
-                mHandler.postDelayed(heartBeatRunnable, CLOSE_RECON_TIME);//开启心跳检测
-            }
-
-            @Override
-            public void onError(Exception ex) {//在连接出错时调用
-                Log.e(TAG, "onError() 连接出错：" + ex.getMessage());
-                mHandler.removeCallbacks(heartBeatRunnable);
-                mHandler.postDelayed(heartBeatRunnable, CLOSE_RECON_TIME);//开启心跳检测
-            }
-        };
-        connect();
+                @Override
+                public void onError(Exception ex) {//在连接出错时调用
+                    Log.e(TAG, "onError() 连接出错：" + ex.getMessage());
+                    mHandler.removeCallbacks(heartBeatRunnable);
+                    mHandler.postDelayed(heartBeatRunnable, CLOSE_RECON_TIME);//开启心跳检测
+                }
+            };
+            connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * 连接WebSocket
      */
     private void connect() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    //connectBlocking多出一个等待操作，会先连接再发送，否则未连接发送会报错
-                    client.connectBlocking();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                //connectBlocking多出一个等待操作，会先连接再发送，否则未连接发送会报错
+                client.connectBlocking();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }.start();
+        });
     }
 
     /**
@@ -223,16 +225,13 @@ public class JWebSocketClientService  extends Service {
      */
     private void reconnectWs() {
         mHandler.removeCallbacks(heartBeatRunnable);
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Log.e(TAG, "开启重连");
-                    client.reconnectBlocking();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        App.getInstance().getThreadExecutor().execute(() -> {
+            try {
+                Log.e(TAG, "开启重连");
+                client.reconnectBlocking();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }.start();
+        });
     }
 }

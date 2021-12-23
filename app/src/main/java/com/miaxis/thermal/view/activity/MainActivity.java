@@ -1,5 +1,6 @@
 package com.miaxis.thermal.view.activity;
 
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -63,13 +64,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements O
 
     @Override
     protected void initView() {
-        new Thread(() -> {
+        App.getInstance().getThreadExecutor().execute(() -> {
             SystemClock.sleep(5000);
             Intent intentWS = new Intent(getApplicationContext(), JWebSocketClientService.class);
             startService(intentWS);
             bindService(intentWS, wsServiceConnection, BIND_AUTO_CREATE);
-        }).start();
-
+        });
         initDialog();
         replaceFragment(PreludeFragment.newInstance());
     }

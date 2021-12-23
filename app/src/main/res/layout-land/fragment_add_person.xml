@@ -184,6 +184,7 @@
                 android:hint="@string/fragment_add_person_number_hint"
                 android:maxLength="18"
                 android:singleLine="true"
+                android:digits="0123456789xX"
                 android:text="@={viewModel.number}"
                 android:textColor="@color/darkgray"
                 android:textSize="18sp"

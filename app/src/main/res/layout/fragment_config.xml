@@ -1262,7 +1262,7 @@
                         style="@style/SettingBody"
                         android:background="@color/white"
                         android:digits="0123456789"
-                        android:hint="2000 - 20000条"
+                        android:hint="20 - 20000条"
                         android:inputType="number"
                         android:maxLength="5"
                         android:singleLine="true"

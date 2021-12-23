@@ -272,7 +272,7 @@ public class ConfigFragment extends BaseViewModelFragment<FragmentConfigBinding,
                     if (TextUtils.isEmpty(binding.etRecordClearThreshold.getText().toString())
                             || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) < 20
                             || Integer.parseInt(binding.etRecordClearThreshold.getText().toString()) > 20000) {
-                        ToastManager.toast("最大日志保存数目 2000 - 20000 条", ToastManager.INFO);
+                        ToastManager.toast("最大日志保存数目 20 - 20000 条", ToastManager.INFO);
                         return;
                     }
                     if (TextUtils.equals(binding.tvSwitchStartTime.getText().toString(), binding.tvSwitchEndTime.getText().toString())) {
