@@ -4,4 +4,7 @@
 4    android:versionCode="4100"
 5    android:versionName="4.1.0" >
 6
-7</manifest>
+7    <uses-sdk android:minSdkVersion="1" />
+7-->/Users/administrators/Miaxis/Project_Miaxis/Project_ZhengQi/thermal/opencv/src/main/AndroidManifest.xml
+8
+9</manifest>

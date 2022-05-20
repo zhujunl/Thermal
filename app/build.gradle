@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 20
-        versionName "1.0.21"
+        versionName "1.0.22"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -20,6 +20,20 @@ android {
             abiFilters 'armeabi-v7a'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
         multiDexEnabled true
+    }
+    signingConfigs {
+        debug {
+            storeFile file('../thermal.jks')
+            storePassword '163.com'
+            keyAlias 'miaxis'
+            keyPassword '163.com'
+        }
+        release {
+            storeFile file('../thermal.jks')
+            storePassword '163.com'
+            keyAlias 'miaxis'
+            keyPassword '163.com'
+        }
     }
     buildTypes {
         release {

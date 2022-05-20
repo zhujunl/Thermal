@@ -4,4 +4,6 @@
     android:versionCode="4100"
     android:versionName="4.1.0" >
 
+    <uses-sdk android:minSdkVersion="1" />
+
 </manifest>
