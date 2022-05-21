@@ -5,6 +5,6 @@
 5    android:versionName="4.1.0" >
 6
 7    <uses-sdk android:minSdkVersion="1" />
-7-->/Users/administrators/Miaxis/Project_Miaxis/Project_ZhengQi/thermal/opencv/src/main/AndroidManifest.xml
+7-->D:\AndroidProject\thermal\opencv\src\main\AndroidManifest.xml
 8
 9</manifest>

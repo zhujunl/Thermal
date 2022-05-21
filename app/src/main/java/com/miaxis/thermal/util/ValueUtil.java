@@ -37,7 +37,7 @@ public class ValueUtil {
 //    public static final String DEFAULT_DOWNLOAD_PERSON_PATH = "api/v1/attendance/person/downPersonListByDeviceMac";
     public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attence/person/updatePerson";
 //    public static final String DEFAULT_UPDATE_PERSON_PATH = "api/v1/attendance/person/updatePerson";
-    public static final String DEFAULT_UPLOAD_RECORD_PATH = "api/v1/attence/record/uploadRecordFromApp";
+    public static final String DEFAULT_UPLOAD_RECORD_PATH = "/api/v1/attence/personRecord/uploadRecordFromApp";
 //    public static final String DEFAULT_UPLOAD_RECORD_PATH = "api/v1/attendance/record/uploadRecordFromApp";
 //    public static final String DEFAULT_UPLOAD_RECORD_PATH = "api/v1/attence/personRecord/uploadRecordFromApp";
     public static final boolean DEFAULT_CAMERA_SHOW = false; //true:近红外，false:可见光
