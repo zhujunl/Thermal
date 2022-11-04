@@ -87,7 +87,7 @@ public class ValueUtil {
 
     public static final String SUCCESS = "200";
 
-    public static final int PAGE_SIZE = 10;
+    public static final int PAGE_SIZE = 100;
 
     public static final String WORK_MODE_NET = "0";
     public static final String WORK_MODE_LOCAL = "1";

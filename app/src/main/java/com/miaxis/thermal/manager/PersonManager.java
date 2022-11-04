@@ -8,8 +8,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -21,14 +19,13 @@ import com.miaxis.thermal.data.entity.MatchPerson;
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.entity.PhotoFaceFeature;
 import com.miaxis.thermal.data.exception.MyException;
-import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.util.DateUtil;
 import com.miaxis.thermal.util.FileUtil;
 import com.miaxis.thermal.util.ValueUtil;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,9 +34,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class PersonManager {
@@ -149,7 +146,10 @@ public class PersonManager {
                 handleDeletePerson(person);
             } else {
                 Log.e("asd", "同步新增人员");
-                handleSavePerson(person);
+                Person findPerson = PersonRepository.getInstance().findPerson(person.getIdentifyNumber());
+                if (findPerson==null){
+                    handleSavePerson(person);
+                }
             }
         }
     }
@@ -210,11 +210,23 @@ public class PersonManager {
             PersonRepository.getInstance().savePerson(person);
             Config config = ConfigManager.getInstance().getConfig();
             long timeStamp = person.getTimeStamp();
+            Log.e("person.getTimeStamp====", "" +person.getTimeStamp()+"   日期:"+data(person.getTimeStamp()) );
             if (timeStamp != 0 && timeStamp > config.getTimeStamp()) {
+                Log.e("config.getTimeStamp====", "" +config.getTimeStamp()+"      上次数据库日期:"+data(config.getTimeStamp()) );
                 config.setTimeStamp(timeStamp);
+                Log.e("config.getTimeStamp====", "" +config.getTimeStamp()+"      修改后数据库日期:"+data(config.getTimeStamp()) );
+                Log.e("getTimeStamp", "=================================" );
                 ConfigManager.getInstance().saveConfigSync(config);
             }
         }
+    }
+
+
+    public String data(long time){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM⽉dd⽇ HH:mm:ss");
+        long date_temp = Long.valueOf(time);
+        String date_string = sdf.format(new Date(date_temp));
+        return date_string;
     }
 
     public void savePersonFromIdCard(IDCardMessage idCardMessage) {

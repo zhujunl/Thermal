@@ -7,16 +7,10 @@ import android.util.Log;
 
 import com.miaxis.thermal.data.entity.Person;
 import com.miaxis.thermal.data.exception.MyException;
-import com.miaxis.thermal.data.exception.NetResultFailedException;
 import com.miaxis.thermal.data.repository.PersonRepository;
 import com.miaxis.thermal.util.ValueUtil;
 
-import java.io.IOException;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.schedulers.Schedulers;
 
 public class HeartBeatManager {
 
